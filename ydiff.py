@@ -1,11 +1,4 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-
-"""
-Term based tool to view *colored*, *incremental* diff in a *Git/Mercurial/Svn*
-workspace or from stdin, with *side by side* and *auto pager* support. Requires
-python (>= 2.5.0) and ``less``.
-"""
+#!/usr/bin/env python3
 
 import sys
 import os
@@ -14,32 +7,6 @@ import signal
 import subprocess
 import select
 import difflib
-
-META_INFO = {
-    'version'     : '1.1',
-    'license'     : 'BSD-3',
-    'author'      : 'Matthew Wang',
-    'email'       : 'mattwyl(@)gmail(.)com',
-    'url'         : 'https://github.com/ymattw/ydiff',
-    'keywords'    : 'colored incremental side-by-side diff',
-    'description' : ('View colored, incremental diff in a workspace or from '
-                     'stdin, with side by side and auto pager support')
-}
-
-if sys.hexversion < 0x02050000:
-    raise SystemExit('*** Requires python >= 2.5.0')    # pragma: no cover
-
-# Python < 2.6 does not have next()
-try:
-    next
-except NameError:
-    def next(obj):
-        return obj.next()
-
-try:
-    unicode
-except NameError:
-    unicode = str
 
 COLORS = {
     'reset'         : '\x1b[0m',
@@ -783,7 +750,7 @@ def check_command_status(arguments):
 
 def decode(line):
     """Decode UTF-8 if necessary."""
-    if isinstance(line, unicode):
+    if isinstance(line, str):
         return line
 
     for encoding in ['utf-8', 'latin1']:
@@ -838,9 +805,7 @@ def main():
             OptionParser._process_args(self, largs, rargs, values)
 
     usage = """%prog [options] [file|dir ...]"""
-    parser = PassThroughOptionParser(
-        usage=usage, description=META_INFO['description'],
-        version='%%prog %s' % META_INFO['version'])
+    parser = PassThroughOptionParser(usage=usage)
     parser.add_option(
         '-s', '--side-by-side', action='store_true',
         help='enable side-by-side mode')

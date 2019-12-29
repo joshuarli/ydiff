@@ -1,0 +1,13 @@
+This is ydiff, modified to only support git, py3.6+, and utf-8 because my use case is smaller.
+
+To install, symlink ydiff.py as git-ydiff somewhere on your PATH.
+
+I use the following git aliases:
+
+	[alias]
+	    d = ydiff -s -w0 --wrap
+	    dc = ydiff -s -w0 --wrap --cached
+	    s = "!showdiff () { rev=${1:-HEAD}; git d $rev~1 $rev; }; showdiff $1"
+
+	[color]
+		diff = never
