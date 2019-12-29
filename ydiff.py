@@ -9,32 +9,37 @@ import select
 import difflib
 
 COLORS = {
-    'reset'         : '\x1b[0m',
-    'underline'     : '\x1b[4m',
-    'reverse'       : '\x1b[7m',
-    'red'           : '\x1b[31m',
-    'green'         : '\x1b[32m',
-    'yellow'        : '\x1b[33m',
-    'blue'          : '\x1b[34m',
-    'magenta'       : '\x1b[35m',
-    'cyan'          : '\x1b[36m',
-    'lightred'      : '\x1b[1;31m',
-    'lightgreen'    : '\x1b[1;32m',
-    'lightyellow'   : '\x1b[1;33m',
-    'lightblue'     : '\x1b[1;34m',
-    'lightmagenta'  : '\x1b[1;35m',
-    'lightcyan'     : '\x1b[1;36m',
+    "reset": "\x1b[0m",
+    "underline": "\x1b[4m",
+    "reverse": "\x1b[7m",
+    "red": "\x1b[31m",
+    "green": "\x1b[32m",
+    "yellow": "\x1b[33m",
+    "blue": "\x1b[34m",
+    "magenta": "\x1b[35m",
+    "cyan": "\x1b[36m",
+    "lightred": "\x1b[1;31m",
+    "lightgreen": "\x1b[1;32m",
+    "lightyellow": "\x1b[1;33m",
+    "lightblue": "\x1b[1;34m",
+    "lightmagenta": "\x1b[1;35m",
+    "lightcyan": "\x1b[1;36m",
 }
 
+
 def revision_control_diff(vcs_name, args):
-    return subprocess.Popen(['git', 'diff', '--no-ext-diff'] + args, stdout=subprocess.PIPE).stdout
+    return subprocess.Popen(
+        ["git", "diff", "--no-ext-diff"] + args, stdout=subprocess.PIPE
+    ).stdout
 
 
 def revision_control_log(vcs_name, args):
-    return subprocess.Popen(['git', 'log', '--patch'] + args, stdout=subprocess.PIPE).stdout
+    return subprocess.Popen(
+        ["git", "log", "--patch"] + args, stdout=subprocess.PIPE
+    ).stdout
 
 
-def colorize(text, start_color, end_color='reset'):
+def colorize(text, start_color, end_color="reset"):
     return COLORS[start_color] + text + COLORS[end_color]
 
 
@@ -49,8 +54,8 @@ def strsplit(text, width):
     appended with the resetting sequence, and the second string is prefixed
     with all active colors.
     """
-    first = ''
-    second = ''
+    first = ""
+    second = ""
     found_colors = []
     chars_cnt = 0
     bytes_cnt = 0
@@ -60,7 +65,7 @@ def strsplit(text, width):
         append_len = 0
         for color in COLORS:
             if text.startswith(COLORS[color]):
-                if color == 'reset':
+                if color == "reset":
                     found_colors = []
                 else:
                     found_colors.append(color)
@@ -85,7 +90,7 @@ def strsplit(text, width):
     # If the first string has some active colors at the splitting point,
     # reset it and append the same colors to the second string
     if found_colors:
-        first += COLORS['reset']
+        first += COLORS["reset"]
         for color in found_colors:
             second = COLORS[color] + second
 
@@ -106,18 +111,17 @@ def strtrim(text, width, wrap_char, pad):
         text += wrap_char
     elif pad:
         # The string is short enough, but it might need to be padded.
-        text = '%s%*s' % (text, width - tlen, '')
+        text = "%s%*s" % (text, width - tlen, "")
     return text
 
 
 class Hunk(object):
-
     def __init__(self, hunk_headers, hunk_meta, old_addr, new_addr):
         self._hunk_headers = hunk_headers
         self._hunk_meta = hunk_meta
-        self._old_addr = old_addr   # tuple (start, offset)
-        self._new_addr = new_addr   # tuple (start, offset)
-        self._hunk_list = []        # list of tuple (attr, line)
+        self._old_addr = old_addr  # tuple (start, offset)
+        self._new_addr = new_addr  # tuple (start, offset)
+        self._hunk_list = []  # list of tuple (attr, line)
 
     def append(self, hunk_line):
         """hunk_line is a 2-element tuple: (attr, text), where attr is:
@@ -143,10 +147,10 @@ class Hunk(object):
         return difflib._mdiff(self._get_old_text(), self._get_new_text())
 
     def _get_old_text(self):
-        return [line for (attr, line) in self._hunk_list if attr != '+']
+        return [line for (attr, line) in self._hunk_list if attr != "+"]
 
     def _get_new_text(self):
-        return [line for (attr, line) in self._hunk_list if attr != '-']
+        return [line for (attr, line) in self._hunk_list if attr != "-"]
 
     def is_completed(self):
         old_completed = self._old_addr[1] == len(self._get_old_text())
@@ -155,7 +159,6 @@ class Hunk(object):
 
 
 class UnifiedDiff(object):
-
     def __init__(self, headers, old_path, new_path, hunks):
         self._headers = headers
         self._old_path = old_path
@@ -163,29 +166,33 @@ class UnifiedDiff(object):
         self._hunks = hunks
 
     def is_old_path(self, line):
-        return line.startswith('--- ')
+        return line.startswith("--- ")
 
     def is_new_path(self, line):
-        return line.startswith('+++ ')
+        return line.startswith("+++ ")
 
     def is_hunk_meta(self, line):
         """Minimal valid hunk meta is like '@@ -1 +1 @@', note extra chars
         might occur after the ending @@, e.g. in git log.  '## ' usually
         indicates svn property changes in output from `svn log --diff`
         """
-        return (line.startswith('@@ -') and line.find(' @@') >= 8 or
-                line.startswith('## -') and line.find(' ##') >= 8)
+        return (
+            line.startswith("@@ -")
+            and line.find(" @@") >= 8
+            or line.startswith("## -")
+            and line.find(" ##") >= 8
+        )
 
     def parse_hunk_meta(self, hunk_meta):
         # @@ -3,7 +3,6 @@
-        a = hunk_meta.split()[1].split(',')   # -3 7
+        a = hunk_meta.split()[1].split(",")  # -3 7
         if len(a) > 1:
             old_addr = (int(a[0][1:]), int(a[1]))
         else:
             # @@ -1 +1,2 @@
             old_addr = (int(a[0][1:]), 1)
 
-        b = hunk_meta.split()[2].split(',')   # +3 6
+        b = hunk_meta.split()[2].split(",")  # +3 6
         if len(b) > 1:
             new_addr = (int(b[0][1:]), int(b[1]))
         else:
@@ -201,29 +208,31 @@ class UnifiedDiff(object):
         """Exclude old path and header line from svn log --diff output, allow
         '----' likely to see in diff from yaml file
         """
-        return (line.startswith('-') and not self.is_old_path(line) and
-                not re.match(r'^-{72}$', line.rstrip()))
+        return (
+            line.startswith("-")
+            and not self.is_old_path(line)
+            and not re.match(r"^-{72}$", line.rstrip())
+        )
 
     def is_new(self, line):
-        return line.startswith('+') and not self.is_new_path(line)
+        return line.startswith("+") and not self.is_new_path(line)
 
     def is_common(self, line):
-        return line.startswith(' ')
+        return line.startswith(" ")
 
     def is_eof(self, line):
         # \ No newline at end of file
         # \ No newline at end of property
-        return line.startswith(r'\ No newline at end of')
+        return line.startswith(r"\ No newline at end of")
 
     def is_only_in_dir(self, line):
-        return line.startswith('Only in ')
+        return line.startswith("Only in ")
 
     def is_binary_differ(self, line):
-        return re.match('^Binary files .* differ$', line.rstrip())
+        return re.match("^Binary files .* differ$", line.rstrip())
 
 
 class PatchStream(object):
-
     def __init__(self, diff_hdl):
         self._diff_hdl = diff_hdl
         self._stream_header_size = 0
@@ -266,6 +275,7 @@ class PatchStreamForwarder(object):
     input stream to a diff format translator and read output stream from it.
     Note input stream is non-seekable, and upstream has eaten some lines.
     """
+
     def __init__(self, istream, translator):
         assert isinstance(istream, PatchStream)
         assert isinstance(translator, subprocess.Popen)
@@ -296,36 +306,42 @@ class PatchStreamForwarder(object):
 
 
 class DiffParser(object):
-
     def __init__(self, stream):
 
         header = [decode(line) for line in stream.read_stream_header(100)]
         size = len(header)
 
-        if size >= 4 and (header[0].startswith('*** ') and
-                          header[1].startswith('--- ') and
-                          header[2].rstrip() == '***************' and
-                          header[3].startswith('*** ') and
-                          header[3].rstrip().endswith(' ****')):
+        if size >= 4 and (
+            header[0].startswith("*** ")
+            and header[1].startswith("--- ")
+            and header[2].rstrip() == "***************"
+            and header[3].startswith("*** ")
+            and header[3].rstrip().endswith(" ****")
+        ):
             # For context diff, try use `filterdiff` to translate it to unified
             # format and provide a new stream
             #
-            self._type = 'context'
+            self._type = "context"
             try:
                 # Use line buffered mode so that to readline() in block mode
                 self._translator = subprocess.Popen(
-                    ['filterdiff', '--format=unified'], stdin=subprocess.PIPE,
-                    stdout=subprocess.PIPE, bufsize=1)
+                    ["filterdiff", "--format=unified"],
+                    stdin=subprocess.PIPE,
+                    stdout=subprocess.PIPE,
+                    bufsize=1,
+                )
             except OSError:
-                raise SystemExit('*** Context diff support depends on '
-                                 'filterdiff')
+                raise SystemExit("*** Context diff support depends on " "filterdiff")
             self._stream = PatchStreamForwarder(stream, self._translator)
             return
 
         for n in range(size):
-            if (header[n].startswith('--- ') and (n < size - 1) and
-                    header[n + 1].startswith('+++ ')):
-                self._type = 'unified'
+            if (
+                header[n].startswith("--- ")
+                and (n < size - 1)
+                and header[n + 1].startswith("+++ ")
+            ):
+                self._type = "unified"
                 self._stream = stream
                 break
         else:
@@ -333,7 +349,7 @@ class DiffParser(object):
             # unified diff give ydiff a chance to show everything as headers
             #
             sys.stderr.write("*** unknown format, fall through to 'unified'\n")
-            self._type = 'unified'
+            self._type = "unified"
             self._stream = stream
 
     def get_diff_generator(self):
@@ -350,7 +366,7 @@ class DiffParser(object):
                 # a new one for this case.  Otherwise it's acutally an 'old'
                 # line starts with '--- '.
                 #
-                if (not diff._hunks or diff._hunks[-1].is_completed()):
+                if not diff._hunks or diff._hunks[-1].is_completed():
                     if diff._old_path and diff._new_path and diff._hunks:
                         yield diff
                     diff = UnifiedDiff(headers, line, None, [])
@@ -369,14 +385,16 @@ class DiffParser(object):
                 try:
                     old_addr, new_addr = diff.parse_hunk_meta(hunk_meta)
                 except (IndexError, ValueError):
-                    raise RuntimeError('invalid hunk meta: %s' % hunk_meta)
+                    raise RuntimeError("invalid hunk meta: %s" % hunk_meta)
                 hunk = Hunk(headers, hunk_meta, old_addr, new_addr)
                 headers = []
                 diff._hunks.append(hunk)
 
-            elif diff._hunks and not headers and (diff.is_old(line) or
-                                                  diff.is_new(line) or
-                                                  diff.is_common(line)):
+            elif (
+                diff._hunks
+                and not headers
+                and (diff.is_old(line) or diff.is_new(line) or diff.is_common(line))
+            ):
                 diff._hunks[-1].append(diff.parse_hunk_line(line))
 
             elif diff.is_eof(line):
@@ -391,7 +409,7 @@ class DiffParser(object):
                     # Current diff is comppletely constructed
                     yield diff
                 headers.append(line)
-                yield UnifiedDiff(headers, '', '', [])
+                yield UnifiedDiff(headers, "", "", [])
                 headers = []
                 diff = UnifiedDiff([], None, None, [])
 
@@ -413,11 +431,10 @@ class DiffParser(object):
             # Tolerate dangling headers, just yield a UnifiedDiff object with
             # only header lines
             #
-            yield UnifiedDiff(headers, '', '', [])
+            yield UnifiedDiff(headers, "", "", [])
 
 
 class DiffMarker(object):
-
     def __init__(self, side_by_side=False, width=0, tab_width=8, wrap=False):
         self._side_by_side = side_by_side
         self._width = width
@@ -450,30 +467,31 @@ class DiffMarker(object):
                     if not old[0]:
                         # The '+' char after \x00 is kept
                         # DEBUG: yield 'NEW: %s %s\n' % (old, new)
-                        line = new[1].strip('\x00\x01')
+                        line = new[1].strip("\x00\x01")
                         yield self._markup_new(line)
                     elif not new[0]:
                         # The '-' char after \x00 is kept
                         # DEBUG: yield 'OLD: %s %s\n' % (old, new)
-                        line = old[1].strip('\x00\x01')
+                        line = old[1].strip("\x00\x01")
                         yield self._markup_old(line)
                     else:
                         # DEBUG: yield 'CHG: %s %s\n' % (old, new)
-                        yield (self._markup_old('-') +
-                               self._markup_mix(old[1], 'red'))
-                        yield (self._markup_new('+') +
-                               self._markup_mix(new[1], 'green'))
+                        yield (self._markup_old("-") + self._markup_mix(old[1], "red"))
+                        yield (
+                            self._markup_new("+") + self._markup_mix(new[1], "green")
+                        )
                 else:
-                    yield self._markup_common(' ' + old[1])
+                    yield self._markup_common(" " + old[1])
 
     def _markup_side_by_side(self, diff):
         """Returns a generator"""
 
         def _normalize(line):
-            return (line
-                    .replace('\t', ' ' * self._tab_width)
-                    .replace('\n', '')
-                    .replace('\r', ''))
+            return (
+                line.replace("\t", " " * self._tab_width)
+                .replace("\n", "")
+                .replace("\r", "")
+            )
 
         def _fit_with_marker_mix(text, base_color):
             """Wrap input text which contains mdiff tags, markup at the
@@ -482,18 +500,18 @@ class DiffMarker(object):
             out = [COLORS[base_color]]
 
             while text:
-                if text.startswith('\x00-'):    # del
-                    out.append(COLORS['reverse'] + COLORS[base_color])
+                if text.startswith("\x00-"):  # del
+                    out.append(COLORS["reverse"] + COLORS[base_color])
                     text = text[2:]
-                elif text.startswith('\x00+'):  # add
-                    out.append(COLORS['reverse'] + COLORS[base_color])
+                elif text.startswith("\x00+"):  # add
+                    out.append(COLORS["reverse"] + COLORS[base_color])
                     text = text[2:]
-                elif text.startswith('\x00^'):  # change
-                    out.append(COLORS['underline'] + COLORS[base_color])
+                elif text.startswith("\x00^"):  # change
+                    out.append(COLORS["underline"] + COLORS[base_color])
                     text = text[2:]
-                elif text.startswith('\x01'):   # reset
+                elif text.startswith("\x01"):  # reset
                     if len(text) > 1:
-                        out.append(COLORS['reset'] + COLORS[base_color])
+                        out.append(COLORS["reset"] + COLORS[base_color])
                     text = text[1:]
                 else:
                     # FIXME: utf-8 wchar might break the rule here, e.g.
@@ -504,9 +522,9 @@ class DiffMarker(object):
                     out.append(text[0])
                     text = text[1:]
 
-            out.append(COLORS['reset'])
+            out.append(COLORS["reset"])
 
-            return ''.join(out)
+            return "".join(out)
 
         # Set up number width, note last hunk might be empty
         try:
@@ -533,10 +551,15 @@ class DiffMarker(object):
                 width = 80
 
         # Setup lineno and line format
-        left_num_fmt = colorize('%%(left_num)%ds' % num_width, 'yellow')
-        right_num_fmt = colorize('%%(right_num)%ds' % num_width, 'yellow')
-        line_fmt = (left_num_fmt + ' %(left)s ' + COLORS['reset'] +
-                    right_num_fmt + ' %(right)s\n')
+        left_num_fmt = colorize("%%(left_num)%ds" % num_width, "yellow")
+        right_num_fmt = colorize("%%(right_num)%ds" % num_width, "yellow")
+        line_fmt = (
+            left_num_fmt
+            + " %(left)s "
+            + COLORS["reset"]
+            + right_num_fmt
+            + " %(right)s\n"
+        )
 
         # yield header, old path and new path
         for line in diff._headers:
@@ -553,32 +576,32 @@ class DiffMarker(object):
                 if old[0]:
                     left_num = str(hunk._old_addr[0] + int(old[0]) - 1)
                 else:
-                    left_num = ' '
+                    left_num = " "
 
                 if new[0]:
                     right_num = str(hunk._new_addr[0] + int(new[0]) - 1)
                 else:
-                    right_num = ' '
+                    right_num = " "
 
                 left = _normalize(old[1])
                 right = _normalize(new[1])
 
                 if changed:
                     if not old[0]:
-                        left = ''
-                        right = right.rstrip('\x01')
-                        if right.startswith('\x00+'):
+                        left = ""
+                        right = right.rstrip("\x01")
+                        if right.startswith("\x00+"):
                             right = right[2:]
                         right = self._markup_new(right)
                     elif not new[0]:
-                        left = left.rstrip('\x01')
-                        if left.startswith('\x00-'):
+                        left = left.rstrip("\x01")
+                        if left.startswith("\x00-"):
                             left = left[2:]
                         left = self._markup_old(left)
-                        right = ''
+                        right = ""
                     else:
-                        left = _fit_with_marker_mix(left, 'red')
-                        right = _fit_with_marker_mix(right, 'green')
+                        left = _fit_with_marker_mix(left, "red")
+                        right = _fit_with_marker_mix(right, "green")
                 else:
                     left = self._markup_common(left)
                     right = self._markup_common(right)
@@ -598,65 +621,65 @@ class DiffMarker(object):
 
                         # Pad left line with spaces if needed
                         if llen < width:
-                            lcur = '%s%*s' % (lcur, width - llen, '')
+                            lcur = "%s%*s" % (lcur, width - llen, "")
 
                         yield line_fmt % {
-                            'left_num': lncur,
-                            'left': lcur,
-                            'right_num': rncur,
-                            'right': rcur
+                            "left_num": lncur,
+                            "left": lcur,
+                            "right_num": rncur,
+                            "right": rcur,
                         }
 
                         # Clean line numbers for further iterations
-                        lncur = ''
-                        rncur = ''
+                        lncur = ""
+                        rncur = ""
                 else:
                     # Don't need to wrap long lines; instead, a trailing '>'
                     # char needs to be appended.
-                    wrap_char = colorize('>', 'lightmagenta')
+                    wrap_char = colorize(">", "lightmagenta")
                     left = strtrim(left, width, wrap_char, len(right) > 0)
                     right = strtrim(right, width, wrap_char, False)
 
                     yield line_fmt % {
-                        'left_num': left_num,
-                        'left': left,
-                        'right_num': right_num,
-                        'right': right
+                        "left_num": left_num,
+                        "left": left,
+                        "right_num": right_num,
+                        "right": right,
                     }
 
     def _markup_header(self, line):
-        return colorize(line, 'cyan')
+        return colorize(line, "cyan")
 
     def _markup_old_path(self, line):
-        return colorize(line, 'yellow')
+        return colorize(line, "yellow")
 
     def _markup_new_path(self, line):
-        return colorize(line, 'yellow')
+        return colorize(line, "yellow")
 
     def _markup_hunk_header(self, line):
-        return colorize(line, 'lightcyan')
+        return colorize(line, "lightcyan")
 
     def _markup_hunk_meta(self, line):
-        return colorize(line, 'lightblue')
+        return colorize(line, "lightblue")
 
     def _markup_common(self, line):
-        return colorize(line, 'reset')
+        return colorize(line, "reset")
 
     def _markup_old(self, line):
-        return colorize(line, 'lightred')
+        return colorize(line, "lightred")
 
     def _markup_new(self, line):
-        return colorize(line, 'green')
+        return colorize(line, "green")
 
     def _markup_mix(self, line, base_color):
-        del_code = COLORS['reverse'] + COLORS[base_color]
-        add_code = COLORS['reverse'] + COLORS[base_color]
-        chg_code = COLORS['underline'] + COLORS[base_color]
-        rst_code = COLORS['reset'] + COLORS[base_color]
-        line = line.replace('\x00-', del_code)
-        line = line.replace('\x00+', add_code)
-        line = line.replace('\x00^', chg_code)
-        line = line.replace('\x01', rst_code)
+        del_code = COLORS["reverse"] + COLORS[base_color]
+        add_code = COLORS["reverse"] + COLORS[base_color]
+        chg_code = COLORS["underline"] + COLORS[base_color]
+        rst_code = COLORS["reset"] + COLORS[base_color]
+        line = line.replace("\x00-", del_code)
+        line = line.replace("\x00+", add_code)
+        line = line.replace("\x00^", chg_code)
+        line = line.replace("\x01", rst_code)
         return colorize(line, base_color)
 
 
@@ -673,29 +696,32 @@ def markup_to_pager(stream, opts):
     information.
     """
     pager_cmd = [opts.pager]
-    pager_opts = (opts.pager_options.split(' ')
-                  if opts.pager_options is not None
-                  else None)
+    pager_opts = (
+        opts.pager_options.split(" ") if opts.pager_options is not None else None
+    )
 
     if opts.pager is None:
-        pager_cmd = ['less']
-        if not os.getenv('LESS') and not opts.pager_options:
+        pager_cmd = ["less"]
+        if not os.getenv("LESS") and not opts.pager_options:
             # Args stolen from git source:
             # github.com/git/git/blob/master/pager.c
-            pager_opts = ['-FRSX', '--shift 1']
+            pager_opts = ["-FRSX", "--shift 1"]
 
     pager_opts = pager_opts if pager_opts is not None else []
     pager_cmd.extend(pager_opts)
-    pager = subprocess.Popen(
-        pager_cmd, stdin=subprocess.PIPE, stdout=sys.stdout)
+    pager = subprocess.Popen(pager_cmd, stdin=subprocess.PIPE, stdout=sys.stdout)
 
     diffs = DiffParser(stream).get_diff_generator()
     for diff in diffs:
-        marker = DiffMarker(side_by_side=opts.side_by_side, width=opts.width,
-                            tab_width=opts.tab_width, wrap=opts.wrap)
+        marker = DiffMarker(
+            side_by_side=opts.side_by_side,
+            width=opts.width,
+            tab_width=opts.tab_width,
+            wrap=opts.wrap,
+        )
         color_diff = marker.markup(diff)
         for line in color_diff:
-            pager.stdin.write(line.encode('utf-8'))
+            pager.stdin.write(line.encode("utf-8"))
 
     pager.stdin.close()
     pager.wait()
@@ -706,13 +732,13 @@ def decode(line):
     if isinstance(line, str):
         return line
 
-    for encoding in ['utf-8', 'latin1']:
+    for encoding in ["utf-8", "latin1"]:
         try:
             return line.decode(encoding)
         except UnicodeDecodeError:
             pass
 
-    return '*** ydiff: undecodable bytes ***\n'
+    return "*** ydiff: undecodable bytes ***\n"
 
 
 def terminal_size():
@@ -724,9 +750,10 @@ def terminal_size():
         import struct
         import fcntl
         import termios
-        s = struct.pack('HHHH', 0, 0, 0, 0)
+
+        s = struct.pack("HHHH", 0, 0, 0, 0)
         x = fcntl.ioctl(1, termios.TIOCGWINSZ, s)
-        height, width = struct.unpack('HHHH', x)[0:2]
+        height, width = struct.unpack("HHHH", x)[0:2]
     except (IOError, AttributeError):
         pass
     return width, height
@@ -736,8 +763,7 @@ def main():
     signal.signal(signal.SIGPIPE, signal.SIG_DFL)
     signal.signal(signal.SIGINT, signal.SIG_DFL)
 
-    from optparse import (OptionParser, BadOptionError, AmbiguousOptionError,
-                          OptionGroup)
+    from optparse import OptionParser, BadOptionError, AmbiguousOptionError, OptionGroup
 
     class PassThroughOptionParser(OptionParser):
         """Stop parsing on first unknown option (e.g. --cached, -U10) and pass
@@ -747,6 +773,7 @@ def main():
         (on stackoverflow).  My hack is to try parse and insert a '--' in place
         and parse again.  Let me know if someone has better solution.
         """
+
         def _process_args(self, largs, rargs, values):
             left = largs[:]
             right = rargs[:]
@@ -754,72 +781,98 @@ def main():
                 OptionParser._process_args(self, left, right, values)
             except (BadOptionError, AmbiguousOptionError):
                 parsed_num = len(rargs) - len(right) - 1
-                rargs.insert(parsed_num, '--')
+                rargs.insert(parsed_num, "--")
             OptionParser._process_args(self, largs, rargs, values)
 
     usage = """%prog [options] [file|dir ...]"""
     parser = PassThroughOptionParser(usage=usage)
     parser.add_option(
-        '-s', '--side-by-side', action='store_true',
-        help='enable side-by-side mode')
+        "-s", "--side-by-side", action="store_true", help="enable side-by-side mode"
+    )
     parser.add_option(
-        '-w', '--width', type='int', default=80, metavar='N',
-        help='set text width for side-by-side mode, 0 for auto detection, '
-             'default is 80')
+        "-w",
+        "--width",
+        type="int",
+        default=80,
+        metavar="N",
+        help="set text width for side-by-side mode, 0 for auto detection, "
+        "default is 80",
+    )
     parser.add_option(
-        '-l', '--log', action='store_true',
-        help='show log with changes from revision control')
+        "-l",
+        "--log",
+        action="store_true",
+        help="show log with changes from revision control",
+    )
     parser.add_option(
-        '-c', '--color', default='auto', metavar='M',
-        help="""colorize mode 'auto' (default), 'always', or 'never'""")
+        "-c",
+        "--color",
+        default="auto",
+        metavar="M",
+        help="""colorize mode 'auto' (default), 'always', or 'never'""",
+    )
     parser.add_option(
-        '-t', '--tab-width', type='int', default=8, metavar='N',
-        help="""convert tab characters to this many spcaes (default: 8)""")
+        "-t",
+        "--tab-width",
+        type="int",
+        default=8,
+        metavar="N",
+        help="""convert tab characters to this many spcaes (default: 8)""",
+    )
     parser.add_option(
-        '', '--wrap', action='store_true',
-        help='wrap long lines in side-by-side view')
+        "", "--wrap", action="store_true", help="wrap long lines in side-by-side view"
+    )
     parser.add_option(
-        '-p', '--pager', metavar='M',
-        help="""pager application, suggested values are 'less' """
-             """or 'cat'""")
+        "-p",
+        "--pager",
+        metavar="M",
+        help="""pager application, suggested values are 'less' """ """or 'cat'""",
+    )
     parser.add_option(
-        '-o', '--pager-options', metavar='M',
-        help="""options to supply to pager application""")
+        "-o",
+        "--pager-options",
+        metavar="M",
+        help="""options to supply to pager application""",
+    )
 
     # Hack: use OptionGroup text for extra help message after option list
     option_group = OptionGroup(
-        parser, 'Note', ('Option parser will stop on first unknown option '
-                         'and pass them down to underneath revision control. '
-                         'Environment variable YDIFF_OPTIONS may be used to '
-                         'specify default options that will be placed at the '
-                         'beginning of the argument list.'))
+        parser,
+        "Note",
+        (
+            "Option parser will stop on first unknown option "
+            "and pass them down to underneath revision control. "
+            "Environment variable YDIFF_OPTIONS may be used to "
+            "specify default options that will be placed at the "
+            "beginning of the argument list."
+        ),
+    )
     parser.add_option_group(option_group)
 
     # Place possible options defined in YDIFF_OPTIONS at the beginning of argv
-    ydiff_opts = [x for x in os.getenv('YDIFF_OPTIONS', '').split(' ') if x]
+    ydiff_opts = [x for x in os.getenv("YDIFF_OPTIONS", "").split(" ") if x]
 
     # TODO: Deprecate CDIFF_OPTIONS. Fall back to it and warn (for now).
     if not ydiff_opts:
-        cdiff_opts = [x for x in os.getenv('CDIFF_OPTIONS', '').split(' ')
-                      if x]
+        cdiff_opts = [x for x in os.getenv("CDIFF_OPTIONS", "").split(" ") if x]
         if cdiff_opts:
-            sys.stderr.write('*** CDIFF_OPTIONS will be depreated soon, '
-                             'please use YDIFF_OPTIONS instead\n')
+            sys.stderr.write(
+                "*** CDIFF_OPTIONS will be depreated soon, "
+                "please use YDIFF_OPTIONS instead\n"
+            )
             ydiff_opts = cdiff_opts
 
     opts, args = parser.parse_args(ydiff_opts + sys.argv[1:])
 
     if not sys.stdin.isatty():
-        diff_hdl = (sys.stdin.buffer if hasattr(sys.stdin, 'buffer')
-                    else sys.stdin)
+        diff_hdl = sys.stdin.buffer if hasattr(sys.stdin, "buffer") else sys.stdin
     else:
         vcs_name = "git"
 
         if opts.log:
             diff_hdl = revision_control_log(vcs_name, args)
             if diff_hdl is None:
-                sys.stderr.write('*** %s does not support log command.\n' %
-                                 vcs_name)
+                sys.stderr.write("*** %s does not support log command.\n" % vcs_name)
                 return 1
         else:
             # 'diff' is a must have feature.
@@ -831,13 +884,11 @@ def main():
     if stream.is_empty():
         return 0
 
-    if (opts.color == 'always' or
-            (opts.color == 'auto' and sys.stdout.isatty())):
+    if opts.color == "always" or (opts.color == "auto" and sys.stdout.isatty()):
         markup_to_pager(stream, opts)
     else:
         # pipe out stream untouched to make sure it is still a patch
-        byte_output = (sys.stdout.buffer if hasattr(sys.stdout, 'buffer')
-                       else sys.stdout)
+        byte_output = sys.stdout.buffer if hasattr(sys.stdout, "buffer") else sys.stdout
         for line in stream:
             byte_output.write(line)
 
@@ -847,5 +898,5 @@ def main():
     return 0
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     sys.exit(main())
