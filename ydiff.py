@@ -480,7 +480,6 @@ class DiffMarker(object):
             meantime
             """
             out = [COLORS[base_color]]
-            tag_re = re.compile(r'\x00[+^-]|\x01')
 
             while text:
                 if text.startswith('\x00-'):    # del
