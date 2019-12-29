@@ -3,7 +3,7 @@
 TOP_DIR=$(cd $(dirname $0)/.. && pwd) || exit 1
 cd $TOP_DIR || exit 1
 
-YDIFF=./ydiff
+YDIFF=./ydiff.py
 
 # To test with py3k: PYTHON=python3 make test
 PYTHON=${PYTHON:-python}
