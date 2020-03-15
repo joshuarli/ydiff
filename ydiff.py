@@ -27,18 +27,6 @@ COLORS = {
 }
 
 
-def revision_control_diff(vcs_name, args):
-    return subprocess.Popen(
-        ["git", "diff", "--no-ext-diff"] + args, stdout=subprocess.PIPE
-    ).stdout
-
-
-def revision_control_log(vcs_name, args):
-    return subprocess.Popen(
-        ["git", "log", "--patch"] + args, stdout=subprocess.PIPE
-    ).stdout
-
-
 def colorize(text, start_color, end_color="reset"):
     return COLORS[start_color] + text + COLORS[end_color]
 
@@ -864,21 +852,7 @@ def main():
 
     opts, args = parser.parse_args(ydiff_opts + sys.argv[1:])
 
-    if not sys.stdin.isatty():
-        diff_hdl = sys.stdin.buffer if hasattr(sys.stdin, "buffer") else sys.stdin
-    else:
-        vcs_name = "git"
-
-        if opts.log:
-            diff_hdl = revision_control_log(vcs_name, args)
-            if diff_hdl is None:
-                sys.stderr.write("*** %s does not support log command.\n" % vcs_name)
-                return 1
-        else:
-            # 'diff' is a must have feature.
-            diff_hdl = revision_control_diff(vcs_name, args)
-
-    stream = PatchStream(diff_hdl)
+    stream = PatchStream(sys.stdin)
 
     # Don't let empty diff pass thru
     if stream.is_empty():
@@ -891,9 +865,6 @@ def main():
         byte_output = sys.stdout.buffer if hasattr(sys.stdout, "buffer") else sys.stdout
         for line in stream:
             byte_output.write(line)
-
-    if diff_hdl is not sys.stdin:
-        diff_hdl.close()
 
     return 0
 
