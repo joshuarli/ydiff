@@ -43,7 +43,6 @@ def strsplit(text, width):
     second = ""
     found_colors = []
     chars_cnt = 0
-    bytes_cnt = 0
     while text:
         # First of all, check if current string begins with any escape
         # sequence.
@@ -68,7 +67,6 @@ def strsplit(text, width):
 
         first += text[:append_len]
         text = text[append_len:]
-        bytes_cnt += append_len
 
     second = text
 
@@ -80,24 +78,6 @@ def strsplit(text, width):
             second = COLORS[color] + second
 
     return (first, second, chars_cnt)
-
-
-def strtrim(text, width, wrap_char, pad):
-    r"""strtrim() trims given string respecting the escape sequences (using
-    strsplit), so that if text is larger than width, it's trimmed to have
-    width-1 chars plus wrap_char. Additionally, if pad is True, short strings
-    are padded with space to have exactly needed width.
-
-    Returns resulting string.
-    """
-    text, _, tlen = strsplit(text, width + 1)
-    if tlen > width:
-        text, _, _ = strsplit(text, width - 1)
-        text += wrap_char
-    elif pad:
-        # The string is short enough, but it might need to be padded.
-        text = "%s%*s" % (text, width - tlen, "")
-    return text
 
 
 class Hunk(object):
@@ -213,7 +193,6 @@ class UnifiedDiff(object):
 
 class DiffParser(object):
     def __init__(self, stream):
-        self._type = "unified"
         self._stream = stream
 
     def get_diff_generator(self):
