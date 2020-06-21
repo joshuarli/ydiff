@@ -564,10 +564,9 @@ def main():
     diffs = DiffParser(stream).get_diff_generator()
     for diff in diffs:
         marker = DiffMarker()
-
-    color_diff = marker.markup_side_by_side(diff)
-    for line in color_diff:
-        byte_output.write(line.encode("utf-8"))
+        color_diff = marker.markup_side_by_side(diff)
+        for line in color_diff:
+            byte_output.write(line.encode("utf-8"))
 
     return 0
 
