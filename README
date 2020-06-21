@@ -1,17 +1,18 @@
-This is [ydiff](https://github.com/ymattw/ydiff), simplified to only support:
+This is [ydiff](https://github.com/ymattw/ydiff), heavily stripped down to only support:
 
 - reading unified diffs to stdin
 - py3.6+
 - utf-8
+- side-by-side rendering
 
-Essentially, it is a unified diff highlighter.
+Essentially, it is a unified diff -> side-by-side renderer.
 
 I use the following git aliases:
 
 	[alias]
-	    d = "!git diff | ydiff -s -w0 --wrap"
-	    dc = "!git diff --cached | ydiff -s -w0 --wrap"
-	    s = "!rev=${1:-HEAD}; git diff $rev~1 $rev | ydiff -s -w0 --wrap"
+	    d = "!git diff | ydiff -s -w0 --wrap | less"
+	    dc = "!git diff --cached | ydiff -s -w0 --wrap | less"
+	    s = "!rev=${1:-HEAD}; git diff $rev~1 $rev | ydiff -s -w0 --wrap | less"
 
 	[color]
 		diff = never

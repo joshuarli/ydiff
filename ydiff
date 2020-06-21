@@ -623,50 +623,6 @@ class DiffMarker(object):
         return colorize(line, "green")
 
 
-def markup_to_pager(stream, opts):
-    """Pipe unified diff stream to pager (less).
-
-    Note: have to create pager Popen object before the translator Popen object
-    in PatchStreamForwarder, otherwise the `stdin=subprocess.PIPE` would cause
-    trouble to the translator pipe (select() never see EOF after input stream
-    ended), most likely python bug 12607 (http://bugs.python.org/issue12607)
-    which was fixed in python 2.7.3.
-
-    See issue #30 (https://github.com/ymattw/ydiff/issues/30) for more
-    information.
-    """
-    pager_cmd = [opts.pager]
-    pager_opts = (
-        opts.pager_options.split(" ") if opts.pager_options is not None else None
-    )
-
-    if opts.pager is None:
-        pager_cmd = ["less"]
-        if not os.getenv("LESS") and not opts.pager_options:
-            # Args stolen from git source:
-            # github.com/git/git/blob/master/pager.c
-            pager_opts = ["-FRSX", "--shift 1"]
-
-    pager_opts = pager_opts if pager_opts is not None else []
-    pager_cmd.extend(pager_opts)
-    pager = subprocess.Popen(pager_cmd, stdin=subprocess.PIPE, stdout=sys.stdout)
-
-    diffs = DiffParser(stream).get_diff_generator()
-    for diff in diffs:
-        marker = DiffMarker(
-            side_by_side=opts.side_by_side,
-            width=opts.width,
-            tab_width=opts.tab_width,
-            wrap=opts.wrap,
-        )
-        color_diff = marker.markup(diff)
-        for line in color_diff:
-            pager.stdin.write(line.encode("utf-8"))
-
-    pager.stdin.close()
-    pager.wait()
-
-
 def decode(line):
     """Decode UTF-8 if necessary."""
     if isinstance(line, str):
@@ -703,7 +659,7 @@ def main():
     signal.signal(signal.SIGPIPE, signal.SIG_DFL)
     signal.signal(signal.SIGINT, signal.SIG_DFL)
 
-    from optparse import OptionParser, BadOptionError, AmbiguousOptionError, OptionGroup
+    from optparse import OptionParser, BadOptionError, AmbiguousOptionError
 
     class PassThroughOptionParser(OptionParser):
         """Stop parsing on first unknown option (e.g. --cached, -U10) and pass
@@ -756,32 +712,6 @@ def main():
     parser.add_option(
         "", "--wrap", action="store_true", help="wrap long lines in side-by-side view"
     )
-    parser.add_option(
-        "-p",
-        "--pager",
-        metavar="M",
-        help="""pager application, suggested values are 'less' """ """or 'cat'""",
-    )
-    parser.add_option(
-        "-o",
-        "--pager-options",
-        metavar="M",
-        help="""options to supply to pager application""",
-    )
-
-    # Hack: use OptionGroup text for extra help message after option list
-    option_group = OptionGroup(
-        parser,
-        "Note",
-        (
-            "Option parser will stop on first unknown option "
-            "and pass them down to underneath revision control. "
-            "Environment variable YDIFF_OPTIONS may be used to "
-            "specify default options that will be placed at the "
-            "beginning of the argument list."
-        ),
-    )
-    parser.add_option_group(option_group)
 
     # Place possible options defined in YDIFF_OPTIONS at the beginning of argv
     ydiff_opts = [x for x in os.getenv("YDIFF_OPTIONS", "").split(" ") if x]
@@ -790,17 +720,22 @@ def main():
 
     stream = PatchStream(sys.stdin)
 
-    # Don't let empty diff pass thru
     if stream.is_empty():
         return 0
 
-    if opts.color == "always" or (opts.color == "auto" and sys.stdout.isatty()):
-        markup_to_pager(stream, opts)
-    else:
-        # pipe out stream untouched to make sure it is still a patch
-        byte_output = sys.stdout.buffer if hasattr(sys.stdout, "buffer") else sys.stdout
-        for line in stream:
-            byte_output.write(line)
+    byte_output = sys.stdout.buffer if hasattr(sys.stdout, "buffer") else sys.stdout
+
+    diffs = DiffParser(stream).get_diff_generator()
+    for diff in diffs:
+        marker = DiffMarker(
+            side_by_side=opts.side_by_side,
+            width=opts.width,
+            tab_width=opts.tab_width,
+            wrap=opts.wrap,
+        )
+    color_diff = marker.markup(diff)
+    for line in color_diff:
+        byte_output.write(line.encode("utf-8"))
 
     return 0
 
