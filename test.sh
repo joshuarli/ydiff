@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
+# SIGINT will only stop 1 loop iter, we want to abort entire test script
+trap 'exit' INT
+
 for t in tests/*; do
     echo
     echo "test ${t}"
