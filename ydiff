@@ -431,45 +431,8 @@ class DiffMarker(object):
 
     def markup(self, diff):
         """Returns a generator"""
-        if self._side_by_side:
-            for line in self._markup_side_by_side(diff):
-                yield line
-        else:
-            for line in self._markup_traditional(diff):
-                yield line
-
-    def _markup_traditional(self, diff):
-        """Returns a generator"""
-        for line in diff._headers:
-            yield self._markup_header(line)
-
-        yield self._markup_old_path(diff._old_path)
-        yield self._markup_new_path(diff._new_path)
-
-        for hunk in diff._hunks:
-            for hunk_header in hunk._hunk_headers:
-                yield self._markup_hunk_header(hunk_header)
-            yield self._markup_hunk_meta(hunk._hunk_meta)
-            for old, new, changed in hunk.mdiff():
-                if changed:
-                    if not old[0]:
-                        # The '+' char after \x00 is kept
-                        # DEBUG: yield 'NEW: %s %s\n' % (old, new)
-                        line = new[1].strip("\x00\x01")
-                        yield self._markup_new(line)
-                    elif not new[0]:
-                        # The '-' char after \x00 is kept
-                        # DEBUG: yield 'OLD: %s %s\n' % (old, new)
-                        line = old[1].strip("\x00\x01")
-                        yield self._markup_old(line)
-                    else:
-                        # DEBUG: yield 'CHG: %s %s\n' % (old, new)
-                        yield (self._markup_old("-") + self._markup_mix(old[1], "red"))
-                        yield (
-                            self._markup_new("+") + self._markup_mix(new[1], "green")
-                        )
-                else:
-                    yield self._markup_common(" " + old[1])
+        for line in self._markup_side_by_side(diff):
+            yield line
 
     def _markup_side_by_side(self, diff):
         """Returns a generator"""
@@ -659,17 +622,6 @@ class DiffMarker(object):
     def _markup_new(self, line):
         return colorize(line, "green")
 
-    def _markup_mix(self, line, base_color):
-        del_code = COLORS["reverse"] + COLORS[base_color]
-        add_code = COLORS["reverse"] + COLORS[base_color]
-        chg_code = COLORS["underline"] + COLORS[base_color]
-        rst_code = COLORS["reset"] + COLORS[base_color]
-        line = line.replace("\x00-", del_code)
-        line = line.replace("\x00+", add_code)
-        line = line.replace("\x00^", chg_code)
-        line = line.replace("\x01", rst_code)
-        return colorize(line, base_color)
-
 
 def markup_to_pager(stream, opts):
     """Pipe unified diff stream to pager (less).
@@ -787,12 +739,6 @@ def main():
         "default is 80",
     )
     parser.add_option(
-        "-l",
-        "--log",
-        action="store_true",
-        help="show log with changes from revision control",
-    )
-    parser.add_option(
         "-c",
         "--color",
         default="auto",
@@ -839,16 +785,6 @@ def main():
 
     # Place possible options defined in YDIFF_OPTIONS at the beginning of argv
     ydiff_opts = [x for x in os.getenv("YDIFF_OPTIONS", "").split(" ") if x]
-
-    # TODO: Deprecate CDIFF_OPTIONS. Fall back to it and warn (for now).
-    if not ydiff_opts:
-        cdiff_opts = [x for x in os.getenv("CDIFF_OPTIONS", "").split(" ") if x]
-        if cdiff_opts:
-            sys.stderr.write(
-                "*** CDIFF_OPTIONS will be depreated soon, "
-                "please use YDIFF_OPTIONS instead\n"
-            )
-            ydiff_opts = cdiff_opts
 
     opts, args = parser.parse_args(ydiff_opts + sys.argv[1:])
 
