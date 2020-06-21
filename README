@@ -1,13 +1,17 @@
-This is ydiff, modified to only support git, py3.6+, and utf-8 because my use case is smaller.
+This is [ydiff](https://github.com/ymattw/ydiff), simplified to only support:
 
-To install, symlink ydiff.py as git-ydiff somewhere on your PATH.
+- reading unified diffs to stdin
+- py3.6+
+- utf-8
+
+Essentially, it is a unified diff highlighter.
 
 I use the following git aliases:
 
 	[alias]
-	    d = ydiff -s -w0 --wrap
-	    dc = ydiff -s -w0 --wrap --cached
-	    s = "!showdiff () { rev=${1:-HEAD}; git d $rev~1 $rev; }; showdiff $1"
+	    d = "!git diff | ydiff -s -w0 --wrap"
+	    dc = "!git diff --cached | ydiff -s -w0 --wrap"
+	    s = "!rev=${1:-HEAD}; git diff $rev~1 $rev | ydiff -s -w0 --wrap"
 
 	[color]
 		diff = never
