@@ -327,9 +327,6 @@ class DiffParser(object):
 
 
 class DiffMarker(object):
-    def __init__(self, width=0):
-        self._width = width
-
     def markup_side_by_side(self, diff):
         """Returns a generator"""
 
@@ -383,19 +380,16 @@ class DiffMarker(object):
             max1 = max2 = 0
         num_width = max(len(str(max1)), len(str(max2)))
 
-        # Set up line width
-        width = self._width
-        if width <= 0:
-            # Autodetection of text width according to terminal size
-            try:
-                # Each line is like 'nnn TEXT nnn TEXT\n', so width is half of
-                # [terminal size minus the line number columns and 3 separating
-                # spaces
-                #
-                width = (terminal_size()[0] - num_width * 2 - 3) // 2
-            except Exception:
-                # If terminal detection failed, set back to default
-                width = 80
+        # Autodetection of text width according to terminal size
+        try:
+            # Each line is like 'nnn TEXT nnn TEXT\n', so width is half of
+            # [terminal size minus the line number columns and 3 separating
+            # spaces
+            #
+            width = (terminal_size()[0] - num_width * 2 - 3) // 2
+        except Exception:
+            # If terminal detection failed, set back to default
+            width = 80
 
         # Setup lineno and line format
         left_num_fmt = colorize("%%(left_num)%ds" % num_width, "yellow")
@@ -548,15 +542,6 @@ def main():
     usage = """%prog [options] [file|dir ...]"""
     parser = PassThroughOptionParser(usage=usage)
     parser.add_option(
-        "-w",
-        "--width",
-        type="int",
-        default=80,
-        metavar="N",
-        help="set text width for side-by-side mode, 0 for auto detection, "
-        "default is 80",
-    )
-    parser.add_option(
         "-c",
         "--color",
         default="auto",
@@ -578,9 +563,8 @@ def main():
 
     diffs = DiffParser(stream).get_diff_generator()
     for diff in diffs:
-        marker = DiffMarker(
-            width=opts.width,
-        )
+        marker = DiffMarker()
+
     color_diff = marker.markup_side_by_side(diff)
     for line in color_diff:
         byte_output.write(line.encode("utf-8"))
