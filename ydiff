@@ -10,6 +10,7 @@ COLORS = {
     "reset": "\x1b[0m",
     "underline": "\x1b[4m",
     "reverse": "\x1b[7m",
+    "plain": "\x1b[22m",
     "red": "\x1b[31m",
     "green": "\x1b[32m",
     "yellow": "\x1b[33m",
@@ -349,25 +350,25 @@ class DiffMarker(object):
                 .replace("\r", "")
             )
 
-        def _fit_with_marker_mix(text, base_color):
+        def _fit_with_marker_mix(text):
             """Wrap input text which contains mdiff tags, markup at the
             meantime
             """
-            out = [COLORS[base_color]]
+            out = [COLORS["plain"]]
 
             while text:
-                if text.startswith("\x00-"):  # del
-                    out.append(COLORS["reverse"] + COLORS[base_color])
+                if text.startswith("\x00-"):
+                    out.append(COLORS["reverse"] + COLORS["red"])
                     text = text[2:]
-                elif text.startswith("\x00+"):  # add
-                    out.append(COLORS["reverse"] + COLORS[base_color])
+                elif text.startswith("\x00+"):
+                    out.append(COLORS["reverse"] + COLORS["green"])
                     text = text[2:]
-                elif text.startswith("\x00^"):  # change
-                    out.append(COLORS["underline"] + COLORS[base_color])
+                elif text.startswith("\x00^"):
+                    out.append(COLORS["reverse"] + COLORS["yellow"])
                     text = text[2:]
-                elif text.startswith("\x01"):  # reset
+                elif text.startswith("\x01"):
                     if len(text) > 1:
-                        out.append(COLORS["reset"] + COLORS[base_color])
+                        out.append(COLORS["reset"] + COLORS["plain"])
                     text = text[1:]
                 else:
                     # FIXME: utf-8 wchar might break the rule here, e.g.
@@ -456,8 +457,8 @@ class DiffMarker(object):
                         left = self._markup_old(left)
                         right = ""
                     else:
-                        left = _fit_with_marker_mix(left, "red")
-                        right = _fit_with_marker_mix(right, "green")
+                        left = _fit_with_marker_mix(left)
+                        right = _fit_with_marker_mix(right)
                 else:
                     left = self._markup_common(left)
                     right = self._markup_common(right)
