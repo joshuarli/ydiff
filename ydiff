@@ -252,8 +252,6 @@ class DiffParser(object):
         headers = []
 
         for line in self._stream:
-            line = decode(line)
-
             if diff.is_old_path(line):
                 # This is a new diff when current hunk is not yet genreated or
                 # is completed.  We yield previous diff if exists and construct
@@ -529,24 +527,7 @@ class DiffMarker(object):
         return colorize(line, "green")
 
 
-def decode(line):
-    """Decode UTF-8 if necessary."""
-    if isinstance(line, str):
-        return line
-
-    for encoding in ["utf-8", "latin1"]:
-        try:
-            return line.decode(encoding)
-        except UnicodeDecodeError:
-            pass
-
-    return "*** ydiff: undecodable bytes ***\n"
-
-
 def terminal_size():
-    """Returns terminal size. Taken from https://gist.github.com/marsam/7268750
-    but removed win32 support which depends on 3rd party extension.
-    """
     width, height = None, None
     try:
         import struct
