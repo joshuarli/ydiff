@@ -10,9 +10,9 @@ Essentially, it is a unified diff -> side-by-side renderer.
 I use the following git aliases:
 
 	[alias]
-	    d = "!git diff | ydiff -s -w0 --wrap | less"
-	    dc = "!git diff --cached | ydiff -s -w0 --wrap | less"
-	    s = "!rev=${1:-HEAD}; git diff $rev~1 $rev | ydiff -s -w0 --wrap | less"
+	    d = "!git diff | ydiff | less"
+	    dc = "!git diff --cached | ydiff | less"
+	    s = "!rev=${1:-HEAD}; git diff $rev~1 $rev | ydiff | less"
 
 	[color]
 		diff = never

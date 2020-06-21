@@ -327,10 +327,9 @@ class DiffParser(object):
 
 
 class DiffMarker(object):
-    def __init__(self, width=0, tab_width=8, wrap=False):
+    def __init__(self, width=0, tab_width=8):
         self._width = width
         self._tab_width = tab_width
-        self._wrap = wrap
 
     def markup_side_by_side(self, diff):
         """Returns a generator"""
@@ -455,46 +454,32 @@ class DiffMarker(object):
                     left = self._markup_common(left)
                     right = self._markup_common(right)
 
-                if self._wrap:
-                    # Need to wrap long lines, so here we'll iterate,
-                    # shaving off `width` chars from both left and right
-                    # strings, until both are empty. Also, line number needs to
-                    # be printed only for the first part.
-                    lncur = left_num
-                    rncur = right_num
-                    while left or right:
-                        # Split both left and right lines, preserving escaping
-                        # sequences correctly.
-                        lcur, left, llen = strsplit(left, width)
-                        rcur, right, rlen = strsplit(right, width)
+                # Need to wrap long lines, so here we'll iterate,
+                # shaving off `width` chars from both left and right
+                # strings, until both are empty. Also, line number needs to
+                # be printed only for the first part.
+                lncur = left_num
+                rncur = right_num
+                while left or right:
+                    # Split both left and right lines, preserving escaping
+                    # sequences correctly.
+                    lcur, left, llen = strsplit(left, width)
+                    rcur, right, rlen = strsplit(right, width)
 
-                        # Pad left line with spaces if needed
-                        if llen < width:
-                            lcur = "%s%*s" % (lcur, width - llen, "")
-
-                        yield line_fmt % {
-                            "left_num": lncur,
-                            "left": lcur,
-                            "right_num": rncur,
-                            "right": rcur,
-                        }
-
-                        # Clean line numbers for further iterations
-                        lncur = ""
-                        rncur = ""
-                else:
-                    # Don't need to wrap long lines; instead, a trailing '>'
-                    # char needs to be appended.
-                    wrap_char = colorize(">", "lightmagenta")
-                    left = strtrim(left, width, wrap_char, len(right) > 0)
-                    right = strtrim(right, width, wrap_char, False)
+                    # Pad left line with spaces if needed
+                    if llen < width:
+                        lcur = "%s%*s" % (lcur, width - llen, "")
 
                     yield line_fmt % {
-                        "left_num": left_num,
-                        "left": left,
-                        "right_num": right_num,
-                        "right": right,
+                        "left_num": lncur,
+                        "left": lcur,
+                        "right_num": rncur,
+                        "right": rcur,
                     }
+
+                    # Clean line numbers for further iterations
+                    lncur = ""
+                    rncur = ""
 
     def _markup_header(self, line):
         return colorize(line, "cyan")
@@ -587,9 +572,6 @@ def main():
         metavar="N",
         help="""convert tab characters to this many spcaes (default: 8)""",
     )
-    parser.add_option(
-        "", "--wrap", action="store_true", help="wrap long lines in side-by-side view"
-    )
 
     # Place possible options defined in YDIFF_OPTIONS at the beginning of argv
     ydiff_opts = [x for x in os.getenv("YDIFF_OPTIONS", "").split(" ") if x]
@@ -608,7 +590,6 @@ def main():
         marker = DiffMarker(
             width=opts.width,
             tab_width=opts.tab_width,
-            wrap=opts.wrap,
         )
     color_diff = marker.markup_side_by_side(diff)
     for line in color_diff:
