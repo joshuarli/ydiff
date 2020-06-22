@@ -5,6 +5,11 @@ import re
 import difflib
 from os import get_terminal_size
 
+# XXX: Since I'm using ydiff like `git diff | ydiff | less`,
+# both stdin and stdout are redirected, so we'll get inappropriate ioctl for those devices.
+# But we can use stderr (fd 2)!
+terminal_width = get_terminal_size(2)[0]
+
 COLORS = {
     "reset": "\x1b[0m",
     "underline": "\x1b[4m",
@@ -278,8 +283,6 @@ class DiffParser(object):
 
 class DiffMarker(object):
     def markup_side_by_side(self, diff):
-        """Returns a generator"""
-
         def _normalize(line):
             return (
                 line.replace("\t", " " * 8)
@@ -330,11 +333,6 @@ class DiffMarker(object):
             max1 = max2 = 0
 
         num_width = max(len(str(max1)), len(str(max2)))
-
-        # XXX: Since I'm using ydiff like `git diff | ydiff | less`,
-        # both stdin and stdout are redirected, so we'll get inappropriate ioctl for those devices.
-        # But we can use stderr (fd 2)!
-        terminal_width = get_terminal_size(2)[0]
 
         # Each line is like 'nnn TEXT nnn TEXT\n', so width is half of
         # [terminal size minus the line number columns and 3 separating spaces.
