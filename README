@@ -16,3 +16,7 @@ I use the following git aliases:
 
 	[color]
 		diff = never
+
+If you have Cython (`pip install Cython`), use `make` and you'll have a `ydiff-bin` you can use. Maybe it's faster, I'm not really sure.
+
+Haven't figured out static compilation yet.
