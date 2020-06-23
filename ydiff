@@ -166,7 +166,7 @@ class UnifiedDiff(object):
             # @@ -0,0 +1 @@
             new_addr = (int(b[0][1:]), 1)
 
-        return (old_addr, new_addr)
+        return old_addr, new_addr
 
     def parse_hunk_line(self, line):
         return (line[0], line[1:])
@@ -226,10 +226,7 @@ class DiffParser(object):
 
             elif diff.is_hunk_meta(line):
                 hunk_meta = line
-                try:
-                    old_addr, new_addr = diff.parse_hunk_meta(hunk_meta)
-                except (IndexError, ValueError):
-                    raise RuntimeError("invalid hunk meta: %s" % hunk_meta)
+                old_addr, new_addr = diff.parse_hunk_meta(hunk_meta)
                 hunk = Hunk(headers, hunk_meta, old_addr, new_addr)
                 headers = []
                 diff._hunks.append(hunk)
