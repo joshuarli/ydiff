@@ -27,7 +27,7 @@ COLORS = {
 
 
 def colorize(text, start_color, end_color="reset"):
-    return COLORS[start_color] + text + COLORS[end_color]
+    return f"{COLORS[start_color]}{text}{COLORS[end_color]}"
 
 
 def strsplit(text, width):
