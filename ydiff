@@ -4,12 +4,13 @@ import sys
 import re
 import signal
 import difflib
-from os import get_terminal_size
+from os import get_terminal_size, environ
 
 # XXX: Since I'm using ydiff like `git diff | ydiff | less`,
 # both stdin and stdout are redirected, so we'll get inappropriate ioctl for those devices.
 # But we can use stderr (fd 2)!
-terminal_width = get_terminal_size(2)[0]
+terminal_width = environ.get("YDIFF_WIDTH") or get_terminal_size(2)[0]
+terminal_width = int(terminal_width)
 
 COLORS = {
     "reset": "\x1b[0m",
