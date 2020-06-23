@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 
-from sys import stdin, stdout
-from re import match
-from signal import signal, SIGPIPE, SIGINT, SIG_DFL
-from difflib import _mdiff
+import sys
+import re
+import signal
+import difflib
 from os import get_terminal_size, environ
 
 # XXX: Since I'm using ydiff like `git diff | ydiff | less`,
@@ -112,7 +112,7 @@ class Hunk(object):
         boolean flag -- None indicates context separation, True indicates
             either "from" or "to" line contains a change, otherwise False.
         """
-        return _mdiff(self._get_old_text(), self._get_new_text())
+        return difflib._mdiff(self._get_old_text(), self._get_new_text())
 
     def _get_old_text(self):
         return [line for (attr, line) in self._hunk_list if attr != "+"]
@@ -173,7 +173,7 @@ class UnifiedDiff(object):
         return (
             line.startswith("-")
             and not self.is_old_path(line)
-            and not match(r"^-{72}$", line.rstrip())
+            and not re.match(r"^-{72}$", line.rstrip())
         )
 
     def is_new(self, line):
@@ -191,7 +191,7 @@ class UnifiedDiff(object):
         return line.startswith("Only in ")
 
     def is_binary_differ(self, line):
-        return match("^Binary files .* differ$", line.rstrip())
+        return re.match("^Binary files .* differ$", line.rstrip())
 
 
 class DiffParser(object):
@@ -443,11 +443,11 @@ class DiffMarker(object):
         return colorize(line, "green")
 
 
-signal(SIGPIPE, SIG_DFL)
-signal(SIGINT, SIG_DFL)
+signal.signal(signal.SIGPIPE, signal.SIG_DFL)
+signal.signal(signal.SIGINT, signal.SIG_DFL)
 
-for diff in DiffParser(stdin).get_diff_generator():
+for diff in DiffParser(sys.stdin).get_diff_generator():
     marker = DiffMarker()
     color_diff = marker.markup_side_by_side(diff)
     for line in color_diff:
-        stdout.buffer.write(line.encode("utf-8"))
+        sys.stdout.buffer.write(line.encode("utf-8"))
