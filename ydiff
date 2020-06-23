@@ -31,7 +31,7 @@ def colorize(text, start_color, end_color="reset"):
 
 
 def strsplit(text, width):
-    r"""strsplit() splits a given string into two substrings, respecting the
+    """strsplit() splits a given string into two substrings, respecting the
     escape sequences (in a global var COLORS).
 
     It returns 3-tuple: (first string, second string, number of visible chars
@@ -97,7 +97,7 @@ class Hunk(object):
         self._hunk_list.append(hunk_line)
 
     def mdiff(self):
-        r"""The difflib._mdiff() function returns an interator which returns a
+        """The difflib._mdiff() function returns an interator which returns a
         tuple: (from line tuple, to line tuple, boolean flag)
 
         from/to line tuple -- (line num, line text)
@@ -204,7 +204,6 @@ class DiffParser(object):
                 # is completed.  We yield previous diff if exists and construct
                 # a new one for this case.  Otherwise it's acutally an 'old'
                 # line starts with '--- '.
-                #
                 if not diff._hunks or diff._hunks[-1].is_completed():
                     if diff._old_path and diff._new_path and diff._hunks:
                         yield diff
@@ -237,7 +236,6 @@ class DiffParser(object):
                 diff._hunks[-1].append(diff.parse_hunk_line(line))
 
             elif diff.is_eof(line):
-                # ignore
                 pass
 
             elif diff.is_only_in_dir(line) or diff.is_binary_differ(line):
@@ -255,7 +253,6 @@ class DiffParser(object):
             else:
                 # All other non-recognized lines are considered as headers or
                 # hunk headers respectively
-                #
                 headers.append(line)
 
         # Validate and yield the last patch set if it is not yielded yet
@@ -269,7 +266,6 @@ class DiffParser(object):
         if headers:
             # Tolerate dangling headers, just yield a UnifiedDiff object with
             # only header lines
-            #
             yield UnifiedDiff(headers, "", "", [])
 
 
@@ -286,34 +282,31 @@ class DiffMarker(object):
             """Wrap input text which contains mdiff tags, markup at the
             meantime
             """
-            out = [COLORS["plain"]]
-
+            out = COLORS["plain"]
             while text:
                 if text.startswith("\x00-"):
-                    out.append(COLORS["reverse"] + COLORS["red"])
+                    out += f'{COLORS["reverse"]}{COLORS["red"]}'
                     text = text[2:]
                 elif text.startswith("\x00+"):
-                    out.append(COLORS["reverse"] + COLORS["green"])
+                    out += f'{COLORS["reverse"]}{COLORS["green"]}'
                     text = text[2:]
                 elif text.startswith("\x00^"):
-                    out.append(COLORS["reverse"] + COLORS["yellow"])
+                    out += f'{COLORS["reverse"]}{COLORS["yellow"]}'
                     text = text[2:]
                 elif text.startswith("\x01"):
                     if len(text) > 1:
-                        out.append(COLORS["reset"] + COLORS["plain"])
+                        out += f'{COLORS["reset"]}{COLORS["plain"]}'
                     text = text[1:]
                 else:
                     # FIXME: utf-8 wchar might break the rule here, e.g.
                     # u'\u554a' takes double width of a single letter, also
                     # this depends on your terminal font.  I guess audience of
                     # this tool never put that kind of symbol in their code :-)
-                    #
-                    out.append(text[0])
+                    out += text[0]
                     text = text[1:]
 
-            out.append(COLORS["reset"])
-
-            return "".join(out)
+            out += COLORS["reset"]
+            return out
 
         # Set up number width, note last hunk might be empty
         try:
@@ -330,7 +323,6 @@ class DiffMarker(object):
         # [terminal size minus the line number columns and 3 separating spaces.
         width = (terminal_width - num_width * 2 - 3) // 2
 
-        # Setup lineno and line format
         left_num_fmt = colorize("%%(left_num)%ds" % num_width, "yellow")
         right_num_fmt = colorize("%%(right_num)%ds" % num_width, "yellow")
         line_fmt = (
@@ -341,17 +333,18 @@ class DiffMarker(object):
             + " %(right)s\n"
         )
 
-        # yield header, old path and new path
         for line in diff._headers:
             yield self._markup_header(line)
+
         yield self._markup_old_path(diff._old_path)
         yield self._markup_new_path(diff._new_path)
 
-        # yield hunks
         for hunk in diff._hunks:
             for hunk_header in hunk._hunk_headers:
                 yield self._markup_hunk_header(hunk_header)
+
             yield self._markup_hunk_meta(hunk._hunk_meta)
+
             for old, new, changed in hunk.mdiff():
                 if old[0]:
                     left_num = str(hunk._old_addr[0] + int(old[0]) - 1)
@@ -442,7 +435,5 @@ signal.signal(signal.SIGPIPE, signal.SIG_DFL)
 signal.signal(signal.SIGINT, signal.SIG_DFL)
 
 for diff in DiffParser(sys.stdin).get_diff_generator():
-    marker = DiffMarker()
-    color_diff = marker.markup_side_by_side(diff)
-    for line in color_diff:
-        sys.stdout.buffer.write(line.encode("utf-8"))
+    for line in DiffMarker().markup_side_by_side(diff):
+        sys.stdout.buffer.write(line.encode())
