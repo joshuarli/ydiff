@@ -122,8 +122,10 @@ class Hunk(object):
 
     def is_completed(self):
         old_completed = self._old_addr[1] == len(self._get_old_text())
-        new_completed = self._new_addr[1] == len(self._get_new_text())
-        return old_completed and new_completed
+        if not old_completed:
+            return False
+        # new_completed
+        return self._new_addr[1] == len(self._get_new_text())
 
 
 class UnifiedDiff(object):
