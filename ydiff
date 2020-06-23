@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 
 import sys
-import re
 import signal
 import difflib
 from os import get_terminal_size, environ
@@ -167,13 +166,9 @@ class UnifiedDiff(object):
         return (line[0], line[1:])
 
     def is_old(self, line):
-        """Exclude old path and header line from svn log --diff output, allow
-        '----' likely to see in diff from yaml file
-        """
         return (
             line.startswith("-")
             and not self.is_old_path(line)
-            and not re.match(r"^-{72}$", line.rstrip())
         )
 
     def is_new(self, line):
@@ -191,7 +186,7 @@ class UnifiedDiff(object):
         return line.startswith("Only in ")
 
     def is_binary_differ(self, line):
-        return re.match("^Binary files .* differ$", line.rstrip())
+        return line.startswith("Binary files") and line.endswith("differ")
 
 
 class DiffParser(object):
