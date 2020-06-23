@@ -1,5 +1,6 @@
 .PHONY: all
-all: ydiff-bin
+all: clean
+	make ydiff-bin
 
 .PHONY: clean
 clean:
