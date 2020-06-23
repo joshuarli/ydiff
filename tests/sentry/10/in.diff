@@ -1,0 +1,77 @@
+commit 9342cbe0c4c8adb0834b08d3b6f86429a26ef931
+Author: William Mak <william@wmak.io>
+Date:   Mon Jun 22 13:49:36 2020 -0400
+
+    fix(perf-views): Key transactions couldnt query on aggregates (#19424)
+    
+    - `user_aggregate_conditions` was missing on the key transactions query
+
+diff --git a/src/sentry/snuba/discover.py b/src/sentry/snuba/discover.py
+index 8438573331..a6e360aded 100644
+--- a/src/sentry/snuba/discover.py
++++ b/src/sentry/snuba/discover.py
+@@ -626,6 +626,7 @@ def key_transaction_query(selected_columns, user_query, params, orderby, referre
+         orderby=orderby,
+         referrer=referrer,
+         conditions=key_transaction_conditions(queryset),
++        use_aggregate_conditions=True,
+     )
+ 
+ 
+diff --git a/tests/snuba/api/endpoints/test_discover_key_transactions.py b/tests/snuba/api/endpoints/test_discover_key_transactions.py
+index bd30c252a1..46b6676cb8 100644
+--- a/tests/snuba/api/endpoints/test_discover_key_transactions.py
++++ b/tests/snuba/api/endpoints/test_discover_key_transactions.py
+@@ -376,6 +376,52 @@ class KeyTransactionTest(APITestCase, SnubaTestCase):
+         assert len(data) == 1
+         assert data[0]["transaction"] == event_data["transaction"]
+ 
++    @patch("django.utils.timezone.now")
++    def test_get_transaction_with_aggregate_query(self, mock_now):
++        mock_now.return_value = before_now().replace(tzinfo=pytz.utc)
++        event_data = load_data("transaction", timestamp=before_now(minutes=1))
++
++        transactions = [
++            ("127.0.0.1", "/foo_transaction/", 2),
++            ("192.168.0.1", "/blah_transaction/", 3),
++        ]
++
++        for ip_address, transaction, count in transactions:
++            event_data["transaction"] = transaction
++            event_data["user"]["ip_address"] = ip_address
++            for _ in range(count):
++                self.store_event(data=event_data, project_id=self.project.id)
++            KeyTransaction.objects.create(
++                owner=self.user,
++                organization=self.org,
++                transaction=event_data["transaction"],
++                project=self.project,
++            )
++
++        with self.feature("organizations:performance-view"):
++            url = reverse("sentry-api-0-organization-key-transactions", args=[self.org.slug])
++            response = self.client.get(
++                url,
++                {
++                    "project": [self.project.id],
++                    "orderby": "transaction",
++                    "query": "count():>2",
++                    "field": [
++                        "transaction",
++                        "transaction_status",
++                        "project",
++                        "count()",
++                        "failure_rate()",
++                        "percentile(transaction.duration, 0.95)",
++                    ],
++                },
++            )
++
++        assert response.status_code == 200
++        data = response.data["data"]
++        assert len(data) == 1
++        assert data[0]["transaction"] == event_data["transaction"]
++
+     @patch("django.utils.timezone.now")
+     def test_get_transaction_with_backslash_and_quotes(self, mock_now):
+         mock_now.return_value = before_now().replace(tzinfo=pytz.utc)

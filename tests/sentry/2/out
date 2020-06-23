@@ -1,0 +1,20 @@
+[36mcommit 32d42cb465e28d19c8ca3d5da17b31236c8753b4
+[0m[36mAuthor: Matej Minar <matej.minar@sentry.io>
+[0m[36mDate:   Mon Jun 22 22:51:22 2020 +0200
+[0m[36m
+[0m[36m    fix(ui): Do not send query param to artifacts endpoint (#19495)
+[0m[36m
+[0m[36mdiff --git a/src/sentry/static/sentry/app/views/releases/detail/releaseArtifacts.jsx b/src/sentry/static/sentry/app/views/releases/detail/releaseArtifacts.jsx
+[0m[36mindex ce7761ed79..ffda3848d9 100644
+[0m[33m--- a/src/sentry/static/sentry/app/views/releases/detail/releaseArtifacts.jsx
+[0m[33m+++ b/src/sentry/static/sentry/app/views/releases/detail/releaseArtifacts.jsx
+[0m[1;34m@@ -65,7 +65,7 @@ class ReleaseArtifacts extends React.Component {
+[0m[33m65[0m [0m    this.props.api.request(this.getFilesEndpoint(), {[0m         [0m[33m65[0m [0m    this.props.api.request(this.getFilesEndpoint(), {[0m
+[33m66[0m [0m      method: 'GET',[0m                                          [0m[33m66[0m [0m      method: 'GET',[0m
+[33m67[0m [0m      // We need to omit global selection header url params b [0m[33m67[0m [0m      // We need to omit global selection header url params b
+[33m  [0m ecause they are not supported[0m                                 [0m[33m  [0m ecause they are not supported[0m
+[33m68[0m [22m      data: omit(this.props.location.query, Object.values(URL[0m [0m[33m68[0m [22m      data: omit(this.props.location.query, [7m[32m[...[0m[22mObject.values[0m
+[33m  [0m [22m_PARAM)),[0m                                                     [0m[33m  [0m [22m(URL_PARAM)[7m[32m, 'query'][0m[22m),[0m
+[33m69[0m [0m      success: (data, _, jqXHR) => {[0m                          [0m[33m69[0m [0m      success: (data, _, jqXHR) => {[0m
+[33m70[0m [0m        this.setState({[0m                                       [0m[33m70[0m [0m        this.setState({[0m
+[33m71[0m [0m          error: false,[0m                                       [0m[33m71[0m [0m          error: false,[0m

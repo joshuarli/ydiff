@@ -1,0 +1,1344 @@
+[36mcommit 58ee47408b4ee8d987a6d9a4e35c3562b9497a9c
+[0m[36mAuthor: Gaurav Gupta <gaurav5430@gmail.com>
+[0m[36mDate:   Tue Jun 23 02:52:25 2020 +0530
+[0m[36m
+[0m[36m    fix(ui): make sidebar links without href keyboard accessible (#19463)
+[0m[36m    
+[0m[36m    some sidebar links like "Help" , "What's New" and "Collapse" were not keyboard accessible although they are interactive
+[0m[36m    Although they were links, but there was no href, and so interactions were not enabled by the browser
+[0m[36m    added a default href="#" for these links. Also on click of these links, we need to preventDefault to prevent the page from reloading
+[0m[36m
+[0m[36mdiff --git a/src/sentry/static/sentry/app/components/sidebar/sidebarItem.tsx b/src/sentry/static/sentry/app/components/sidebar/sidebarItem.tsx
+[0m[36mindex a916097741..e4588d7fe7 100644
+[0m[33m--- a/src/sentry/static/sentry/app/components/sidebar/sidebarItem.tsx
+[0m[33m+++ b/src/sentry/static/sentry/app/components/sidebar/sidebarItem.tsx
+[0m[1;34m@@ -104,9 +104,10 @@ const SidebarItem = ({
+[0m[33m104[0m [0m      <StyledSidebarItem[0m                                     [0m[33m104[0m [0m      <StyledSidebarItem[0m
+[33m105[0m [0m        data-test-id={props['data-test-id']}[0m                 [0m[33m105[0m [0m        data-test-id={props['data-test-id']}[0m
+[33m106[0m [0m        active={isActive ? 'true' : undefined}[0m               [0m[33m106[0m [0m        active={isActive ? 'true' : undefined}[0m
+[33m107[0m [22m        to={(to ? to : href) || ''}[0m                          [0m[33m107[0m [22m        to={(to ? to : href) || '[7m[32m#[0m[22m'}[0m
+[33m108[0m [0m        className={className}[0m                                [0m[33m108[0m [0m        className={className}[0m
+[33m109[0m [0m        onClick={(event: React.MouseEvent<HTMLAnchorElement> [0m[33m109[0m [0m        onClick={(event: React.MouseEvent<HTMLAnchorElement>
+[33m   [0m ) => {[0m                                                       [0m[33m   [0m ) => {[0m
+[33m   [0m                                                              [0m[33m110[0m [32m          !(to || href) && event.preventDefault();[0m
+[33m110[0m [0m          typeof onClick === 'function' && onClick(id, event [0m[33m111[0m [0m          typeof onClick === 'function' && onClick(id, event
+[33m   [0m );[0m                                                           [0m[33m   [0m );[0m
+[33m111[0m [0m          showIsNew && localStorage.setItem(isNewSeenKey, 't [0m[33m112[0m [0m          showIsNew && localStorage.setItem(isNewSeenKey, 't
+[33m   [0m rue');[0m                                                       [0m[33m   [0m rue');[0m
+[33m112[0m [0m        }}[0m                                                   [0m[33m113[0m [0m        }}[0m
+[36mdiff --git a/tests/js/spec/components/sidebar/__snapshots__/index.spec.jsx.snap b/tests/js/spec/components/sidebar/__snapshots__/index.spec.jsx.snap
+[0m[36mindex 1bb1685343..4c5e6aff22 100644
+[0m[33m--- a/tests/js/spec/components/sidebar/__snapshots__/index.spec.jsx.snap
+[0m[33m+++ b/tests/js/spec/components/sidebar/__snapshots__/index.spec.jsx.snap
+[0m[1;34m@@ -2312,6 +2312,18 @@ exports[`Sidebar can have onboarding feature 1`] = `
+[0m[33m2312[0m [0m                                        Array [[0m             [0m[33m2312[0m [0m                                        Array [[0m
+[33m2313[0m [0m                                          "/settings/org-sl [0m[33m2313[0m [0m                                          "/settings/org-sl
+[33m    [0m ug/",[0m                                                       [0m[33m    [0m ug/",[0m
+[33m2314[0m [0m                                        ],[0m                  [0m[33m2314[0m [0m                                        ],[0m
+[33m2315[0m [0m                                        Array [[0m             [0m[33m2315[0m [0m                                        Array [[0m
+[33m    [0m                                                             [0m[33m2316[0m [32m                                          "#",[0m
+[33m    [0m                                                             [0m[33m2317[0m [32m                                        ],[0m
+[33m    [0m                                                             [0m[33m2318[0m [32m                                        Array [[0m
+[33m    [0m                                                             [0m[33m2319[0m [32m                                          "#",[0m
+[33m    [0m                                                             [0m[33m2320[0m [32m                                        ],[0m
+[33m    [0m                                                             [0m[33m2321[0m [32m                                        Array [[0m
+[33m    [0m                                                             [0m[33m2322[0m [32m                                          "#",[0m
+[33m    [0m                                                             [0m[33m2323[0m [32m                                        ],[0m
+[33m    [0m                                                             [0m[33m2324[0m [32m                                        Array [[0m
+[33m    [0m                                                             [0m[33m2325[0m [32m                                          "#",[0m
+[33m    [0m                                                             [0m[33m2326[0m [32m                                        ],[0m
+[33m    [0m                                                             [0m[33m2327[0m [32m                                        Array [[0m
+[33m2316[0m [0m                                          "/organizations/o [0m[33m2328[0m [0m                                          "/organizations/o
+[33m    [0m rg-slug/projects/",[0m                                         [0m[33m    [0m rg-slug/projects/",[0m
+[33m2317[0m [0m                                        ],[0m                  [0m[33m2329[0m [0m                                        ],[0m
+[1;34m@@ -2333,6 +2345,15 @@ exports[`Sidebar can have onboarding feature 1`] = `
+[0m[33m2333[0m [0m                                        Array [[0m             [0m[33m2345[0m [0m                                        Array [[0m
+[33m2334[0m [0m                                          "/settings/org-sl [0m[33m2346[0m [0m                                          "/settings/org-sl
+[33m    [0m ug/",[0m                                                       [0m[33m    [0m ug/",[0m
+[33m2335[0m [0m                                        ],[0m                  [0m[33m2347[0m [0m                                        ],[0m
+[33m2336[0m [0m                                        Array [[0m             [0m[33m2348[0m [0m                                        Array [[0m
+[33m    [0m                                                             [0m[33m2349[0m [32m                                          "#",[0m
+[33m    [0m                                                             [0m[33m2350[0m [32m                                        ],[0m
+[33m    [0m                                                             [0m[33m2351[0m [32m                                        Array [[0m
+[33m    [0m                                                             [0m[33m2352[0m [32m                                          "#",[0m
+[33m    [0m                                                             [0m[33m2353[0m [32m                                        ],[0m
+[33m    [0m                                                             [0m[33m2354[0m [32m                                        Array [[0m
+[33m    [0m                                                             [0m[33m2355[0m [32m                                          "#",[0m
+[33m    [0m                                                             [0m[33m2356[0m [32m                                        ],[0m
+[33m    [0m                                                             [0m[33m2357[0m [32m                                        Array [[0m
+[33m2337[0m [0m                                          "/organizations/o [0m[33m2358[0m [0m                                          "/organizations/o
+[33m    [0m rg-slug/projects/",[0m                                         [0m[33m    [0m rg-slug/projects/",[0m
+[33m2338[0m [0m                                        ],[0m                  [0m[33m2359[0m [0m                                        ],[0m
+[1;34m@@ -2354,6 +2375,15 @@ exports[`Sidebar can have onboarding feature 1`] = `
+[0m[33m2354[0m [0m                                        Array [[0m             [0m[33m2375[0m [0m                                        Array [[0m
+[33m2355[0m [0m                                          "/settings/org-sl [0m[33m2376[0m [0m                                          "/settings/org-sl
+[33m    [0m ug/",[0m                                                       [0m[33m    [0m ug/",[0m
+[33m2356[0m [0m                                        ],[0m                  [0m[33m2377[0m [0m                                        ],[0m
+[33m2357[0m [0m                                        Array [[0m             [0m[33m2378[0m [0m                                        Array [[0m
+[33m    [0m                                                             [0m[33m2379[0m [32m                                          "#",[0m
+[33m    [0m                                                             [0m[33m2380[0m [32m                                        ],[0m
+[33m    [0m                                                             [0m[33m2381[0m [32m                                        Array [[0m
+[33m    [0m                                                             [0m[33m2382[0m [32m                                          "#",[0m
+[33m    [0m                                                             [0m[33m2383[0m [32m                                        ],[0m
+[33m    [0m                                                             [0m[33m2384[0m [32m                                        Array [[0m
+[33m    [0m                                                             [0m[33m2385[0m [32m                                          "#",[0m
+[33m    [0m                                                             [0m[33m2386[0m [32m                                        ],[0m
+[33m    [0m                                                             [0m[33m2387[0m [32m                                        Array [[0m
+[33m2358[0m [0m                                          "/organizations/o [0m[33m2388[0m [0m                                          "/organizations/o
+[33m    [0m rg-slug/projects/",[0m                                         [0m[33m    [0m rg-slug/projects/",[0m
+[33m2359[0m [0m                                        ],[0m                  [0m[33m2389[0m [0m                                        ],[0m
+[1;34m@@ -2375,6 +2405,15 @@ exports[`Sidebar can have onboarding feature 1`] = `
+[0m[33m2375[0m [0m                                        Array [[0m             [0m[33m2405[0m [0m                                        Array [[0m
+[33m2376[0m [0m                                          "/settings/org-sl [0m[33m2406[0m [0m                                          "/settings/org-sl
+[33m    [0m ug/",[0m                                                       [0m[33m    [0m ug/",[0m
+[33m2377[0m [0m                                        ],[0m                  [0m[33m2407[0m [0m                                        ],[0m
+[33m2378[0m [0m                                        Array [[0m             [0m[33m2408[0m [0m                                        Array [[0m
+[33m    [0m                                                             [0m[33m2409[0m [32m                                          "#",[0m
+[33m    [0m                                                             [0m[33m2410[0m [32m                                        ],[0m
+[33m    [0m                                                             [0m[33m2411[0m [32m                                        Array [[0m
+[33m    [0m                                                             [0m[33m2412[0m [32m                                          "#",[0m
+[33m    [0m                                                             [0m[33m2413[0m [32m                                        ],[0m
+[33m    [0m                                                             [0m[33m2414[0m [32m                                        Array [[0m
+[33m    [0m                                                             [0m[33m2415[0m [32m                                          "#",[0m
+[33m    [0m                                                             [0m[33m2416[0m [32m                                        ],[0m
+[33m    [0m                                                             [0m[33m2417[0m [32m                                        Array [[0m
+[33m2379[0m [0m                                          "/organizations/o [0m[33m2418[0m [0m                                          "/organizations/o
+[33m    [0m rg-slug/projects/",[0m                                         [0m[33m    [0m rg-slug/projects/",[0m
+[33m2380[0m [0m                                        ],[0m                  [0m[33m2419[0m [0m                                        ],[0m
+[1;34m@@ -2399,6 +2438,15 @@ exports[`Sidebar can have onboarding feature 1`] = `
+[0m[33m2399[0m [0m                                        Array [[0m             [0m[33m2438[0m [0m                                        Array [[0m
+[33m2400[0m [0m                                          "https://forum.se [0m[33m2439[0m [0m                                          "https://forum.se
+[33m    [0m ntry.io/",[0m                                                  [0m[33m    [0m ntry.io/",[0m
+[33m    [0m                                                             [0m[33m2440[0m [32m                                        ],[0m
+[33m    [0m                                                             [0m[33m2441[0m [32m                                        Array [[0m
+[33m    [0m                                                             [0m[33m2442[0m [32m                                          "#",[0m
+[33m    [0m                                                             [0m[33m2443[0m [32m                                        ],[0m
+[33m    [0m                                                             [0m[33m2444[0m [32m                                        Array [[0m
+[33m    [0m                                                             [0m[33m2445[0m [32m                                          "#",[0m
+[33m    [0m                                                             [0m[33m2446[0m [32m                                        ],[0m
+[33m    [0m                                                             [0m[33m2447[0m [32m                                        Array [[0m
+[33m    [0m                                                             [0m[33m2448[0m [32m                                          "#",[0m
+[33m2401[0m [0m                                        ],[0m                  [0m[33m2449[0m [0m                                        ],[0m
+[33m2402[0m [0m                                      ],[0m                    [0m[33m2450[0m [0m                                      ],[0m
+[33m2403[0m [0m                                      "results": Array [[0m    [0m[33m2451[0m [0m                                      "results": Array [[0m
+[33m2404[0m [0m                                        Object {[0m            [0m[33m2452[0m [0m                                        Object {[0m
+[1;34m@@ -2557,6 +2605,70 @@ exports[`Sidebar can have onboarding feature 1`] = `
+[0m[33m    [0m                                                             [0m[33m2605[0m [32m                                          "type": "return",[0m
+[33m    [0m                                                             [0m[33m2606[0m [32m                                          "value": undefine[0m
+[33m    [0m                                                             [0m[33m    [0m [32md,[0m
+[33m    [0m                                                             [0m[33m2607[0m [32m                                        },[0m
+[33m    [0m                                                             [0m[33m2608[0m [32m                                        Object {[0m
+[33m    [0m                                                             [0m[33m2609[0m [32m                                          "type": "return",[0m
+[33m    [0m                                                             [0m[33m2610[0m [32m                                          "value": undefine[0m
+[33m    [0m                                                             [0m[33m    [0m [32md,[0m
+[33m    [0m                                                             [0m[33m2611[0m [32m                                        },[0m
+[33m    [0m                                                             [0m[33m2612[0m [32m                                        Object {[0m
+[33m    [0m                                                             [0m[33m2613[0m [32m                                          "type": "return",[0m
+[33m    [0m                                                             [0m[33m2614[0m [32m                                          "value": undefine[0m
+[33m    [0m                                                             [0m[33m    [0m [32md,[0m
+[33m    [0m                                                             [0m[33m2615[0m [32m                                        },[0m
+[33m    [0m                                                             [0m[33m2616[0m [32m                                        Object {[0m
+[33m    [0m                                                             [0m[33m2617[0m [32m                                          "type": "return",[0m
+[33m    [0m                                                             [0m[33m2618[0m [32m                                          "value": undefine[0m
+[33m    [0m                                                             [0m[33m    [0m [32md,[0m
+[33m    [0m                                                             [0m[33m2619[0m [32m                                        },[0m
+[33m    [0m                                                             [0m[33m2620[0m [32m                                        Object {[0m
+[33m    [0m                                                             [0m[33m2621[0m [32m                                          "type": "return",[0m
+[33m    [0m                                                             [0m[33m2622[0m [32m                                          "value": undefine[0m
+[33m    [0m                                                             [0m[33m    [0m [32md,[0m
+[33m    [0m                                                             [0m[33m2623[0m [32m                                        },[0m
+[33m    [0m                                                             [0m[33m2624[0m [32m                                        Object {[0m
+[33m    [0m                                                             [0m[33m2625[0m [32m                                          "type": "return",[0m
+[33m    [0m                                                             [0m[33m2626[0m [32m                                          "value": undefine[0m
+[33m    [0m                                                             [0m[33m    [0m [32md,[0m
+[33m    [0m                                                             [0m[33m2627[0m [32m                                        },[0m
+[33m    [0m                                                             [0m[33m2628[0m [32m                                        Object {[0m
+[33m    [0m                                                             [0m[33m2629[0m [32m                                          "type": "return",[0m
+[33m    [0m                                                             [0m[33m2630[0m [32m                                          "value": undefine[0m
+[33m    [0m                                                             [0m[33m    [0m [32md,[0m
+[33m    [0m                                                             [0m[33m2631[0m [32m                                        },[0m
+[33m    [0m                                                             [0m[33m2632[0m [32m                                        Object {[0m
+[33m    [0m                                                             [0m[33m2633[0m [32m                                          "type": "return",[0m
+[33m    [0m                                                             [0m[33m2634[0m [32m                                          "value": undefine[0m
+[33m    [0m                                                             [0m[33m    [0m [32md,[0m
+[33m    [0m                                                             [0m[33m2635[0m [32m                                        },[0m
+[33m    [0m                                                             [0m[33m2636[0m [32m                                        Object {[0m
+[33m    [0m                                                             [0m[33m2637[0m [32m                                          "type": "return",[0m
+[33m    [0m                                                             [0m[33m2638[0m [32m                                          "value": undefine[0m
+[33m    [0m                                                             [0m[33m    [0m [32md,[0m
+[33m    [0m                                                             [0m[33m2639[0m [32m                                        },[0m
+[33m    [0m                                                             [0m[33m2640[0m [32m                                        Object {[0m
+[33m    [0m                                                             [0m[33m2641[0m [32m                                          "type": "return",[0m
+[33m    [0m                                                             [0m[33m2642[0m [32m                                          "value": undefine[0m
+[33m    [0m                                                             [0m[33m    [0m [32md,[0m
+[33m    [0m                                                             [0m[33m2643[0m [32m                                        },[0m
+[33m    [0m                                                             [0m[33m2644[0m [32m                                        Object {[0m
+[33m    [0m                                                             [0m[33m2645[0m [32m                                          "type": "return",[0m
+[33m    [0m                                                             [0m[33m2646[0m [32m                                          "value": undefine[0m
+[33m    [0m                                                             [0m[33m    [0m [32md,[0m
+[33m    [0m                                                             [0m[33m2647[0m [32m                                        },[0m
+[33m    [0m                                                             [0m[33m2648[0m [32m                                        Object {[0m
+[33m    [0m                                                             [0m[33m2649[0m [32m                                          "type": "return",[0m
+[33m    [0m                                                             [0m[33m2650[0m [32m                                          "value": undefine[0m
+[33m    [0m                                                             [0m[33m    [0m [32md,[0m
+[33m    [0m                                                             [0m[33m2651[0m [32m                                        },[0m
+[33m    [0m                                                             [0m[33m2652[0m [32m                                        Object {[0m
+[33m    [0m                                                             [0m[33m2653[0m [32m                                          "type": "return",[0m
+[33m    [0m                                                             [0m[33m2654[0m [32m                                          "value": undefine[0m
+[33m    [0m                                                             [0m[33m    [0m [32md,[0m
+[33m    [0m                                                             [0m[33m2655[0m [32m                                        },[0m
+[33m    [0m                                                             [0m[33m2656[0m [32m                                        Object {[0m
+[33m    [0m                                                             [0m[33m2657[0m [32m                                          "type": "return",[0m
+[33m    [0m                                                             [0m[33m2658[0m [32m                                          "value": undefine[0m
+[33m    [0m                                                             [0m[33m    [0m [32md,[0m
+[33m    [0m                                                             [0m[33m2659[0m [32m                                        },[0m
+[33m    [0m                                                             [0m[33m2660[0m [32m                                        Object {[0m
+[33m    [0m                                                             [0m[33m2661[0m [32m                                          "type": "return",[0m
+[33m    [0m                                                             [0m[33m2662[0m [32m                                          "value": undefine[0m
+[33m    [0m                                                             [0m[33m    [0m [32md,[0m
+[33m    [0m                                                             [0m[33m2663[0m [32m                                        },[0m
+[33m    [0m                                                             [0m[33m2664[0m [32m                                        Object {[0m
+[33m    [0m                                                             [0m[33m2665[0m [32m                                          "type": "return",[0m
+[33m    [0m                                                             [0m[33m2666[0m [32m                                          "value": undefine[0m
+[33m    [0m                                                             [0m[33m    [0m [32md,[0m
+[33m    [0m                                                             [0m[33m2667[0m [32m                                        },[0m
+[33m    [0m                                                             [0m[33m2668[0m [32m                                        Object {[0m
+[33m2557[0m [0m                                          "type": "return",[0m [0m[33m2669[0m [0m                                          "type": "return",[0m
+[33m2558[0m [0m                                          "value": undefine [0m[33m2670[0m [0m                                          "value": undefine
+[33m    [0m d,[0m                                                          [0m[33m    [0m d,[0m
+[33m2559[0m [0m                                        },[0m                  [0m[33m2671[0m [0m                                        },[0m
+[33m2560[0m [0m                                      ],[0m                    [0m[33m2672[0m [0m                                      ],[0m
+[33m2561[0m [0m                                    },[0m                      [0m[33m2673[0m [0m                                    },[0m
+[33m2562[0m [0m                                    "go": [MockFunction],[0m   [0m[33m2674[0m [0m                                    "go": [MockFunction],[0m
+[1;34m@@ -2864,6 +2976,18 @@ exports[`Sidebar can have onboarding feature 1`] = `
+[0m[33m2864[0m [0m                                        Array [[0m             [0m[33m2976[0m [0m                                        Array [[0m
+[33m2865[0m [0m                                          "/settings/org-sl [0m[33m2977[0m [0m                                          "/settings/org-sl
+[33m    [0m ug/",[0m                                                       [0m[33m    [0m ug/",[0m
+[33m2866[0m [0m                                        ],[0m                  [0m[33m2978[0m [0m                                        ],[0m
+[33m2867[0m [0m                                        Array [[0m             [0m[33m2979[0m [0m                                        Array [[0m
+[33m    [0m                                                             [0m[33m2980[0m [32m                                          "#",[0m
+[33m    [0m                                                             [0m[33m2981[0m [32m                                        ],[0m
+[33m    [0m                                                             [0m[33m2982[0m [32m                                        Array [[0m
+[33m    [0m                                                             [0m[33m2983[0m [32m                                          "#",[0m
+[33m    [0m                                                             [0m[33m2984[0m [32m                                        ],[0m
+[33m    [0m                                                             [0m[33m2985[0m [32m                                        Array [[0m
+[33m    [0m                                                             [0m[33m2986[0m [32m                                          "#",[0m
+[33m    [0m                                                             [0m[33m2987[0m [32m                                        ],[0m
+[33m    [0m                                                             [0m[33m2988[0m [32m                                        Array [[0m
+[33m    [0m                                                             [0m[33m2989[0m [32m                                          "#",[0m
+[33m    [0m                                                             [0m[33m2990[0m [32m                                        ],[0m
+[33m    [0m                                                             [0m[33m2991[0m [32m                                        Array [[0m
+[33m2868[0m [0m                                          "/organizations/o [0m[33m2992[0m [0m                                          "/organizations/o
+[33m    [0m rg-slug/projects/",[0m                                         [0m[33m    [0m rg-slug/projects/",[0m
+[33m2869[0m [0m                                        ],[0m                  [0m[33m2993[0m [0m                                        ],[0m
+[1;34m@@ -2885,6 +3009,15 @@ exports[`Sidebar can have onboarding feature 1`] = `
+[0m[33m2885[0m [0m                                        Array [[0m             [0m[33m3009[0m [0m                                        Array [[0m
+[33m2886[0m [0m                                          "/settings/org-sl [0m[33m3010[0m [0m                                          "/settings/org-sl
+[33m    [0m ug/",[0m                                                       [0m[33m    [0m ug/",[0m
+[33m2887[0m [0m                                        ],[0m                  [0m[33m3011[0m [0m                                        ],[0m
+[33m2888[0m [0m                                        Array [[0m             [0m[33m3012[0m [0m                                        Array [[0m
+[33m    [0m                                                             [0m[33m3013[0m [32m                                          "#",[0m
+[33m    [0m                                                             [0m[33m3014[0m [32m                                        ],[0m
+[33m    [0m                                                             [0m[33m3015[0m [32m                                        Array [[0m
+[33m    [0m                                                             [0m[33m3016[0m [32m                                          "#",[0m
+[33m    [0m                                                             [0m[33m3017[0m [32m                                        ],[0m
+[33m    [0m                                                             [0m[33m3018[0m [32m                                        Array [[0m
+[33m    [0m                                                             [0m[33m3019[0m [32m                                          "#",[0m
+[33m    [0m                                                             [0m[33m3020[0m [32m                                        ],[0m
+[33m    [0m                                                             [0m[33m3021[0m [32m                                        Array [[0m
+[33m2889[0m [0m                                          "/organizations/o [0m[33m3022[0m [0m                                          "/organizations/o
+[33m    [0m rg-slug/projects/",[0m                                         [0m[33m    [0m rg-slug/projects/",[0m
+[33m2890[0m [0m                                        ],[0m                  [0m[33m3023[0m [0m                                        ],[0m
+[1;34m@@ -2906,6 +3039,15 @@ exports[`Sidebar can have onboarding feature 1`] = `
+[0m[33m2906[0m [0m                                        Array [[0m             [0m[33m3039[0m [0m                                        Array [[0m
+[33m2907[0m [0m                                          "/settings/org-sl [0m[33m3040[0m [0m                                          "/settings/org-sl
+[33m    [0m ug/",[0m                                                       [0m[33m    [0m ug/",[0m
+[33m2908[0m [0m                                        ],[0m                  [0m[33m3041[0m [0m                                        ],[0m
+[33m2909[0m [0m                                        Array [[0m             [0m[33m3042[0m [0m                                        Array [[0m
+[33m    [0m                                                             [0m[33m3043[0m [32m                                          "#",[0m
+[33m    [0m                                                             [0m[33m3044[0m [32m                                        ],[0m
+[33m    [0m                                                             [0m[33m3045[0m [32m                                        Array [[0m
+[33m    [0m                                                             [0m[33m3046[0m [32m                                          "#",[0m
+[33m    [0m                                                             [0m[33m3047[0m [32m                                        ],[0m
+[33m    [0m                                                             [0m[33m3048[0m [32m                                        Array [[0m
+[33m    [0m                                                             [0m[33m3049[0m [32m                                          "#",[0m
+[33m    [0m                                                             [0m[33m3050[0m [32m                                        ],[0m
+[33m    [0m                                                             [0m[33m3051[0m [32m                                        Array [[0m
+[33m2910[0m [0m                                          "/organizations/o [0m[33m3052[0m [0m                                          "/organizations/o
+[33m    [0m rg-slug/projects/",[0m                                         [0m[33m    [0m rg-slug/projects/",[0m
+[33m2911[0m [0m                                        ],[0m                  [0m[33m3053[0m [0m                                        ],[0m
+[1;34m@@ -2927,6 +3069,15 @@ exports[`Sidebar can have onboarding feature 1`] = `
+[0m[33m2927[0m [0m                                        Array [[0m             [0m[33m3069[0m [0m                                        Array [[0m
+[33m2928[0m [0m                                          "/settings/org-sl [0m[33m3070[0m [0m                                          "/settings/org-sl
+[33m    [0m ug/",[0m                                                       [0m[33m    [0m ug/",[0m
+[33m2929[0m [0m                                        ],[0m                  [0m[33m3071[0m [0m                                        ],[0m
+[33m2930[0m [0m                                        Array [[0m             [0m[33m3072[0m [0m                                        Array [[0m
+[33m    [0m                                                             [0m[33m3073[0m [32m                                          "#",[0m
+[33m    [0m                                                             [0m[33m3074[0m [32m                                        ],[0m
+[33m    [0m                                                             [0m[33m3075[0m [32m                                        Array [[0m
+[33m    [0m                                                             [0m[33m3076[0m [32m                                          "#",[0m
+[33m    [0m                                                             [0m[33m3077[0m [32m                                        ],[0m
+[33m    [0m                                                             [0m[33m3078[0m [32m                                        Array [[0m
+[33m    [0m                                                             [0m[33m3079[0m [32m                                          "#",[0m
+[33m    [0m                                                             [0m[33m3080[0m [32m                                        ],[0m
+[33m    [0m                                                             [0m[33m3081[0m [32m                                        Array [[0m
+[33m2931[0m [0m                                          "/organizations/o [0m[33m3082[0m [0m                                          "/organizations/o
+[33m    [0m rg-slug/projects/",[0m                                         [0m[33m    [0m rg-slug/projects/",[0m
+[33m2932[0m [0m                                        ],[0m                  [0m[33m3083[0m [0m                                        ],[0m
+[1;34m@@ -2951,6 +3102,15 @@ exports[`Sidebar can have onboarding feature 1`] = `
+[0m[33m2951[0m [0m                                        Array [[0m             [0m[33m3102[0m [0m                                        Array [[0m
+[33m2952[0m [0m                                          "https://forum.se [0m[33m3103[0m [0m                                          "https://forum.se
+[33m    [0m ntry.io/",[0m                                                  [0m[33m    [0m ntry.io/",[0m
+[33m    [0m                                                             [0m[33m3104[0m [32m                                        ],[0m
+[33m    [0m                                                             [0m[33m3105[0m [32m                                        Array [[0m
+[33m    [0m                                                             [0m[33m3106[0m [32m                                          "#",[0m
+[33m    [0m                                                             [0m[33m3107[0m [32m                                        ],[0m
+[33m    [0m                                                             [0m[33m3108[0m [32m                                        Array [[0m
+[33m    [0m                                                             [0m[33m3109[0m [32m                                          "#",[0m
+[33m    [0m                                                             [0m[33m3110[0m [32m                                        ],[0m
+[33m    [0m                                                             [0m[33m3111[0m [32m                                        Array [[0m
+[33m    [0m                                                             [0m[33m3112[0m [32m                                          "#",[0m
+[33m2953[0m [0m                                        ],[0m                  [0m[33m3113[0m [0m                                        ],[0m
+[33m2954[0m [0m                                      ],[0m                    [0m[33m3114[0m [0m                                      ],[0m
+[33m2955[0m [0m                                      "results": Array [[0m    [0m[33m3115[0m [0m                                      "results": Array [[0m
+[33m2956[0m [0m                                        Object {[0m            [0m[33m3116[0m [0m                                        Object {[0m
+[1;34m@@ -3109,6 +3269,70 @@ exports[`Sidebar can have onboarding feature 1`] = `
+[0m[33m    [0m                                                             [0m[33m3269[0m [32m                                          "type": "return",[0m
+[33m    [0m                                                             [0m[33m3270[0m [32m                                          "value": undefine[0m
+[33m    [0m                                                             [0m[33m    [0m [32md,[0m
+[33m    [0m                                                             [0m[33m3271[0m [32m                                        },[0m
+[33m    [0m                                                             [0m[33m3272[0m [32m                                        Object {[0m
+[33m    [0m                                                             [0m[33m3273[0m [32m                                          "type": "return",[0m
+[33m    [0m                                                             [0m[33m3274[0m [32m                                          "value": undefine[0m
+[33m    [0m                                                             [0m[33m    [0m [32md,[0m
+[33m    [0m                                                             [0m[33m3275[0m [32m                                        },[0m
+[33m    [0m                                                             [0m[33m3276[0m [32m                                        Object {[0m
+[33m    [0m                                                             [0m[33m3277[0m [32m                                          "type": "return",[0m
+[33m    [0m                                                             [0m[33m3278[0m [32m                                          "value": undefine[0m
+[33m    [0m                                                             [0m[33m    [0m [32md,[0m
+[33m    [0m                                                             [0m[33m3279[0m [32m                                        },[0m
+[33m    [0m                                                             [0m[33m3280[0m [32m                                        Object {[0m
+[33m    [0m                                                             [0m[33m3281[0m [32m                                          "type": "return",[0m
+[33m    [0m                                                             [0m[33m3282[0m [32m                                          "value": undefine[0m
+[33m    [0m                                                             [0m[33m    [0m [32md,[0m
+[33m    [0m                                                             [0m[33m3283[0m [32m                                        },[0m
+[33m    [0m                                                             [0m[33m3284[0m [32m                                        Object {[0m
+[33m    [0m                                                             [0m[33m3285[0m [32m                                          "type": "return",[0m
+[33m    [0m                                                             [0m[33m3286[0m [32m                                          "value": undefine[0m
+[33m    [0m                                                             [0m[33m    [0m [32md,[0m
+[33m    [0m                                                             [0m[33m3287[0m [32m                                        },[0m
+[33m    [0m                                                             [0m[33m3288[0m [32m                                        Object {[0m
+[33m    [0m                                                             [0m[33m3289[0m [32m                                          "type": "return",[0m
+[33m    [0m                                                             [0m[33m3290[0m [32m                                          "value": undefine[0m
+[33m    [0m                                                             [0m[33m    [0m [32md,[0m
+[33m    [0m                                                             [0m[33m3291[0m [32m                                        },[0m
+[33m    [0m                                                             [0m[33m3292[0m [32m                                        Object {[0m
+[33m    [0m                                                             [0m[33m3293[0m [32m                                          "type": "return",[0m
+[33m    [0m                                                             [0m[33m3294[0m [32m                                          "value": undefine[0m
+[33m    [0m                                                             [0m[33m    [0m [32md,[0m
+[33m    [0m                                                             [0m[33m3295[0m [32m                                        },[0m
+[33m    [0m                                                             [0m[33m3296[0m [32m                                        Object {[0m
+[33m    [0m                                                             [0m[33m3297[0m [32m                                          "type": "return",[0m
+[33m    [0m                                                             [0m[33m3298[0m [32m                                          "value": undefine[0m
+[33m    [0m                                                             [0m[33m    [0m [32md,[0m
+[33m    [0m                                                             [0m[33m3299[0m [32m                                        },[0m
+[33m    [0m                                                             [0m[33m3300[0m [32m                                        Object {[0m
+[33m    [0m                                                             [0m[33m3301[0m [32m                                          "type": "return",[0m
+[33m    [0m                                                             [0m[33m3302[0m [32m                                          "value": undefine[0m
+[33m    [0m                                                             [0m[33m    [0m [32md,[0m
+[33m    [0m                                                             [0m[33m3303[0m [32m                                        },[0m
+[33m    [0m                                                             [0m[33m3304[0m [32m                                        Object {[0m
+[33m    [0m                                                             [0m[33m3305[0m [32m                                          "type": "return",[0m
+[33m    [0m                                                             [0m[33m3306[0m [32m                                          "value": undefine[0m
+[33m    [0m                                                             [0m[33m    [0m [32md,[0m
+[33m    [0m                                                             [0m[33m3307[0m [32m                                        },[0m
+[33m    [0m                                                             [0m[33m3308[0m [32m                                        Object {[0m
+[33m    [0m                                                             [0m[33m3309[0m [32m                                          "type": "return",[0m
+[33m    [0m                                                             [0m[33m3310[0m [32m                                          "value": undefine[0m
+[33m    [0m                                                             [0m[33m    [0m [32md,[0m
+[33m    [0m                                                             [0m[33m3311[0m [32m                                        },[0m
+[33m    [0m                                                             [0m[33m3312[0m [32m                                        Object {[0m
+[33m    [0m                                                             [0m[33m3313[0m [32m                                          "type": "return",[0m
+[33m    [0m                                                             [0m[33m3314[0m [32m                                          "value": undefine[0m
+[33m    [0m                                                             [0m[33m    [0m [32md,[0m
+[33m    [0m                                                             [0m[33m3315[0m [32m                                        },[0m
+[33m    [0m                                                             [0m[33m3316[0m [32m                                        Object {[0m
+[33m    [0m                                                             [0m[33m3317[0m [32m                                          "type": "return",[0m
+[33m    [0m                                                             [0m[33m3318[0m [32m                                          "value": undefine[0m
+[33m    [0m                                                             [0m[33m    [0m [32md,[0m
+[33m    [0m                                                             [0m[33m3319[0m [32m                                        },[0m
+[33m    [0m                                                             [0m[33m3320[0m [32m                                        Object {[0m
+[33m    [0m                                                             [0m[33m3321[0m [32m                                          "type": "return",[0m
+[33m    [0m                                                             [0m[33m3322[0m [32m                                          "value": undefine[0m
+[33m    [0m                                                             [0m[33m    [0m [32md,[0m
+[33m    [0m                                                             [0m[33m3323[0m [32m                                        },[0m
+[33m    [0m                                                             [0m[33m3324[0m [32m                                        Object {[0m
+[33m    [0m                                                             [0m[33m3325[0m [32m                                          "type": "return",[0m
+[33m    [0m                                                             [0m[33m3326[0m [32m                                          "value": undefine[0m
+[33m    [0m                                                             [0m[33m    [0m [32md,[0m
+[33m    [0m                                                             [0m[33m3327[0m [32m                                        },[0m
+[33m    [0m                                                             [0m[33m3328[0m [32m                                        Object {[0m
+[33m    [0m                                                             [0m[33m3329[0m [32m                                          "type": "return",[0m
+[33m    [0m                                                             [0m[33m3330[0m [32m                                          "value": undefine[0m
+[33m    [0m                                                             [0m[33m    [0m [32md,[0m
+[33m    [0m                                                             [0m[33m3331[0m [32m                                        },[0m
+[33m    [0m                                                             [0m[33m3332[0m [32m                                        Object {[0m
+[33m3109[0m [0m                                          "type": "return",[0m [0m[33m3333[0m [0m                                          "type": "return",[0m
+[33m3110[0m [0m                                          "value": undefine [0m[33m3334[0m [0m                                          "value": undefine
+[33m    [0m d,[0m                                                          [0m[33m    [0m d,[0m
+[33m3111[0m [0m                                        },[0m                  [0m[33m3335[0m [0m                                        },[0m
+[33m3112[0m [0m                                      ],[0m                    [0m[33m3336[0m [0m                                      ],[0m
+[33m3113[0m [0m                                    },[0m                      [0m[33m3337[0m [0m                                    },[0m
+[33m3114[0m [0m                                    "go": [MockFunction],[0m   [0m[33m3338[0m [0m                                    "go": [MockFunction],[0m
+[1;34m@@ -3799,6 +4023,18 @@ exports[`Sidebar can have onboarding feature 1`] = `
+[0m[33m3799[0m [0m                                        Array [[0m             [0m[33m4023[0m [0m                                        Array [[0m
+[33m3800[0m [0m                                          "/settings/org-sl [0m[33m4024[0m [0m                                          "/settings/org-sl
+[33m    [0m ug/",[0m                                                       [0m[33m    [0m ug/",[0m
+[33m3801[0m [0m                                        ],[0m                  [0m[33m4025[0m [0m                                        ],[0m
+[33m3802[0m [0m                                        Array [[0m             [0m[33m4026[0m [0m                                        Array [[0m
+[33m    [0m                                                             [0m[33m4027[0m [32m                                          "#",[0m
+[33m    [0m                                                             [0m[33m4028[0m [32m                                        ],[0m
+[33m    [0m                                                             [0m[33m4029[0m [32m                                        Array [[0m
+[33m    [0m                                                             [0m[33m4030[0m [32m                                          "#",[0m
+[33m    [0m                                                             [0m[33m4031[0m [32m                                        ],[0m
+[33m    [0m                                                             [0m[33m4032[0m [32m                                        Array [[0m
+[33m    [0m                                                             [0m[33m4033[0m [32m                                          "#",[0m
+[33m    [0m                                                             [0m[33m4034[0m [32m                                        ],[0m
+[33m    [0m                                                             [0m[33m4035[0m [32m                                        Array [[0m
+[33m    [0m                                                             [0m[33m4036[0m [32m                                          "#",[0m
+[33m    [0m                                                             [0m[33m4037[0m [32m                                        ],[0m
+[33m    [0m                                                             [0m[33m4038[0m [32m                                        Array [[0m
+[33m3803[0m [0m                                          "/organizations/o [0m[33m4039[0m [0m                                          "/organizations/o
+[33m    [0m rg-slug/projects/",[0m                                         [0m[33m    [0m rg-slug/projects/",[0m
+[33m3804[0m [0m                                        ],[0m                  [0m[33m4040[0m [0m                                        ],[0m
+[1;34m@@ -3820,6 +4056,15 @@ exports[`Sidebar can have onboarding feature 1`] = `
+[0m[33m3820[0m [0m                                        Array [[0m             [0m[33m4056[0m [0m                                        Array [[0m
+[33m3821[0m [0m                                          "/settings/org-sl [0m[33m4057[0m [0m                                          "/settings/org-sl
+[33m    [0m ug/",[0m                                                       [0m[33m    [0m ug/",[0m
+[33m3822[0m [0m                                        ],[0m                  [0m[33m4058[0m [0m                                        ],[0m
+[33m3823[0m [0m                                        Array [[0m             [0m[33m4059[0m [0m                                        Array [[0m
+[33m    [0m                                                             [0m[33m4060[0m [32m                                          "#",[0m
+[33m    [0m                                                             [0m[33m4061[0m [32m                                        ],[0m
+[33m    [0m                                                             [0m[33m4062[0m [32m                                        Array [[0m
+[33m    [0m                                                             [0m[33m4063[0m [32m                                          "#",[0m
+[33m    [0m                                                             [0m[33m4064[0m [32m                                        ],[0m
+[33m    [0m                                                             [0m[33m4065[0m [32m                                        Array [[0m
+[33m    [0m                                                             [0m[33m4066[0m [32m                                          "#",[0m
+[33m    [0m                                                             [0m[33m4067[0m [32m                                        ],[0m
+[33m    [0m                                                             [0m[33m4068[0m [32m                                        Array [[0m
+[33m3824[0m [0m                                          "/organizations/o [0m[33m4069[0m [0m                                          "/organizations/o
+[33m    [0m rg-slug/projects/",[0m                                         [0m[33m    [0m rg-slug/projects/",[0m
+[33m3825[0m [0m                                        ],[0m                  [0m[33m4070[0m [0m                                        ],[0m
+[1;34m@@ -3841,6 +4086,15 @@ exports[`Sidebar can have onboarding feature 1`] = `
+[0m[33m3841[0m [0m                                        Array [[0m             [0m[33m4086[0m [0m                                        Array [[0m
+[33m3842[0m [0m                                          "/settings/org-sl [0m[33m4087[0m [0m                                          "/settings/org-sl
+[33m    [0m ug/",[0m                                                       [0m[33m    [0m ug/",[0m
+[33m3843[0m [0m                                        ],[0m                  [0m[33m4088[0m [0m                                        ],[0m
+[33m3844[0m [0m                                        Array [[0m             [0m[33m4089[0m [0m                                        Array [[0m
+[33m    [0m                                                             [0m[33m4090[0m [32m                                          "#",[0m
+[33m    [0m                                                             [0m[33m4091[0m [32m                                        ],[0m
+[33m    [0m                                                             [0m[33m4092[0m [32m                                        Array [[0m
+[33m    [0m                                                             [0m[33m4093[0m [32m                                          "#",[0m
+[33m    [0m                                                             [0m[33m4094[0m [32m                                        ],[0m
+[33m    [0m                                                             [0m[33m4095[0m [32m                                        Array [[0m
+[33m    [0m                                                             [0m[33m4096[0m [32m                                          "#",[0m
+[33m    [0m                                                             [0m[33m4097[0m [32m                                        ],[0m
+[33m    [0m                                                             [0m[33m4098[0m [32m                                        Array [[0m
+[33m3845[0m [0m                                          "/organizations/o [0m[33m4099[0m [0m                                          "/organizations/o
+[33m    [0m rg-slug/projects/",[0m                                         [0m[33m    [0m rg-slug/projects/",[0m
+[33m3846[0m [0m                                        ],[0m                  [0m[33m4100[0m [0m                                        ],[0m
+[1;34m@@ -3862,6 +4116,15 @@ exports[`Sidebar can have onboarding feature 1`] = `
+[0m[33m3862[0m [0m                                        Array [[0m             [0m[33m4116[0m [0m                                        Array [[0m
+[33m3863[0m [0m                                          "/settings/org-sl [0m[33m4117[0m [0m                                          "/settings/org-sl
+[33m    [0m ug/",[0m                                                       [0m[33m    [0m ug/",[0m
+[33m3864[0m [0m                                        ],[0m                  [0m[33m4118[0m [0m                                        ],[0m
+[33m3865[0m [0m                                        Array [[0m             [0m[33m4119[0m [0m                                        Array [[0m
+[33m    [0m                                                             [0m[33m4120[0m [32m                                          "#",[0m
+[33m    [0m                                                             [0m[33m4121[0m [32m                                        ],[0m
+[33m    [0m                                                             [0m[33m4122[0m [32m                                        Array [[0m
+[33m    [0m                                                             [0m[33m4123[0m [32m                                          "#",[0m
+[33m    [0m                                                             [0m[33m4124[0m [32m                                        ],[0m
+[33m    [0m                                                             [0m[33m4125[0m [32m                                        Array [[0m
+[33m    [0m                                                             [0m[33m4126[0m [32m                                          "#",[0m
+[33m    [0m                                                             [0m[33m4127[0m [32m                                        ],[0m
+[33m    [0m                                                             [0m[33m4128[0m [32m                                        Array [[0m
+[33m3866[0m [0m                                          "/organizations/o [0m[33m4129[0m [0m                                          "/organizations/o
+[33m    [0m rg-slug/projects/",[0m                                         [0m[33m    [0m rg-slug/projects/",[0m
+[33m3867[0m [0m                                        ],[0m                  [0m[33m4130[0m [0m                                        ],[0m
+[1;34m@@ -3886,6 +4149,15 @@ exports[`Sidebar can have onboarding feature 1`] = `
+[0m[33m3886[0m [0m                                        Array [[0m             [0m[33m4149[0m [0m                                        Array [[0m
+[33m3887[0m [0m                                          "https://forum.se [0m[33m4150[0m [0m                                          "https://forum.se
+[33m    [0m ntry.io/",[0m                                                  [0m[33m    [0m ntry.io/",[0m
+[33m    [0m                                                             [0m[33m4151[0m [32m                                        ],[0m
+[33m    [0m                                                             [0m[33m4152[0m [32m                                        Array [[0m
+[33m    [0m                                                             [0m[33m4153[0m [32m                                          "#",[0m
+[33m    [0m                                                             [0m[33m4154[0m [32m                                        ],[0m
+[33m    [0m                                                             [0m[33m4155[0m [32m                                        Array [[0m
+[33m    [0m                                                             [0m[33m4156[0m [32m                                          "#",[0m
+[33m    [0m                                                             [0m[33m4157[0m [32m                                        ],[0m
+[33m    [0m                                                             [0m[33m4158[0m [32m                                        Array [[0m
+[33m    [0m                                                             [0m[33m4159[0m [32m                                          "#",[0m
+[33m3888[0m [0m                                        ],[0m                  [0m[33m4160[0m [0m                                        ],[0m
+[33m3889[0m [0m                                      ],[0m                    [0m[33m4161[0m [0m                                      ],[0m
+[33m3890[0m [0m                                      "results": Array [[0m    [0m[33m4162[0m [0m                                      "results": Array [[0m
+[33m3891[0m [0m                                        Object {[0m            [0m[33m4163[0m [0m                                        Object {[0m
+[1;34m@@ -4044,38 +4316,102 @@ exports[`Sidebar can have onboarding feature 1`] = `
+[0m[33m    [0m                                                             [0m[33m4316[0m [32m                                          "type": "return",[0m
+[33m    [0m                                                             [0m[33m4317[0m [32m                                          "value": undefine[0m
+[33m    [0m                                                             [0m[33m    [0m [32md,[0m
+[33m    [0m                                                             [0m[33m4318[0m [32m                                        },[0m
+[33m    [0m                                                             [0m[33m4319[0m [32m                                        Object {[0m
+[33m    [0m                                                             [0m[33m4320[0m [32m                                          "type": "return",[0m
+[33m    [0m                                                             [0m[33m4321[0m [32m                                          "value": undefine[0m
+[33m    [0m                                                             [0m[33m    [0m [32md,[0m
+[33m    [0m                                                             [0m[33m4322[0m [32m                                        },[0m
+[33m    [0m                                                             [0m[33m4323[0m [32m                                        Object {[0m
+[33m    [0m                                                             [0m[33m4324[0m [32m                                          "type": "return",[0m
+[33m    [0m                                                             [0m[33m4325[0m [32m                                          "value": undefine[0m
+[33m    [0m                                                             [0m[33m    [0m [32md,[0m
+[33m    [0m                                                             [0m[33m4326[0m [32m                                        },[0m
+[33m    [0m                                                             [0m[33m4327[0m [32m                                        Object {[0m
+[33m    [0m                                                             [0m[33m4328[0m [32m                                          "type": "return",[0m
+[33m    [0m                                                             [0m[33m4329[0m [32m                                          "value": undefine[0m
+[33m    [0m                                                             [0m[33m    [0m [32md,[0m
+[33m    [0m                                                             [0m[33m4330[0m [32m                                        },[0m
+[33m    [0m                                                             [0m[33m4331[0m [32m                                        Object {[0m
+[33m    [0m                                                             [0m[33m4332[0m [32m                                          "type": "return",[0m
+[33m    [0m                                                             [0m[33m4333[0m [32m                                          "value": undefine[0m
+[33m    [0m                                                             [0m[33m    [0m [32md,[0m
+[33m    [0m                                                             [0m[33m4334[0m [32m                                        },[0m
+[33m    [0m                                                             [0m[33m4335[0m [32m                                        Object {[0m
+[33m    [0m                                                             [0m[33m4336[0m [32m                                          "type": "return",[0m
+[33m    [0m                                                             [0m[33m4337[0m [32m                                          "value": undefine[0m
+[33m    [0m                                                             [0m[33m    [0m [32md,[0m
+[33m    [0m                                                             [0m[33m4338[0m [32m                                        },[0m
+[33m    [0m                                                             [0m[33m4339[0m [32m                                        Object {[0m
+[33m    [0m                                                             [0m[33m4340[0m [32m                                          "type": "return",[0m
+[33m    [0m                                                             [0m[33m4341[0m [32m                                          "value": undefine[0m
+[33m    [0m                                                             [0m[33m    [0m [32md,[0m
+[33m    [0m                                                             [0m[33m4342[0m [32m                                        },[0m
+[33m    [0m                                                             [0m[33m4343[0m [32m                                        Object {[0m
+[33m    [0m                                                             [0m[33m4344[0m [32m                                          "type": "return",[0m
+[33m    [0m                                                             [0m[33m4345[0m [32m                                          "value": undefine[0m
+[33m    [0m                                                             [0m[33m    [0m [32md,[0m
+[33m    [0m                                                             [0m[33m4346[0m [32m                                        },[0m
+[33m    [0m                                                             [0m[33m4347[0m [32m                                        Object {[0m
+[33m    [0m                                                             [0m[33m4348[0m [32m                                          "type": "return",[0m
+[33m    [0m                                                             [0m[33m4349[0m [32m                                          "value": undefine[0m
+[33m    [0m                                                             [0m[33m    [0m [32md,[0m
+[33m    [0m                                                             [0m[33m4350[0m [32m                                        },[0m
+[33m    [0m                                                             [0m[33m4351[0m [32m                                        Object {[0m
+[33m    [0m                                                             [0m[33m4352[0m [32m                                          "type": "return",[0m
+[33m    [0m                                                             [0m[33m4353[0m [32m                                          "value": undefine[0m
+[33m    [0m                                                             [0m[33m    [0m [32md,[0m
+[33m    [0m                                                             [0m[33m4354[0m [32m                                        },[0m
+[33m    [0m                                                             [0m[33m4355[0m [32m                                        Object {[0m
+[33m    [0m                                                             [0m[33m4356[0m [32m                                          "type": "return",[0m
+[33m    [0m                                                             [0m[33m4357[0m [32m                                          "value": undefine[0m
+[33m    [0m                                                             [0m[33m    [0m [32md,[0m
+[33m    [0m                                                             [0m[33m4358[0m [32m                                        },[0m
+[33m    [0m                                                             [0m[33m4359[0m [32m                                        Object {[0m
+[33m    [0m                                                             [0m[33m4360[0m [32m                                          "type": "return",[0m
+[33m    [0m                                                             [0m[33m4361[0m [32m                                          "value": undefine[0m
+[33m    [0m                                                             [0m[33m    [0m [32md,[0m
+[33m    [0m                                                             [0m[33m4362[0m [32m                                        },[0m
+[33m    [0m                                                             [0m[33m4363[0m [32m                                        Object {[0m
+[33m    [0m                                                             [0m[33m4364[0m [32m                                          "type": "return",[0m
+[33m    [0m                                                             [0m[33m4365[0m [32m                                          "value": undefine[0m
+[33m    [0m                                                             [0m[33m    [0m [32md,[0m
+[33m    [0m                                                             [0m[33m4366[0m [32m                                        },[0m
+[33m    [0m                                                             [0m[33m4367[0m [32m                                        Object {[0m
+[33m    [0m                                                             [0m[33m4368[0m [32m                                          "type": "return",[0m
+[33m    [0m                                                             [0m[33m4369[0m [32m                                          "value": undefine[0m
+[33m    [0m                                                             [0m[33m    [0m [32md,[0m
+[33m    [0m                                                             [0m[33m4370[0m [32m                                        },[0m
+[33m    [0m                                                             [0m[33m4371[0m [32m                                        Object {[0m
+[33m    [0m                                                             [0m[33m4372[0m [32m                                          "type": "return",[0m
+[33m    [0m                                                             [0m[33m4373[0m [32m                                          "value": undefine[0m
+[33m    [0m                                                             [0m[33m    [0m [32md,[0m
+[33m    [0m                                                             [0m[33m4374[0m [32m                                        },[0m
+[33m    [0m                                                             [0m[33m4375[0m [32m                                        Object {[0m
+[33m    [0m                                                             [0m[33m4376[0m [32m                                          "type": "return",[0m
+[33m    [0m                                                             [0m[33m4377[0m [32m                                          "value": undefine[0m
+[33m    [0m                                                             [0m[33m    [0m [32md,[0m
+[33m    [0m                                                             [0m[33m4378[0m [32m                                        },[0m
+[33m    [0m                                                             [0m[33m4379[0m [32m                                        Object {[0m
+[33m4044[0m [0m                                          "type": "return",[0m [0m[33m4380[0m [0m                                          "type": "return",[0m
+[33m4045[0m [0m                                          "value": undefine [0m[33m4381[0m [0m                                          "value": undefine
+[33m    [0m d,[0m                                                          [0m[33m    [0m d,[0m
+[33m4046[0m [0m                                        },[0m                  [0m[33m4382[0m [0m                                        },[0m
+[33m4047[0m [0m                                      ],[0m                    [0m[33m4383[0m [0m                                      ],[0m
+[33m4048[0m [0m                                    },[0m                      [0m[33m4384[0m [0m                                    },[0m
+[33m4049[0m [0m                                    "go": [MockFunction],[0m   [0m[33m4385[0m [0m                                    "go": [MockFunction],[0m
+[33m4050[0m [0m                                    "goBack": [MockFunction [0m[33m4386[0m [0m                                    "goBack": [MockFunction
+[33m    [0m ],[0m                                                          [0m[33m    [0m ],[0m
+[33m4051[0m [0m                                    "goForward": [MockFunct [0m[33m4387[0m [0m                                    "goForward": [MockFunct
+[33m    [0m ion],[0m                                                       [0m[33m    [0m ion],[0m
+[33m4052[0m [0m                                    "isActive": [MockFuncti [0m[33m4388[0m [0m                                    "isActive": [MockFuncti
+[33m    [0m on],[0m                                                        [0m[33m    [0m on],[0m
+[33m4053[0m [0m                                    "listen": [MockFunction [0m[33m4389[0m [0m                                    "listen": [MockFunction
+[33m    [0m ],[0m                                                          [0m[33m    [0m ],[0m
+[33m4054[0m [0m                                    "location": Object {[0m    [0m[33m4390[0m [0m                                    "location": Object {[0m
+[33m4055[0m [0m                                      "query": Object {},[0m   [0m[33m4391[0m [0m                                      "query": Object {},[0m
+[33m4056[0m [0m                                    },[0m                      [0m[33m4392[0m [0m                                    },[0m
+[33m4057[0m [0m                                    "push": [MockFunction],[0m [0m[33m4393[0m [0m                                    "push": [MockFunction],[0m
+[33m4058[0m [0m                                    "replace": [MockFunctio [0m[33m4394[0m [0m                                    "replace": [MockFunctio
+[33m    [0m n],[0m                                                         [0m[33m    [0m n],[0m
+[33m4059[0m [0m                                    "setRouteLeaveHook": [M [0m[33m4395[0m [0m                                    "setRouteLeaveHook": [M
+[33m    [0m ockFunction],[0m                                               [0m[33m    [0m ockFunction],[0m
+[33m4060[0m [0m                                  }[0m                         [0m[33m4396[0m [0m                                  }[0m
+[33m4061[0m [0m                                }[0m                           [0m[33m4397[0m [0m                                }[0m
+[33m4062[0m [0m                                task={[0m                      [0m[33m4398[0m [0m                                task={[0m
+[33m4063[0m [0m                                  Object {[0m                  [0m[33m4399[0m [0m                                  Object {[0m
+[33m4064[0m [0m                                    "SupplementComponent":  [0m[33m4400[0m [0m                                    "SupplementComponent": 
+[33m    [0m [Function],[0m                                                 [0m[33m    [0m [Function],[0m
+[33m4065[0m [0m                                    "actionType": "app",[0m    [0m[33m4401[0m [0m                                    "actionType": "app",[0m
+[33m4066[0m [0m                                    "description": "Install [0m[33m4402[0m [0m                                    "description": "Install
+[33m    [0m  the appropriate Sentry SDK for your application",[0m          [0m[33m    [0m  the appropriate Sentry SDK for your application",[0m
+[33m4067[0m [0m                                    "detailedDescription":  [0m[33m4403[0m [0m                                    "detailedDescription": 
+[33m    [0m "Choose your platform and send an event.",[0m                  [0m[33m    [0m "Choose your platform and send an event.",[0m
+[33m4068[0m [0m                                    "display": true,[0m        [0m[33m4404[0m [0m                                    "display": true,[0m
+[33m4069[0m [0m                                    "location": "/settings/ [0m[33m4405[0m [0m                                    "location": "/settings/
+[33m    [0m org-slug/projects/:projectId/install/",[0m                     [0m[33m    [0m org-slug/projects/:projectId/install/",[0m
+[33m4070[0m [0m                                    "requisiteTasks": Array [0m[33m4406[0m [0m                                    "requisiteTasks": Array
+[33m    [0m  [[0m                                                          [0m[33m    [0m  [[0m
+[33m4071[0m [0m                                      Object {[0m              [0m[33m4407[0m [0m                                      Object {[0m
+[33m4072[0m [0m                                        "actionType": "app" [0m[33m4408[0m [0m                                        "actionType": "app"
+[33m    [0m ,[0m                                                           [0m[33m    [0m ,[0m
+[33m4073[0m [0m                                        "description": "Cre [0m[33m4409[0m [0m                                        "description": "Cre
+[33m    [0m ate your first Sentry project",[0m                             [0m[33m    [0m ate your first Sentry project",[0m
+[33m4074[0m [0m                                        "detailedDescriptio [0m[33m4410[0m [0m                                        "detailedDescriptio
+[33m    [0m n": "Follow our quick and easy steps to set up a project an [0m[33m    [0m n": "Follow our quick and easy steps to set up a project an
+[33m    [0m d start sending errors.",[0m                                   [0m[33m    [0m d start sending errors.",[0m
+[33m4075[0m [0m                                        "display": true,[0m    [0m[33m4411[0m [0m                                        "display": true,[0m
+[33m4076[0m [0m                                        "location": "/organ [0m[33m4412[0m [0m                                        "location": "/organ
+[33m    [0m izations/org-slug/projects/new/",[0m                           [0m[33m    [0m izations/org-slug/projects/new/",[0m
+[33m4077[0m [0m                                        "requisiteTasks": A [0m[33m4413[0m [0m                                        "requisiteTasks": A
+[33m    [0m rray [],[0m                                                    [0m[33m    [0m rray [],[0m
+[33m4078[0m [0m                                        "requisites": Array [0m[33m4414[0m [0m                                        "requisites": Array
+[33m    [0m  [],[0m                                                        [0m[33m    [0m  [],[0m
+[33m4079[0m [0m                                        "skippable": false,[0m [0m[33m4415[0m [0m                                        "skippable": false,[0m
+[33m4080[0m [0m                                        "task": "create_pro [0m[33m4416[0m [0m                                        "task": "create_pro
+[33m    [0m ject",[0m                                                      [0m[33m    [0m ject",[0m
+[33m4081[0m [0m                                        "title": "Create a  [0m[33m4417[0m [0m                                        "title": "Create a 
+[33m    [0m project",[0m                                                   [0m[33m    [0m project",[0m
+[1;34m@@ -4573,6 +4909,18 @@ exports[`Sidebar can have onboarding feature 1`] = `
+[0m[33m4573[0m [0m                                        Array [[0m             [0m[33m4909[0m [0m                                        Array [[0m
+[33m4574[0m [0m                                          "/settings/org-sl [0m[33m4910[0m [0m                                          "/settings/org-sl
+[33m    [0m ug/",[0m                                                       [0m[33m    [0m ug/",[0m
+[33m4575[0m [0m                                        ],[0m                  [0m[33m4911[0m [0m                                        ],[0m
+[33m4576[0m [0m                                        Array [[0m             [0m[33m4912[0m [0m                                        Array [[0m
+[33m    [0m                                                             [0m[33m4913[0m [32m                                          "#",[0m
+[33m    [0m                                                             [0m[33m4914[0m [32m                                        ],[0m
+[33m    [0m                                                             [0m[33m4915[0m [32m                                        Array [[0m
+[33m    [0m                                                             [0m[33m4916[0m [32m                                          "#",[0m
+[33m    [0m                                                             [0m[33m4917[0m [32m                                        ],[0m
+[33m    [0m                                                             [0m[33m4918[0m [32m                                        Array [[0m
+[33m    [0m                                                             [0m[33m4919[0m [32m                                          "#",[0m
+[33m    [0m                                                             [0m[33m4920[0m [32m                                        ],[0m
+[33m    [0m                                                             [0m[33m4921[0m [32m                                        Array [[0m
+[33m    [0m                                                             [0m[33m4922[0m [32m                                          "#",[0m
+[33m    [0m                                                             [0m[33m4923[0m [32m                                        ],[0m
+[33m    [0m                                                             [0m[33m4924[0m [32m                                        Array [[0m
+[33m4577[0m [0m                                          "/organizations/o [0m[33m4925[0m [0m                                          "/organizations/o
+[33m    [0m rg-slug/projects/",[0m                                         [0m[33m    [0m rg-slug/projects/",[0m
+[33m4578[0m [0m                                        ],[0m                  [0m[33m4926[0m [0m                                        ],[0m
+[1;34m@@ -4594,6 +4942,15 @@ exports[`Sidebar can have onboarding feature 1`] = `
+[0m[33m4594[0m [0m                                        Array [[0m             [0m[33m4942[0m [0m                                        Array [[0m
+[33m4595[0m [0m                                          "/settings/org-sl [0m[33m4943[0m [0m                                          "/settings/org-sl
+[33m    [0m ug/",[0m                                                       [0m[33m    [0m ug/",[0m
+[33m4596[0m [0m                                        ],[0m                  [0m[33m4944[0m [0m                                        ],[0m
+[33m4597[0m [0m                                        Array [[0m             [0m[33m4945[0m [0m                                        Array [[0m
+[33m    [0m                                                             [0m[33m4946[0m [32m                                          "#",[0m
+[33m    [0m                                                             [0m[33m4947[0m [32m                                        ],[0m
+[33m    [0m                                                             [0m[33m4948[0m [32m                                        Array [[0m
+[33m    [0m                                                             [0m[33m4949[0m [32m                                          "#",[0m
+[33m    [0m                                                             [0m[33m4950[0m [32m                                        ],[0m
+[33m    [0m                                                             [0m[33m4951[0m [32m                                        Array [[0m
+[33m    [0m                                                             [0m[33m4952[0m [32m                                          "#",[0m
+[33m    [0m                                                             [0m[33m4953[0m [32m                                        ],[0m
+[33m    [0m                                                             [0m[33m4954[0m [32m                                        Array [[0m
+[33m4598[0m [0m                                          "/organizations/o [0m[33m4955[0m [0m                                          "/organizations/o
+[33m    [0m rg-slug/projects/",[0m                                         [0m[33m    [0m rg-slug/projects/",[0m
+[33m4599[0m [0m                                        ],[0m                  [0m[33m4956[0m [0m                                        ],[0m
+[1;34m@@ -4615,6 +4972,15 @@ exports[`Sidebar can have onboarding feature 1`] = `
+[0m[33m4615[0m [0m                                        Array [[0m             [0m[33m4972[0m [0m                                        Array [[0m
+[33m4616[0m [0m                                          "/settings/org-sl [0m[33m4973[0m [0m                                          "/settings/org-sl
+[33m    [0m ug/",[0m                                                       [0m[33m    [0m ug/",[0m
+[33m4617[0m [0m                                        ],[0m                  [0m[33m4974[0m [0m                                        ],[0m
+[33m4618[0m [0m                                        Array [[0m             [0m[33m4975[0m [0m                                        Array [[0m
+[33m    [0m                                                             [0m[33m4976[0m [32m                                          "#",[0m
+[33m    [0m                                                             [0m[33m4977[0m [32m                                        ],[0m
+[33m    [0m                                                             [0m[33m4978[0m [32m                                        Array [[0m
+[33m    [0m                                                             [0m[33m4979[0m [32m                                          "#",[0m
+[33m    [0m                                                             [0m[33m4980[0m [32m                                        ],[0m
+[33m    [0m                                                             [0m[33m4981[0m [32m                                        Array [[0m
+[33m    [0m                                                             [0m[33m4982[0m [32m                                          "#",[0m
+[33m    [0m                                                             [0m[33m4983[0m [32m                                        ],[0m
+[33m    [0m                                                             [0m[33m4984[0m [32m                                        Array [[0m
+[33m4619[0m [0m                                          "/organizations/o [0m[33m4985[0m [0m                                          "/organizations/o
+[33m    [0m rg-slug/projects/",[0m                                         [0m[33m    [0m rg-slug/projects/",[0m
+[33m4620[0m [0m                                        ],[0m                  [0m[33m4986[0m [0m                                        ],[0m
+[1;34m@@ -4636,6 +5002,15 @@ exports[`Sidebar can have onboarding feature 1`] = `
+[0m[33m4636[0m [0m                                        Array [[0m             [0m[33m5002[0m [0m                                        Array [[0m
+[33m4637[0m [0m                                          "/settings/org-sl [0m[33m5003[0m [0m                                          "/settings/org-sl
+[33m    [0m ug/",[0m                                                       [0m[33m    [0m ug/",[0m
+[33m4638[0m [0m                                        ],[0m                  [0m[33m5004[0m [0m                                        ],[0m
+[33m4639[0m [0m                                        Array [[0m             [0m[33m5005[0m [0m                                        Array [[0m
+[33m    [0m                                                             [0m[33m5006[0m [32m                                          "#",[0m
+[33m    [0m                                                             [0m[33m5007[0m [32m                                        ],[0m
+[33m    [0m                                                             [0m[33m5008[0m [32m                                        Array [[0m
+[33m    [0m                                                             [0m[33m5009[0m [32m                                          "#",[0m
+[33m    [0m                                                             [0m[33m5010[0m [32m                                        ],[0m
+[33m    [0m                                                             [0m[33m5011[0m [32m                                        Array [[0m
+[33m    [0m                                                             [0m[33m5012[0m [32m                                          "#",[0m
+[33m    [0m                                                             [0m[33m5013[0m [32m                                        ],[0m
+[33m    [0m                                                             [0m[33m5014[0m [32m                                        Array [[0m
+[33m4640[0m [0m                                          "/organizations/o [0m[33m5015[0m [0m                                          "/organizations/o
+[33m    [0m rg-slug/projects/",[0m                                         [0m[33m    [0m rg-slug/projects/",[0m
+[33m4641[0m [0m                                        ],[0m                  [0m[33m5016[0m [0m                                        ],[0m
+[1;34m@@ -4660,6 +5035,15 @@ exports[`Sidebar can have onboarding feature 1`] = `
+[0m[33m4660[0m [0m                                        Array [[0m             [0m[33m5035[0m [0m                                        Array [[0m
+[33m4661[0m [0m                                          "https://forum.se [0m[33m5036[0m [0m                                          "https://forum.se
+[33m    [0m ntry.io/",[0m                                                  [0m[33m    [0m ntry.io/",[0m
+[33m    [0m                                                             [0m[33m5037[0m [32m                                        ],[0m
+[33m    [0m                                                             [0m[33m5038[0m [32m                                        Array [[0m
+[33m    [0m                                                             [0m[33m5039[0m [32m                                          "#",[0m
+[33m    [0m                                                             [0m[33m5040[0m [32m                                        ],[0m
+[33m    [0m                                                             [0m[33m5041[0m [32m                                        Array [[0m
+[33m    [0m                                                             [0m[33m5042[0m [32m                                          "#",[0m
+[33m    [0m                                                             [0m[33m5043[0m [32m                                        ],[0m
+[33m    [0m                                                             [0m[33m5044[0m [32m                                        Array [[0m
+[33m    [0m                                                             [0m[33m5045[0m [32m                                          "#",[0m
+[33m4662[0m [0m                                        ],[0m                  [0m[33m5046[0m [0m                                        ],[0m
+[33m4663[0m [0m                                      ],[0m                    [0m[33m5047[0m [0m                                      ],[0m
+[33m4664[0m [0m                                      "results": Array [[0m    [0m[33m5048[0m [0m                                      "results": Array [[0m
+[33m4665[0m [0m                                        Object {[0m            [0m[33m5049[0m [0m                                        Object {[0m
+[1;34m@@ -4818,6 +5202,70 @@ exports[`Sidebar can have onboarding feature 1`] = `
+[0m[33m    [0m                                                             [0m[33m5202[0m [32m                                          "type": "return",[0m
+[33m    [0m                                                             [0m[33m5203[0m [32m                                          "value": undefine[0m
+[33m    [0m                                                             [0m[33m    [0m [32md,[0m
+[33m    [0m                                                             [0m[33m5204[0m [32m                                        },[0m
+[33m    [0m                                                             [0m[33m5205[0m [32m                                        Object {[0m
+[33m    [0m                                                             [0m[33m5206[0m [32m                                          "type": "return",[0m
+[33m    [0m                                                             [0m[33m5207[0m [32m                                          "value": undefine[0m
+[33m    [0m                                                             [0m[33m    [0m [32md,[0m
+[33m    [0m                                                             [0m[33m5208[0m [32m                                        },[0m
+[33m    [0m                                                             [0m[33m5209[0m [32m                                        Object {[0m
+[33m    [0m                                                             [0m[33m5210[0m [32m                                          "type": "return",[0m
+[33m    [0m                                                             [0m[33m5211[0m [32m                                          "value": undefine[0m
+[33m    [0m                                                             [0m[33m    [0m [32md,[0m
+[33m    [0m                                                             [0m[33m5212[0m [32m                                        },[0m
+[33m    [0m                                                             [0m[33m5213[0m [32m                                        Object {[0m
+[33m    [0m                                                             [0m[33m5214[0m [32m                                          "type": "return",[0m
+[33m    [0m                                                             [0m[33m5215[0m [32m                                          "value": undefine[0m
+[33m    [0m                                                             [0m[33m    [0m [32md,[0m
+[33m    [0m                                                             [0m[33m5216[0m [32m                                        },[0m
+[33m    [0m                                                             [0m[33m5217[0m [32m                                        Object {[0m
+[33m    [0m                                                             [0m[33m5218[0m [32m                                          "type": "return",[0m
+[33m    [0m                                                             [0m[33m5219[0m [32m                                          "value": undefine[0m
+[33m    [0m                                                             [0m[33m    [0m [32md,[0m
+[33m    [0m                                                             [0m[33m5220[0m [32m                                        },[0m
+[33m    [0m                                                             [0m[33m5221[0m [32m                                        Object {[0m
+[33m    [0m                                                             [0m[33m5222[0m [32m                                          "type": "return",[0m
+[33m    [0m                                                             [0m[33m5223[0m [32m                                          "value": undefine[0m
+[33m    [0m                                                             [0m[33m    [0m [32md,[0m
+[33m    [0m                                                             [0m[33m5224[0m [32m                                        },[0m
+[33m    [0m                                                             [0m[33m5225[0m [32m                                        Object {[0m
+[33m    [0m                                                             [0m[33m5226[0m [32m                                          "type": "return",[0m
+[33m    [0m                                                             [0m[33m5227[0m [32m                                          "value": undefine[0m
+[33m    [0m                                                             [0m[33m    [0m [32md,[0m
+[33m    [0m                                                             [0m[33m5228[0m [32m                                        },[0m
+[33m    [0m                                                             [0m[33m5229[0m [32m                                        Object {[0m
+[33m    [0m                                                             [0m[33m5230[0m [32m                                          "type": "return",[0m
+[33m    [0m                                                             [0m[33m5231[0m [32m                                          "value": undefine[0m
+[33m    [0m                                                             [0m[33m    [0m [32md,[0m
+[33m    [0m                                                             [0m[33m5232[0m [32m                                        },[0m
+[33m    [0m                                                             [0m[33m5233[0m [32m                                        Object {[0m
+[33m    [0m                                                             [0m[33m5234[0m [32m                                          "type": "return",[0m
+[33m    [0m                                                             [0m[33m5235[0m [32m                                          "value": undefine[0m
+[33m    [0m                                                             [0m[33m    [0m [32md,[0m
+[33m    [0m                                                             [0m[33m5236[0m [32m                                        },[0m
+[33m    [0m                                                             [0m[33m5237[0m [32m                                        Object {[0m
+[33m    [0m                                                             [0m[33m5238[0m [32m                                          "type": "return",[0m
+[33m    [0m                                                             [0m[33m5239[0m [32m                                          "value": undefine[0m
+[33m    [0m                                                             [0m[33m    [0m [32md,[0m
+[33m    [0m                                                             [0m[33m5240[0m [32m                                        },[0m
+[33m    [0m                                                             [0m[33m5241[0m [32m                                        Object {[0m
+[33m    [0m                                                             [0m[33m5242[0m [32m                                          "type": "return",[0m
+[33m    [0m                                                             [0m[33m5243[0m [32m                                          "value": undefine[0m
+[33m    [0m                                                             [0m[33m    [0m [32md,[0m
+[33m    [0m                                                             [0m[33m5244[0m [32m                                        },[0m
+[33m    [0m                                                             [0m[33m5245[0m [32m                                        Object {[0m
+[33m    [0m                                                             [0m[33m5246[0m [32m                                          "type": "return",[0m
+[33m    [0m                                                             [0m[33m5247[0m [32m                                          "value": undefine[0m
+[33m    [0m                                                             [0m[33m    [0m [32md,[0m
+[33m    [0m                                                             [0m[33m5248[0m [32m                                        },[0m
+[33m    [0m                                                             [0m[33m5249[0m [32m                                        Object {[0m
+[33m    [0m                                                             [0m[33m5250[0m [32m                                          "type": "return",[0m
+[33m    [0m                                                             [0m[33m5251[0m [32m                                          "value": undefine[0m
+[33m    [0m                                                             [0m[33m    [0m [32md,[0m
+[33m    [0m                                                             [0m[33m5252[0m [32m                                        },[0m
+[33m    [0m                                                             [0m[33m5253[0m [32m                                        Object {[0m
+[33m    [0m                                                             [0m[33m5254[0m [32m                                          "type": "return",[0m
+[33m    [0m                                                             [0m[33m5255[0m [32m                                          "value": undefine[0m
+[33m    [0m                                                             [0m[33m    [0m [32md,[0m
+[33m    [0m                                                             [0m[33m5256[0m [32m                                        },[0m
+[33m    [0m                                                             [0m[33m5257[0m [32m                                        Object {[0m
+[33m    [0m                                                             [0m[33m5258[0m [32m                                          "type": "return",[0m
+[33m    [0m                                                             [0m[33m5259[0m [32m                                          "value": undefine[0m
+[33m    [0m                                                             [0m[33m    [0m [32md,[0m
+[33m    [0m                                                             [0m[33m5260[0m [32m                                        },[0m
+[33m    [0m                                                             [0m[33m5261[0m [32m                                        Object {[0m
+[33m    [0m                                                             [0m[33m5262[0m [32m                                          "type": "return",[0m
+[33m    [0m                                                             [0m[33m5263[0m [32m                                          "value": undefine[0m
+[33m    [0m                                                             [0m[33m    [0m [32md,[0m
+[33m    [0m                                                             [0m[33m5264[0m [32m                                        },[0m
+[33m    [0m                                                             [0m[33m5265[0m [32m                                        Object {[0m
+[33m4818[0m [0m                                          "type": "return",[0m [0m[33m5266[0m [0m                                          "type": "return",[0m
+[33m4819[0m [0m                                          "value": undefine [0m[33m5267[0m [0m                                          "value": undefine
+[33m    [0m d,[0m                                                          [0m[33m    [0m d,[0m
+[33m4820[0m [0m                                        },[0m                  [0m[33m5268[0m [0m                                        },[0m
+[33m4821[0m [0m                                      ],[0m                    [0m[33m5269[0m [0m                                      ],[0m
+[33m4822[0m [0m                                    },[0m                      [0m[33m5270[0m [0m                                    },[0m
+[33m4823[0m [0m                                    "go": [MockFunction],[0m   [0m[33m5271[0m [0m                                    "go": [MockFunction],[0m
+[1;34m@@ -5367,6 +5815,18 @@ exports[`Sidebar can have onboarding feature 1`] = `
+[0m[33m5367[0m [0m                                        Array [[0m             [0m[33m5815[0m [0m                                        Array [[0m
+[33m5368[0m [0m                                          "/settings/org-sl [0m[33m5816[0m [0m                                          "/settings/org-sl
+[33m    [0m ug/",[0m                                                       [0m[33m    [0m ug/",[0m
+[33m5369[0m [0m                                        ],[0m                  [0m[33m5817[0m [0m                                        ],[0m
+[33m5370[0m [0m                                        Array [[0m             [0m[33m5818[0m [0m                                        Array [[0m
+[33m    [0m                                                             [0m[33m5819[0m [32m                                          "#",[0m
+[33m    [0m                                                             [0m[33m5820[0m [32m                                        ],[0m
+[33m    [0m                                                             [0m[33m5821[0m [32m                                        Array [[0m
+[33m    [0m                                                             [0m[33m5822[0m [32m                                          "#",[0m
+[33m    [0m                                                             [0m[33m5823[0m [32m                                        ],[0m
+[33m    [0m                                                             [0m[33m5824[0m [32m                                        Array [[0m
+[33m    [0m                                                             [0m[33m5825[0m [32m                                          "#",[0m
+[33m    [0m                                                             [0m[33m5826[0m [32m                                        ],[0m
+[33m    [0m                                                             [0m[33m5827[0m [32m                                        Array [[0m
+[33m    [0m                                                             [0m[33m5828[0m [32m                                          "#",[0m
+[33m    [0m                                                             [0m[33m5829[0m [32m                                        ],[0m
+[33m    [0m                                                             [0m[33m5830[0m [32m                                        Array [[0m
+[33m5371[0m [0m                                          "/organizations/o [0m[33m5831[0m [0m                                          "/organizations/o
+[33m    [0m rg-slug/projects/",[0m                                         [0m[33m    [0m rg-slug/projects/",[0m
+[33m5372[0m [0m                                        ],[0m                  [0m[33m5832[0m [0m                                        ],[0m
+[1;34m@@ -5388,6 +5848,15 @@ exports[`Sidebar can have onboarding feature 1`] = `
+[0m[33m5388[0m [0m                                        Array [[0m             [0m[33m5848[0m [0m                                        Array [[0m
+[33m5389[0m [0m                                          "/settings/org-sl [0m[33m5849[0m [0m                                          "/settings/org-sl
+[33m    [0m ug/",[0m                                                       [0m[33m    [0m ug/",[0m
+[33m5390[0m [0m                                        ],[0m                  [0m[33m5850[0m [0m                                        ],[0m
+[33m5391[0m [0m                                        Array [[0m             [0m[33m5851[0m [0m                                        Array [[0m
+[33m    [0m                                                             [0m[33m5852[0m [32m                                          "#",[0m
+[33m    [0m                                                             [0m[33m5853[0m [32m                                        ],[0m
+[33m    [0m                                                             [0m[33m5854[0m [32m                                        Array [[0m
+[33m    [0m                                                             [0m[33m5855[0m [32m                                          "#",[0m
+[33m    [0m                                                             [0m[33m5856[0m [32m                                        ],[0m
+[33m    [0m                                                             [0m[33m5857[0m [32m                                        Array [[0m
+[33m    [0m                                                             [0m[33m5858[0m [32m                                          "#",[0m
+[33m    [0m                                                             [0m[33m5859[0m [32m                                        ],[0m
+[33m    [0m                                                             [0m[33m5860[0m [32m                                        Array [[0m
+[33m5392[0m [0m                                          "/organizations/o [0m[33m5861[0m [0m                                          "/organizations/o
+[33m    [0m rg-slug/projects/",[0m                                         [0m[33m    [0m rg-slug/projects/",[0m
+[33m5393[0m [0m                                        ],[0m                  [0m[33m5862[0m [0m                                        ],[0m
+[1;34m@@ -5409,6 +5878,15 @@ exports[`Sidebar can have onboarding feature 1`] = `
+[0m[33m5409[0m [0m                                        Array [[0m             [0m[33m5878[0m [0m                                        Array [[0m
+[33m5410[0m [0m                                          "/settings/org-sl [0m[33m5879[0m [0m                                          "/settings/org-sl
+[33m    [0m ug/",[0m                                                       [0m[33m    [0m ug/",[0m
+[33m5411[0m [0m                                        ],[0m                  [0m[33m5880[0m [0m                                        ],[0m
+[33m5412[0m [0m                                        Array [[0m             [0m[33m5881[0m [0m                                        Array [[0m
+[33m    [0m                                                             [0m[33m5882[0m [32m                                          "#",[0m
+[33m    [0m                                                             [0m[33m5883[0m [32m                                        ],[0m
+[33m    [0m                                                             [0m[33m5884[0m [32m                                        Array [[0m
+[33m    [0m                                                             [0m[33m5885[0m [32m                                          "#",[0m
+[33m    [0m                                                             [0m[33m5886[0m [32m                                        ],[0m
+[33m    [0m                                                             [0m[33m5887[0m [32m                                        Array [[0m
+[33m    [0m                                                             [0m[33m5888[0m [32m                                          "#",[0m
+[33m    [0m                                                             [0m[33m5889[0m [32m                                        ],[0m
+[33m    [0m                                                             [0m[33m5890[0m [32m                                        Array [[0m
+[33m5413[0m [0m                                          "/organizations/o [0m[33m5891[0m [0m                                          "/organizations/o
+[33m    [0m rg-slug/projects/",[0m                                         [0m[33m    [0m rg-slug/projects/",[0m
+[33m5414[0m [0m                                        ],[0m                  [0m[33m5892[0m [0m                                        ],[0m
+[1;34m@@ -5430,6 +5908,15 @@ exports[`Sidebar can have onboarding feature 1`] = `
+[0m[33m5430[0m [0m                                        Array [[0m             [0m[33m5908[0m [0m                                        Array [[0m
+[33m5431[0m [0m                                          "/settings/org-sl [0m[33m5909[0m [0m                                          "/settings/org-sl
+[33m    [0m ug/",[0m                                                       [0m[33m    [0m ug/",[0m
+[33m5432[0m [0m                                        ],[0m                  [0m[33m5910[0m [0m                                        ],[0m
+[33m5433[0m [0m                                        Array [[0m             [0m[33m5911[0m [0m                                        Array [[0m
+[33m    [0m                                                             [0m[33m5912[0m [32m                                          "#",[0m
+[33m    [0m                                                             [0m[33m5913[0m [32m                                        ],[0m
+[33m    [0m                                                             [0m[33m5914[0m [32m                                        Array [[0m
+[33m    [0m                                                             [0m[33m5915[0m [32m                                          "#",[0m
+[33m    [0m                                                             [0m[33m5916[0m [32m                                        ],[0m
+[33m    [0m                                                             [0m[33m5917[0m [32m                                        Array [[0m
+[33m    [0m                                                             [0m[33m5918[0m [32m                                          "#",[0m
+[33m    [0m                                                             [0m[33m5919[0m [32m                                        ],[0m
+[33m    [0m                                                             [0m[33m5920[0m [32m                                        Array [[0m
+[33m5434[0m [0m                                          "/organizations/o [0m[33m5921[0m [0m                                          "/organizations/o
+[33m    [0m rg-slug/projects/",[0m                                         [0m[33m    [0m rg-slug/projects/",[0m
+[33m5435[0m [0m                                        ],[0m                  [0m[33m5922[0m [0m                                        ],[0m
+[1;34m@@ -5454,6 +5941,15 @@ exports[`Sidebar can have onboarding feature 1`] = `
+[0m[33m5454[0m [0m                                        Array [[0m             [0m[33m5941[0m [0m                                        Array [[0m
+[33m5455[0m [0m                                          "https://forum.se [0m[33m5942[0m [0m                                          "https://forum.se
+[33m    [0m ntry.io/",[0m                                                  [0m[33m    [0m ntry.io/",[0m
+[33m    [0m                                                             [0m[33m5943[0m [32m                                        ],[0m
+[33m    [0m                                                             [0m[33m5944[0m [32m                                        Array [[0m
+[33m    [0m                                                             [0m[33m5945[0m [32m                                          "#",[0m
+[33m    [0m                                                             [0m[33m5946[0m [32m                                        ],[0m
+[33m    [0m                                                             [0m[33m5947[0m [32m                                        Array [[0m
+[33m    [0m                                                             [0m[33m5948[0m [32m                                          "#",[0m
+[33m    [0m                                                             [0m[33m5949[0m [32m                                        ],[0m
+[33m    [0m                                                             [0m[33m5950[0m [32m                                        Array [[0m
+[33m    [0m                                                             [0m[33m5951[0m [32m                                          "#",[0m
+[33m5456[0m [0m                                        ],[0m                  [0m[33m5952[0m [0m                                        ],[0m
+[33m5457[0m [0m                                      ],[0m                    [0m[33m5953[0m [0m                                      ],[0m
+[33m5458[0m [0m                                      "results": Array [[0m    [0m[33m5954[0m [0m                                      "results": Array [[0m
+[33m5459[0m [0m                                        Object {[0m            [0m[33m5955[0m [0m                                        Object {[0m
+[1;34m@@ -5612,6 +6108,70 @@ exports[`Sidebar can have onboarding feature 1`] = `
+[0m[33m    [0m                                                             [0m[33m6108[0m [32m                                          "type": "return",[0m
+[33m    [0m                                                             [0m[33m6109[0m [32m                                          "value": undefine[0m
+[33m    [0m                                                             [0m[33m    [0m [32md,[0m
+[33m    [0m                                                             [0m[33m6110[0m [32m                                        },[0m
+[33m    [0m                                                             [0m[33m6111[0m [32m                                        Object {[0m
+[33m    [0m                                                             [0m[33m6112[0m [32m                                          "type": "return",[0m
+[33m    [0m                                                             [0m[33m6113[0m [32m                                          "value": undefine[0m
+[33m    [0m                                                             [0m[33m    [0m [32md,[0m
+[33m    [0m                                                             [0m[33m6114[0m [32m                                        },[0m
+[33m    [0m                                                             [0m[33m6115[0m [32m                                        Object {[0m
+[33m    [0m                                                             [0m[33m6116[0m [32m                                          "type": "return",[0m
+[33m    [0m                                                             [0m[33m6117[0m [32m                                          "value": undefine[0m
+[33m    [0m                                                             [0m[33m    [0m [32md,[0m
+[33m    [0m                                                             [0m[33m6118[0m [32m                                        },[0m
+[33m    [0m                                                             [0m[33m6119[0m [32m                                        Object {[0m
+[33m    [0m                                                             [0m[33m6120[0m [32m                                          "type": "return",[0m
+[33m    [0m                                                             [0m[33m6121[0m [32m                                          "value": undefine[0m
+[33m    [0m                                                             [0m[33m    [0m [32md,[0m
+[33m    [0m                                                             [0m[33m6122[0m [32m                                        },[0m
+[33m    [0m                                                             [0m[33m6123[0m [32m                                        Object {[0m
+[33m    [0m                                                             [0m[33m6124[0m [32m                                          "type": "return",[0m
+[33m    [0m                                                             [0m[33m6125[0m [32m                                          "value": undefine[0m
+[33m    [0m                                                             [0m[33m    [0m [32md,[0m
+[33m    [0m                                                             [0m[33m6126[0m [32m                                        },[0m
+[33m    [0m                                                             [0m[33m6127[0m [32m                                        Object {[0m
+[33m    [0m                                                             [0m[33m6128[0m [32m                                          "type": "return",[0m
+[33m    [0m                                                             [0m[33m6129[0m [32m                                          "value": undefine[0m
+[33m    [0m                                                             [0m[33m    [0m [32md,[0m
+[33m    [0m                                                             [0m[33m6130[0m [32m                                        },[0m
+[33m    [0m                                                             [0m[33m6131[0m [32m                                        Object {[0m
+[33m    [0m                                                             [0m[33m6132[0m [32m                                          "type": "return",[0m
+[33m    [0m                                                             [0m[33m6133[0m [32m                                          "value": undefine[0m
+[33m    [0m                                                             [0m[33m    [0m [32md,[0m
+[33m    [0m                                                             [0m[33m6134[0m [32m                                        },[0m
+[33m    [0m                                                             [0m[33m6135[0m [32m                                        Object {[0m
+[33m    [0m                                                             [0m[33m6136[0m [32m                                          "type": "return",[0m
+[33m    [0m                                                             [0m[33m6137[0m [32m                                          "value": undefine[0m
+[33m    [0m                                                             [0m[33m    [0m [32md,[0m
+[33m    [0m                                                             [0m[33m6138[0m [32m                                        },[0m
+[33m    [0m                                                             [0m[33m6139[0m [32m                                        Object {[0m
+[33m    [0m                                                             [0m[33m6140[0m [32m                                          "type": "return",[0m
+[33m    [0m                                                             [0m[33m6141[0m [32m                                          "value": undefine[0m
+[33m    [0m                                                             [0m[33m    [0m [32md,[0m
+[33m    [0m                                                             [0m[33m6142[0m [32m                                        },[0m
+[33m    [0m                                                             [0m[33m6143[0m [32m                                        Object {[0m
+[33m    [0m                                                             [0m[33m6144[0m [32m                                          "type": "return",[0m
+[33m    [0m                                                             [0m[33m6145[0m [32m                                          "value": undefine[0m
+[33m    [0m                                                             [0m[33m    [0m [32md,[0m
+[33m    [0m                                                             [0m[33m6146[0m [32m                                        },[0m
+[33m    [0m                                                             [0m[33m6147[0m [32m                                        Object {[0m
+[33m    [0m                                                             [0m[33m6148[0m [32m                                          "type": "return",[0m
+[33m    [0m                                                             [0m[33m6149[0m [32m                                          "value": undefine[0m
+[33m    [0m                                                             [0m[33m    [0m [32md,[0m
+[33m    [0m                                                             [0m[33m6150[0m [32m                                        },[0m
+[33m    [0m                                                             [0m[33m6151[0m [32m                                        Object {[0m
+[33m    [0m                                                             [0m[33m6152[0m [32m                                          "type": "return",[0m
+[33m    [0m                                                             [0m[33m6153[0m [32m                                          "value": undefine[0m
+[33m    [0m                                                             [0m[33m    [0m [32md,[0m
+[33m    [0m                                                             [0m[33m6154[0m [32m                                        },[0m
+[33m    [0m                                                             [0m[33m6155[0m [32m                                        Object {[0m
+[33m    [0m                                                             [0m[33m6156[0m [32m                                          "type": "return",[0m
+[33m    [0m                                                             [0m[33m6157[0m [32m                                          "value": undefine[0m
+[33m    [0m                                                             [0m[33m    [0m [32md,[0m
+[33m    [0m                                                             [0m[33m6158[0m [32m                                        },[0m
+[33m    [0m                                                             [0m[33m6159[0m [32m                                        Object {[0m
+[33m    [0m                                                             [0m[33m6160[0m [32m                                          "type": "return",[0m
+[33m    [0m                                                             [0m[33m6161[0m [32m                                          "value": undefine[0m
+[33m    [0m                                                             [0m[33m    [0m [32md,[0m
+[33m    [0m                                                             [0m[33m6162[0m [32m                                        },[0m
+[33m    [0m                                                             [0m[33m6163[0m [32m                                        Object {[0m
+[33m    [0m                                                             [0m[33m6164[0m [32m                                          "type": "return",[0m
+[33m    [0m                                                             [0m[33m6165[0m [32m                                          "value": undefine[0m
+[33m    [0m                                                             [0m[33m    [0m [32md,[0m
+[33m    [0m                                                             [0m[33m6166[0m [32m                                        },[0m
+[33m    [0m                                                             [0m[33m6167[0m [32m                                        Object {[0m
+[33m    [0m                                                             [0m[33m6168[0m [32m                                          "type": "return",[0m
+[33m    [0m                                                             [0m[33m6169[0m [32m                                          "value": undefine[0m
+[33m    [0m                                                             [0m[33m    [0m [32md,[0m
+[33m    [0m                                                             [0m[33m6170[0m [32m                                        },[0m
+[33m    [0m                                                             [0m[33m6171[0m [32m                                        Object {[0m
+[33m5612[0m [0m                                          "type": "return",[0m [0m[33m6172[0m [0m                                          "type": "return",[0m
+[33m5613[0m [0m                                          "value": undefine [0m[33m6173[0m [0m                                          "value": undefine
+[33m    [0m d,[0m                                                          [0m[33m    [0m d,[0m
+[33m5614[0m [0m                                        },[0m                  [0m[33m6174[0m [0m                                        },[0m
+[33m5615[0m [0m                                      ],[0m                    [0m[33m6175[0m [0m                                      ],[0m
+[33m5616[0m [0m                                    },[0m                      [0m[33m6176[0m [0m                                    },[0m
+[33m5617[0m [0m                                    "go": [MockFunction],[0m   [0m[33m6177[0m [0m                                    "go": [MockFunction],[0m
+[1;34m@@ -6163,6 +6723,18 @@ exports[`Sidebar can have onboarding feature 1`] = `
+[0m[33m6163[0m [0m                                        Array [[0m             [0m[33m6723[0m [0m                                        Array [[0m
+[33m6164[0m [0m                                          "/settings/org-sl [0m[33m6724[0m [0m                                          "/settings/org-sl
+[33m    [0m ug/",[0m                                                       [0m[33m    [0m ug/",[0m
+[33m6165[0m [0m                                        ],[0m                  [0m[33m6725[0m [0m                                        ],[0m
+[33m6166[0m [0m                                        Array [[0m             [0m[33m6726[0m [0m                                        Array [[0m
+[33m    [0m                                                             [0m[33m6727[0m [32m                                          "#",[0m
+[33m    [0m                                                             [0m[33m6728[0m [32m                                        ],[0m
+[33m    [0m                                                             [0m[33m6729[0m [32m                                        Array [[0m
+[33m    [0m                                                             [0m[33m6730[0m [32m                                          "#",[0m
+[33m    [0m                                                             [0m[33m6731[0m [32m                                        ],[0m
+[33m    [0m                                                             [0m[33m6732[0m [32m                                        Array [[0m
+[33m    [0m                                                             [0m[33m6733[0m [32m                                          "#",[0m
+[33m    [0m                                                             [0m[33m6734[0m [32m                                        ],[0m
+[33m    [0m                                                             [0m[33m6735[0m [32m                                        Array [[0m
+[33m    [0m                                                             [0m[33m6736[0m [32m                                          "#",[0m
+[33m    [0m                                                             [0m[33m6737[0m [32m                                        ],[0m
+[33m    [0m                                                             [0m[33m6738[0m [32m                                        Array [[0m
+[33m6167[0m [0m                                          "/organizations/o [0m[33m6739[0m [0m                                          "/organizations/o
+[33m    [0m rg-slug/projects/",[0m                                         [0m[33m    [0m rg-slug/projects/",[0m
+[33m6168[0m [0m                                        ],[0m                  [0m[33m6740[0m [0m                                        ],[0m
+[1;34m@@ -6184,6 +6756,15 @@ exports[`Sidebar can have onboarding feature 1`] = `
+[0m[33m6184[0m [0m                                        Array [[0m             [0m[33m6756[0m [0m                                        Array [[0m
+[33m6185[0m [0m                                          "/settings/org-sl [0m[33m6757[0m [0m                                          "/settings/org-sl
+[33m    [0m ug/",[0m                                                       [0m[33m    [0m ug/",[0m
+[33m6186[0m [0m                                        ],[0m                  [0m[33m6758[0m [0m                                        ],[0m
+[33m6187[0m [0m                                        Array [[0m             [0m[33m6759[0m [0m                                        Array [[0m
+[33m    [0m                                                             [0m[33m6760[0m [32m                                          "#",[0m
+[33m    [0m                                                             [0m[33m6761[0m [32m                                        ],[0m
+[33m    [0m                                                             [0m[33m6762[0m [32m                                        Array [[0m
+[33m    [0m                                                             [0m[33m6763[0m [32m                                          "#",[0m
+[33m    [0m                                                             [0m[33m6764[0m [32m                                        ],[0m
+[33m    [0m                                                             [0m[33m6765[0m [32m                                        Array [[0m
+[33m    [0m                                                             [0m[33m6766[0m [32m                                          "#",[0m
+[33m    [0m                                                             [0m[33m6767[0m [32m                                        ],[0m
+[33m    [0m                                                             [0m[33m6768[0m [32m                                        Array [[0m
+[33m6188[0m [0m                                          "/organizations/o [0m[33m6769[0m [0m                                          "/organizations/o
+[33m    [0m rg-slug/projects/",[0m                                         [0m[33m    [0m rg-slug/projects/",[0m
+[33m6189[0m [0m                                        ],[0m                  [0m[33m6770[0m [0m                                        ],[0m
+[1;34m@@ -6205,6 +6786,15 @@ exports[`Sidebar can have onboarding feature 1`] = `
+[0m[33m6205[0m [0m                                        Array [[0m             [0m[33m6786[0m [0m                                        Array [[0m
+[33m6206[0m [0m                                          "/settings/org-sl [0m[33m6787[0m [0m                                          "/settings/org-sl
+[33m    [0m ug/",[0m                                                       [0m[33m    [0m ug/",[0m
+[33m6207[0m [0m                                        ],[0m                  [0m[33m6788[0m [0m                                        ],[0m
+[33m6208[0m [0m                                        Array [[0m             [0m[33m6789[0m [0m                                        Array [[0m
+[33m    [0m                                                             [0m[33m6790[0m [32m                                          "#",[0m
+[33m    [0m                                                             [0m[33m6791[0m [32m                                        ],[0m
+[33m    [0m                                                             [0m[33m6792[0m [32m                                        Array [[0m
+[33m    [0m                                                             [0m[33m6793[0m [32m                                          "#",[0m
+[33m    [0m                                                             [0m[33m6794[0m [32m                                        ],[0m
+[33m    [0m                                                             [0m[33m6795[0m [32m                                        Array [[0m
+[33m    [0m                                                             [0m[33m6796[0m [32m                                          "#",[0m
+[33m    [0m                                                             [0m[33m6797[0m [32m                                        ],[0m
+[33m    [0m                                                             [0m[33m6798[0m [32m                                        Array [[0m
+[33m6209[0m [0m                                          "/organizations/o [0m[33m6799[0m [0m                                          "/organizations/o
+[33m    [0m rg-slug/projects/",[0m                                         [0m[33m    [0m rg-slug/projects/",[0m
+[33m6210[0m [0m                                        ],[0m                  [0m[33m6800[0m [0m                                        ],[0m
+[1;34m@@ -6226,6 +6816,15 @@ exports[`Sidebar can have onboarding feature 1`] = `
+[0m[33m6226[0m [0m                                        Array [[0m             [0m[33m6816[0m [0m                                        Array [[0m
+[33m6227[0m [0m                                          "/settings/org-sl [0m[33m6817[0m [0m                                          "/settings/org-sl
+[33m    [0m ug/",[0m                                                       [0m[33m    [0m ug/",[0m
+[33m6228[0m [0m                                        ],[0m                  [0m[33m6818[0m [0m                                        ],[0m
+[33m6229[0m [0m                                        Array [[0m             [0m[33m6819[0m [0m                                        Array [[0m
+[33m    [0m                                                             [0m[33m6820[0m [32m                                          "#",[0m
+[33m    [0m                                                             [0m[33m6821[0m [32m                                        ],[0m
+[33m    [0m                                                             [0m[33m6822[0m [32m                                        Array [[0m
+[33m    [0m                                                             [0m[33m6823[0m [32m                                          "#",[0m
+[33m    [0m                                                             [0m[33m6824[0m [32m                                        ],[0m
+[33m    [0m                                                             [0m[33m6825[0m [32m                                        Array [[0m
+[33m    [0m                                                             [0m[33m6826[0m [32m                                          "#",[0m
+[33m    [0m                                                             [0m[33m6827[0m [32m                                        ],[0m
+[33m    [0m                                                             [0m[33m6828[0m [32m                                        Array [[0m
+[33m6230[0m [0m                                          "/organizations/o [0m[33m6829[0m [0m                                          "/organizations/o
+[33m    [0m rg-slug/projects/",[0m                                         [0m[33m    [0m rg-slug/projects/",[0m
+[33m6231[0m [0m                                        ],[0m                  [0m[33m6830[0m [0m                                        ],[0m
+[1;34m@@ -6250,6 +6849,15 @@ exports[`Sidebar can have onboarding feature 1`] = `
+[0m[33m6250[0m [0m                                        Array [[0m             [0m[33m6849[0m [0m                                        Array [[0m
+[33m6251[0m [0m                                          "https://forum.se [0m[33m6850[0m [0m                                          "https://forum.se
+[33m    [0m ntry.io/",[0m                                                  [0m[33m    [0m ntry.io/",[0m
+[33m    [0m                                                             [0m[33m6851[0m [32m                                        ],[0m
+[33m    [0m                                                             [0m[33m6852[0m [32m                                        Array [[0m
+[33m    [0m                                                             [0m[33m6853[0m [32m                                          "#",[0m
+[33m    [0m                                                             [0m[33m6854[0m [32m                                        ],[0m
+[33m    [0m                                                             [0m[33m6855[0m [32m                                        Array [[0m
+[33m    [0m                                                             [0m[33m6856[0m [32m                                          "#",[0m
+[33m    [0m                                                             [0m[33m6857[0m [32m                                        ],[0m
+[33m    [0m                                                             [0m[33m6858[0m [32m                                        Array [[0m
+[33m    [0m                                                             [0m[33m6859[0m [32m                                          "#",[0m
+[33m6252[0m [0m                                        ],[0m                  [0m[33m6860[0m [0m                                        ],[0m
+[33m6253[0m [0m                                      ],[0m                    [0m[33m6861[0m [0m                                      ],[0m
+[33m6254[0m [0m                                      "results": Array [[0m    [0m[33m6862[0m [0m                                      "results": Array [[0m
+[33m6255[0m [0m                                        Object {[0m            [0m[33m6863[0m [0m                                        Object {[0m
+[1;34m@@ -6408,6 +7016,70 @@ exports[`Sidebar can have onboarding feature 1`] = `
+[0m[33m    [0m                                                             [0m[33m7016[0m [32m                                          "type": "return",[0m
+[33m    [0m                                                             [0m[33m7017[0m [32m                                          "value": undefine[0m
+[33m    [0m                                                             [0m[33m    [0m [32md,[0m
+[33m    [0m                                                             [0m[33m7018[0m [32m                                        },[0m
+[33m    [0m                                                             [0m[33m7019[0m [32m                                        Object {[0m
+[33m    [0m                                                             [0m[33m7020[0m [32m                                          "type": "return",[0m
+[33m    [0m                                                             [0m[33m7021[0m [32m                                          "value": undefine[0m
+[33m    [0m                                                             [0m[33m    [0m [32md,[0m
+[33m    [0m                                                             [0m[33m7022[0m [32m                                        },[0m
+[33m    [0m                                                             [0m[33m7023[0m [32m                                        Object {[0m
+[33m    [0m                                                             [0m[33m7024[0m [32m                                          "type": "return",[0m
+[33m    [0m                                                             [0m[33m7025[0m [32m                                          "value": undefine[0m
+[33m    [0m                                                             [0m[33m    [0m [32md,[0m
+[33m    [0m                                                             [0m[33m7026[0m [32m                                        },[0m
+[33m    [0m                                                             [0m[33m7027[0m [32m                                        Object {[0m
+[33m    [0m                                                             [0m[33m7028[0m [32m                                          "type": "return",[0m
+[33m    [0m                                                             [0m[33m7029[0m [32m                                          "value": undefine[0m
+[33m    [0m                                                             [0m[33m    [0m [32md,[0m
+[33m    [0m                                                             [0m[33m7030[0m [32m                                        },[0m
+[33m    [0m                                                             [0m[33m7031[0m [32m                                        Object {[0m
+[33m    [0m                                                             [0m[33m7032[0m [32m                                          "type": "return",[0m
+[33m    [0m                                                             [0m[33m7033[0m [32m                                          "value": undefine[0m
+[33m    [0m                                                             [0m[33m    [0m [32md,[0m
+[33m    [0m                                                             [0m[33m7034[0m [32m                                        },[0m
+[33m    [0m                                                             [0m[33m7035[0m [32m                                        Object {[0m
+[33m    [0m                                                             [0m[33m7036[0m [32m                                          "type": "return",[0m
+[33m    [0m                                                             [0m[33m7037[0m [32m                                          "value": undefine[0m
+[33m    [0m                                                             [0m[33m    [0m [32md,[0m
+[33m    [0m                                                             [0m[33m7038[0m [32m                                        },[0m
+[33m    [0m                                                             [0m[33m7039[0m [32m                                        Object {[0m
+[33m    [0m                                                             [0m[33m7040[0m [32m                                          "type": "return",[0m
+[33m    [0m                                                             [0m[33m7041[0m [32m                                          "value": undefine[0m
+[33m    [0m                                                             [0m[33m    [0m [32md,[0m
+[33m    [0m                                                             [0m[33m7042[0m [32m                                        },[0m
+[33m    [0m                                                             [0m[33m7043[0m [32m                                        Object {[0m
+[33m    [0m                                                             [0m[33m7044[0m [32m                                          "type": "return",[0m
+[33m    [0m                                                             [0m[33m7045[0m [32m                                          "value": undefine[0m
+[33m    [0m                                                             [0m[33m    [0m [32md,[0m
+[33m    [0m                                                             [0m[33m7046[0m [32m                                        },[0m
+[33m    [0m                                                             [0m[33m7047[0m [32m                                        Object {[0m
+[33m    [0m                                                             [0m[33m7048[0m [32m                                          "type": "return",[0m
+[33m    [0m                                                             [0m[33m7049[0m [32m                                          "value": undefine[0m
+[33m    [0m                                                             [0m[33m    [0m [32md,[0m
+[33m    [0m                                                             [0m[33m7050[0m [32m                                        },[0m
+[33m    [0m                                                             [0m[33m7051[0m [32m                                        Object {[0m
+[33m    [0m                                                             [0m[33m7052[0m [32m                                          "type": "return",[0m
+[33m    [0m                                                             [0m[33m7053[0m [32m                                          "value": undefine[0m
+[33m    [0m                                                             [0m[33m    [0m [32md,[0m
+[33m    [0m                                                             [0m[33m7054[0m [32m                                        },[0m
+[33m    [0m                                                             [0m[33m7055[0m [32m                                        Object {[0m
+[33m    [0m                                                             [0m[33m7056[0m [32m                                          "type": "return",[0m
+[33m    [0m                                                             [0m[33m7057[0m [32m                                          "value": undefine[0m
+[33m    [0m                                                             [0m[33m    [0m [32md,[0m
+[33m    [0m                                                             [0m[33m7058[0m [32m                                        },[0m
+[33m    [0m                                                             [0m[33m7059[0m [32m                                        Object {[0m
+[33m    [0m                                                             [0m[33m7060[0m [32m                                          "type": "return",[0m
+[33m    [0m                                                             [0m[33m7061[0m [32m                                          "value": undefine[0m
+[33m    [0m                                                             [0m[33m    [0m [32md,[0m
+[33m    [0m                                                             [0m[33m7062[0m [32m                                        },[0m
+[33m    [0m                                                             [0m[33m7063[0m [32m                                        Object {[0m
+[33m    [0m                                                             [0m[33m7064[0m [32m                                          "type": "return",[0m
+[33m    [0m                                                             [0m[33m7065[0m [32m                                          "value": undefine[0m
+[33m    [0m                                                             [0m[33m    [0m [32md,[0m
+[33m    [0m                                                             [0m[33m7066[0m [32m                                        },[0m
+[33m    [0m                                                             [0m[33m7067[0m [32m                                        Object {[0m
+[33m    [0m                                                             [0m[33m7068[0m [32m                                          "type": "return",[0m
+[33m    [0m                                                             [0m[33m7069[0m [32m                                          "value": undefine[0m
+[33m    [0m                                                             [0m[33m    [0m [32md,[0m
+[33m    [0m                                                             [0m[33m7070[0m [32m                                        },[0m
+[33m    [0m                                                             [0m[33m7071[0m [32m                                        Object {[0m
+[33m    [0m                                                             [0m[33m7072[0m [32m                                          "type": "return",[0m
+[33m    [0m                                                             [0m[33m7073[0m [32m                                          "value": undefine[0m
+[33m    [0m                                                             [0m[33m    [0m [32md,[0m
+[33m    [0m                                                             [0m[33m7074[0m [32m                                        },[0m
+[33m    [0m                                                             [0m[33m7075[0m [32m                                        Object {[0m
+[33m    [0m                                                             [0m[33m7076[0m [32m                                          "type": "return",[0m
+[33m    [0m                                                             [0m[33m7077[0m [32m                                          "value": undefine[0m
+[33m    [0m                                                             [0m[33m    [0m [32md,[0m
+[33m    [0m                                                             [0m[33m7078[0m [32m                                        },[0m
+[33m    [0m                                                             [0m[33m7079[0m [32m                                        Object {[0m
+[33m6408[0m [0m                                          "type": "return",[0m [0m[33m7080[0m [0m                                          "type": "return",[0m
+[33m6409[0m [0m                                          "value": undefine [0m[33m7081[0m [0m                                          "value": undefine
+[33m    [0m d,[0m                                                          [0m[33m    [0m d,[0m
+[33m6410[0m [0m                                        },[0m                  [0m[33m7082[0m [0m                                        },[0m
+[33m6411[0m [0m                                      ],[0m                    [0m[33m7083[0m [0m                                      ],[0m
+[33m6412[0m [0m                                    },[0m                      [0m[33m7084[0m [0m                                    },[0m
+[33m6413[0m [0m                                    "go": [MockFunction],[0m   [0m[33m7085[0m [0m                                    "go": [MockFunction],[0m
+[1;34m@@ -6874,6 +7546,18 @@ exports[`Sidebar can have onboarding feature 1`] = `
+[0m[33m6874[0m [0m                                        Array [[0m             [0m[33m7546[0m [0m                                        Array [[0m
+[33m6875[0m [0m                                          "/settings/org-sl [0m[33m7547[0m [0m                                          "/settings/org-sl
+[33m    [0m ug/",[0m                                                       [0m[33m    [0m ug/",[0m
+[33m6876[0m [0m                                        ],[0m                  [0m[33m7548[0m [0m                                        ],[0m
+[33m6877[0m [0m                                        Array [[0m             [0m[33m7549[0m [0m                                        Array [[0m
+[33m    [0m                                                             [0m[33m7550[0m [32m                                          "#",[0m
+[33m    [0m                                                             [0m[33m7551[0m [32m                                        ],[0m
+[33m    [0m                                                             [0m[33m7552[0m [32m                                        Array [[0m
+[33m    [0m                                                             [0m[33m7553[0m [32m                                          "#",[0m
+[33m    [0m                                                             [0m[33m7554[0m [32m                                        ],[0m
+[33m    [0m                                                             [0m[33m7555[0m [32m                                        Array [[0m
+[33m    [0m                                                             [0m[33m7556[0m [32m                                          "#",[0m
+[33m    [0m                                                             [0m[33m7557[0m [32m                                        ],[0m
+[33m    [0m                                                             [0m[33m7558[0m [32m                                        Array [[0m
+[33m    [0m                                                             [0m[33m7559[0m [32m                                          "#",[0m
+[33m    [0m                                                             [0m[33m7560[0m [32m                                        ],[0m
+[33m    [0m                                                             [0m[33m7561[0m [32m                                        Array [[0m
+[33m6878[0m [0m                                          "/organizations/o [0m[33m7562[0m [0m                                          "/organizations/o
+[33m    [0m rg-slug/projects/",[0m                                         [0m[33m    [0m rg-slug/projects/",[0m
+[33m6879[0m [0m                                        ],[0m                  [0m[33m7563[0m [0m                                        ],[0m
+[1;34m@@ -6895,6 +7579,15 @@ exports[`Sidebar can have onboarding feature 1`] = `
+[0m[33m6895[0m [0m                                        Array [[0m             [0m[33m7579[0m [0m                                        Array [[0m
+[33m6896[0m [0m                                          "/settings/org-sl [0m[33m7580[0m [0m                                          "/settings/org-sl
+[33m    [0m ug/",[0m                                                       [0m[33m    [0m ug/",[0m
+[33m6897[0m [0m                                        ],[0m                  [0m[33m7581[0m [0m                                        ],[0m
+[33m6898[0m [0m                                        Array [[0m             [0m[33m7582[0m [0m                                        Array [[0m
+[33m    [0m                                                             [0m[33m7583[0m [32m                                          "#",[0m
+[33m    [0m                                                             [0m[33m7584[0m [32m                                        ],[0m
+[33m    [0m                                                             [0m[33m7585[0m [32m                                        Array [[0m
+[33m    [0m                                                             [0m[33m7586[0m [32m                                          "#",[0m
+[33m    [0m                                                             [0m[33m7587[0m [32m                                        ],[0m
+[33m    [0m                                                             [0m[33m7588[0m [32m                                        Array [[0m
+[33m    [0m                                                             [0m[33m7589[0m [32m                                          "#",[0m
+[33m    [0m                                                             [0m[33m7590[0m [32m                                        ],[0m
+[33m    [0m                                                             [0m[33m7591[0m [32m                                        Array [[0m
+[33m6899[0m [0m                                          "/organizations/o [0m[33m7592[0m [0m                                          "/organizations/o
+[33m    [0m rg-slug/projects/",[0m                                         [0m[33m    [0m rg-slug/projects/",[0m
+[33m6900[0m [0m                                        ],[0m                  [0m[33m7593[0m [0m                                        ],[0m
+[1;34m@@ -6916,6 +7609,15 @@ exports[`Sidebar can have onboarding feature 1`] = `
+[0m[33m6916[0m [0m                                        Array [[0m             [0m[33m7609[0m [0m                                        Array [[0m
+[33m6917[0m [0m                                          "/settings/org-sl [0m[33m7610[0m [0m                                          "/settings/org-sl
+[33m    [0m ug/",[0m                                                       [0m[33m    [0m ug/",[0m
+[33m6918[0m [0m                                        ],[0m                  [0m[33m7611[0m [0m                                        ],[0m
+[33m6919[0m [0m                                        Array [[0m             [0m[33m7612[0m [0m                                        Array [[0m
+[33m    [0m                                                             [0m[33m7613[0m [32m                                          "#",[0m
+[33m    [0m                                                             [0m[33m7614[0m [32m                                        ],[0m
+[33m    [0m                                                             [0m[33m7615[0m [32m                                        Array [[0m
+[33m    [0m                                                             [0m[33m7616[0m [32m                                          "#",[0m
+[33m    [0m                                                             [0m[33m7617[0m [32m                                        ],[0m
+[33m    [0m                                                             [0m[33m7618[0m [32m                                        Array [[0m
+[33m    [0m                                                             [0m[33m7619[0m [32m                                          "#",[0m
+[33m    [0m                                                             [0m[33m7620[0m [32m                                        ],[0m
+[33m    [0m                                                             [0m[33m7621[0m [32m                                        Array [[0m
+[33m6920[0m [0m                                          "/organizations/o [0m[33m7622[0m [0m                                          "/organizations/o
+[33m    [0m rg-slug/projects/",[0m                                         [0m[33m    [0m rg-slug/projects/",[0m
+[33m6921[0m [0m                                        ],[0m                  [0m[33m7623[0m [0m                                        ],[0m
+[1;34m@@ -6937,6 +7639,15 @@ exports[`Sidebar can have onboarding feature 1`] = `
+[0m[33m6937[0m [0m                                        Array [[0m             [0m[33m7639[0m [0m                                        Array [[0m
+[33m6938[0m [0m                                          "/settings/org-sl [0m[33m7640[0m [0m                                          "/settings/org-sl
+[33m    [0m ug/",[0m                                                       [0m[33m    [0m ug/",[0m
+[33m6939[0m [0m                                        ],[0m                  [0m[33m7641[0m [0m                                        ],[0m
+[33m6940[0m [0m                                        Array [[0m             [0m[33m7642[0m [0m                                        Array [[0m
+[33m    [0m                                                             [0m[33m7643[0m [32m                                          "#",[0m
+[33m    [0m                                                             [0m[33m7644[0m [32m                                        ],[0m
+[33m    [0m                                                             [0m[33m7645[0m [32m                                        Array [[0m
+[33m    [0m                                                             [0m[33m7646[0m [32m                                          "#",[0m
+[33m    [0m                                                             [0m[33m7647[0m [32m                                        ],[0m
+[33m    [0m                                                             [0m[33m7648[0m [32m                                        Array [[0m
+[33m    [0m                                                             [0m[33m7649[0m [32m                                          "#",[0m
+[33m    [0m                                                             [0m[33m7650[0m [32m                                        ],[0m
+[33m    [0m                                                             [0m[33m7651[0m [32m                                        Array [[0m
+[33m6941[0m [0m                                          "/organizations/o [0m[33m7652[0m [0m                                          "/organizations/o
+[33m    [0m rg-slug/projects/",[0m                                         [0m[33m    [0m rg-slug/projects/",[0m
+[33m6942[0m [0m                                        ],[0m                  [0m[33m7653[0m [0m                                        ],[0m
+[1;34m@@ -6961,6 +7672,15 @@ exports[`Sidebar can have onboarding feature 1`] = `
+[0m[33m6961[0m [0m                                        Array [[0m             [0m[33m7672[0m [0m                                        Array [[0m
+[33m6962[0m [0m                                          "https://forum.se [0m[33m7673[0m [0m                                          "https://forum.se
+[33m    [0m ntry.io/",[0m                                                  [0m[33m    [0m ntry.io/",[0m
+[33m    [0m                                                             [0m[33m7674[0m [32m                                        ],[0m
+[33m    [0m                                                             [0m[33m7675[0m [32m                                        Array [[0m
+[33m    [0m                                                             [0m[33m7676[0m [32m                                          "#",[0m
+[33m    [0m                                                             [0m[33m7677[0m [32m                                        ],[0m
+[33m    [0m                                                             [0m[33m7678[0m [32m                                        Array [[0m
+[33m    [0m                                                             [0m[33m7679[0m [32m                                          "#",[0m
+[33m    [0m                                                             [0m[33m7680[0m [32m                                        ],[0m
+[33m    [0m                                                             [0m[33m7681[0m [32m                                        Array [[0m
+[33m    [0m                                                             [0m[33m7682[0m [32m                                          "#",[0m
+[33m6963[0m [0m                                        ],[0m                  [0m[33m7683[0m [0m                                        ],[0m
+[33m6964[0m [0m                                      ],[0m                    [0m[33m7684[0m [0m                                      ],[0m
+[33m6965[0m [0m                                      "results": Array [[0m    [0m[33m7685[0m [0m                                      "results": Array [[0m
+[33m6966[0m [0m                                        Object {[0m            [0m[33m7686[0m [0m                                        Object {[0m
+[1;34m@@ -7119,6 +7839,70 @@ exports[`Sidebar can have onboarding feature 1`] = `
+[0m[33m    [0m                                                             [0m[33m7839[0m [32m                                          "type": "return",[0m
+[33m    [0m                                                             [0m[33m7840[0m [32m                                          "value": undefine[0m
+[33m    [0m                                                             [0m[33m    [0m [32md,[0m
+[33m    [0m                                                             [0m[33m7841[0m [32m                                        },[0m
+[33m    [0m                                                             [0m[33m7842[0m [32m                                        Object {[0m
+[33m    [0m                                                             [0m[33m7843[0m [32m                                          "type": "return",[0m
+[33m    [0m                                                             [0m[33m7844[0m [32m                                          "value": undefine[0m
+[33m    [0m                                                             [0m[33m    [0m [32md,[0m
+[33m    [0m                                                             [0m[33m7845[0m [32m                                        },[0m
+[33m    [0m                                                             [0m[33m7846[0m [32m                                        Object {[0m
+[33m    [0m                                                             [0m[33m7847[0m [32m                                          "type": "return",[0m
+[33m    [0m                                                             [0m[33m7848[0m [32m                                          "value": undefine[0m
+[33m    [0m                                                             [0m[33m    [0m [32md,[0m
+[33m    [0m                                                             [0m[33m7849[0m [32m                                        },[0m
+[33m    [0m                                                             [0m[33m7850[0m [32m                                        Object {[0m
+[33m    [0m                                                             [0m[33m7851[0m [32m                                          "type": "return",[0m
+[33m    [0m                                                             [0m[33m7852[0m [32m                                          "value": undefine[0m
+[33m    [0m                                                             [0m[33m    [0m [32md,[0m
+[33m    [0m                                                             [0m[33m7853[0m [32m                                        },[0m
+[33m    [0m                                                             [0m[33m7854[0m [32m                                        Object {[0m
+[33m    [0m                                                             [0m[33m7855[0m [32m                                          "type": "return",[0m
+[33m    [0m                                                             [0m[33m7856[0m [32m                                          "value": undefine[0m
+[33m    [0m                                                             [0m[33m    [0m [32md,[0m
+[33m    [0m                                                             [0m[33m7857[0m [32m                                        },[0m
+[33m    [0m                                                             [0m[33m7858[0m [32m                                        Object {[0m
+[33m    [0m                                                             [0m[33m7859[0m [32m                                          "type": "return",[0m
+[33m    [0m                                                             [0m[33m7860[0m [32m                                          "value": undefine[0m
+[33m    [0m                                                             [0m[33m    [0m [32md,[0m
+[33m    [0m                                                             [0m[33m7861[0m [32m                                        },[0m
+[33m    [0m                                                             [0m[33m7862[0m [32m                                        Object {[0m
+[33m    [0m                                                             [0m[33m7863[0m [32m                                          "type": "return",[0m
+[33m    [0m                                                             [0m[33m7864[0m [32m                                          "value": undefine[0m
+[33m    [0m                                                             [0m[33m    [0m [32md,[0m
+[33m    [0m                                                             [0m[33m7865[0m [32m                                        },[0m
+[33m    [0m                                                             [0m[33m7866[0m [32m                                        Object {[0m
+[33m    [0m                                                             [0m[33m7867[0m [32m                                          "type": "return",[0m
+[33m    [0m                                                             [0m[33m7868[0m [32m                                          "value": undefine[0m
+[33m    [0m                                                             [0m[33m    [0m [32md,[0m
+[33m    [0m                                                             [0m[33m7869[0m [32m                                        },[0m
+[33m    [0m                                                             [0m[33m7870[0m [32m                                        Object {[0m
+[33m    [0m                                                             [0m[33m7871[0m [32m                                          "type": "return",[0m
+[33m    [0m                                                             [0m[33m7872[0m [32m                                          "value": undefine[0m
+[33m    [0m                                                             [0m[33m    [0m [32md,[0m
+[33m    [0m                                                             [0m[33m7873[0m [32m                                        },[0m
+[33m    [0m                                                             [0m[33m7874[0m [32m                                        Object {[0m
+[33m    [0m                                                             [0m[33m7875[0m [32m                                          "type": "return",[0m
+[33m    [0m                                                             [0m[33m7876[0m [32m                                          "value": undefine[0m
+[33m    [0m                                                             [0m[33m    [0m [32md,[0m
+[33m    [0m                                                             [0m[33m7877[0m [32m                                        },[0m
+[33m    [0m                                                             [0m[33m7878[0m [32m                                        Object {[0m
+[33m    [0m                                                             [0m[33m7879[0m [32m                                          "type": "return",[0m
+[33m    [0m                                                             [0m[33m7880[0m [32m                                          "value": undefine[0m
+[33m    [0m                                                             [0m[33m    [0m [32md,[0m
+[33m    [0m                                                             [0m[33m7881[0m [32m                                        },[0m
+[33m    [0m                                                             [0m[33m7882[0m [32m                                        Object {[0m
+[33m    [0m                                                             [0m[33m7883[0m [32m                                          "type": "return",[0m
+[33m    [0m                                                             [0m[33m7884[0m [32m                                          "value": undefine[0m
+[33m    [0m                                                             [0m[33m    [0m [32md,[0m
+[33m    [0m                                                             [0m[33m7885[0m [32m                                        },[0m
+[33m    [0m                                                             [0m[33m7886[0m [32m                                        Object {[0m
+[33m    [0m                                                             [0m[33m7887[0m [32m                                          "type": "return",[0m
+[33m    [0m                                                             [0m[33m7888[0m [32m                                          "value": undefine[0m
+[33m    [0m                                                             [0m[33m    [0m [32md,[0m
+[33m    [0m                                                             [0m[33m7889[0m [32m                                        },[0m
+[33m    [0m                                                             [0m[33m7890[0m [32m                                        Object {[0m
+[33m    [0m                                                             [0m[33m7891[0m [32m                                          "type": "return",[0m
+[33m    [0m                                                             [0m[33m7892[0m [32m                                          "value": undefine[0m
+[33m    [0m                                                             [0m[33m    [0m [32md,[0m
+[33m    [0m                                                             [0m[33m7893[0m [32m                                        },[0m
+[33m    [0m                                                             [0m[33m7894[0m [32m                                        Object {[0m
+[33m    [0m                                                             [0m[33m7895[0m [32m                                          "type": "return",[0m
+[33m    [0m                                                             [0m[33m7896[0m [32m                                          "value": undefine[0m
+[33m    [0m                                                             [0m[33m    [0m [32md,[0m
+[33m    [0m                                                             [0m[33m7897[0m [32m                                        },[0m
+[33m    [0m                                                             [0m[33m7898[0m [32m                                        Object {[0m
+[33m    [0m                                                             [0m[33m7899[0m [32m                                          "type": "return",[0m
+[33m    [0m                                                             [0m[33m7900[0m [32m                                          "value": undefine[0m
+[33m    [0m                                                             [0m[33m    [0m [32md,[0m
+[33m    [0m                                                             [0m[33m7901[0m [32m                                        },[0m
+[33m    [0m                                                             [0m[33m7902[0m [32m                                        Object {[0m
+[33m7119[0m [0m                                          "type": "return",[0m [0m[33m7903[0m [0m                                          "type": "return",[0m
+[33m7120[0m [0m                                          "value": undefine [0m[33m7904[0m [0m                                          "value": undefine
+[33m    [0m d,[0m                                                          [0m[33m    [0m d,[0m
+[33m7121[0m [0m                                        },[0m                  [0m[33m7905[0m [0m                                        },[0m
+[33m7122[0m [0m                                      ],[0m                    [0m[33m7906[0m [0m                                      ],[0m
+[33m7123[0m [0m                                    },[0m                      [0m[33m7907[0m [0m                                    },[0m
+[33m7124[0m [0m                                    "go": [MockFunction],[0m   [0m[33m7908[0m [0m                                    "go": [MockFunction],[0m

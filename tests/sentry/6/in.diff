@@ -1,0 +1,115 @@
+commit b6714f7f268d6c0df1263c0b654be5a27661e337
+Author: Billy Vong <billyvg@users.noreply.github.com>
+Date:   Mon Jun 22 13:00:26 2020 -0700
+
+    feat(ui): Update `<Tag>` to accept React node for `icon` (#19470)
+    
+    Previously only accepted a string for icon (and used `InlineSvg`) -- update to accept a string or an Icon component
+    
+    Currently, will only be used in getsentry
+
+diff --git a/src/sentry/static/sentry/app/views/settings/components/tag.tsx b/src/sentry/static/sentry/app/views/settings/components/tag.tsx
+index 7ed0d85c19..311685e0b0 100644
+--- a/src/sentry/static/sentry/app/views/settings/components/tag.tsx
++++ b/src/sentry/static/sentry/app/views/settings/components/tag.tsx
+@@ -3,11 +3,12 @@ import styled from '@emotion/styled';
+ 
+ import InlineSvg from 'app/components/inlineSvg';
+ import {Theme} from 'app/utils/theme';
++import space from 'app/styles/space';
+ 
+ type Props = React.HTMLAttributes<HTMLDivElement> & {
+   priority?: keyof Theme['badge'] | keyof Theme['alert'];
+   size?: string;
+-  icon?: string;
++  icon?: string | React.ReactNode;
+   border?: boolean;
+   inline?: boolean;
+ };
+@@ -42,7 +43,15 @@ const Tag = styled(
+     ...props
+   }: Props) => (
+     <div {...props}>
+-      {icon && <StyledInlineSvg src={icon} size="12px" />}
++      {icon && (
++        <IconWrapper>
++          {React.isValidElement(icon) ? (
++            React.cloneElement(icon, {size: 'xs'})
++          ) : typeof icon === 'string' ? (
++            <InlineSvg src={icon} size="12px" />
++          ) : null}
++        </IconWrapper>
++      )}
+       {children}
+     </div>
+   )
+@@ -56,6 +65,7 @@ const Tag = styled(
+   text-align: center;
+   white-space: nowrap;
+   vertical-align: middle;
++  align-items: center;
+   border-radius: ${p => (p.size === 'small' ? '0.25em' : '2em')};
+   text-transform: lowercase;
+   font-weight: ${p => (p.size === 'small' ? 'bold' : 'normal')};
+@@ -64,8 +74,8 @@ const Tag = styled(
+   ${p => getMarginLeft(p)};
+ `;
+ 
+-const StyledInlineSvg = styled(InlineSvg)`
+-  margin-right: 4px;
++const IconWrapper = styled('span')`
++  margin-right: ${space(0.5)};
+ `;
+ 
+ export default Tag;
+diff --git a/tests/js/spec/components/__snapshots__/tag.spec.jsx.snap b/tests/js/spec/components/__snapshots__/tag.spec.jsx.snap
+index db6b51c74c..7106150464 100644
+--- a/tests/js/spec/components/__snapshots__/tag.spec.jsx.snap
++++ b/tests/js/spec/components/__snapshots__/tag.spec.jsx.snap
+@@ -8,12 +8,12 @@ exports[`Tag renders 1`] = `
+ >
+   <Component
+     border={true}
+-    className="css-w9a2kc-Tag e1glkkip0"
++    className="css-mpoebz-Tag e1glkkip0"
+     priority="info"
+     size="small"
+   >
+     <div
+-      className="css-w9a2kc-Tag e1glkkip0"
++      className="css-mpoebz-Tag e1glkkip0"
+     >
+       Text to Copy
+     </div>
+diff --git a/tests/js/spec/components/events/interfaces/breadcrumbs/__snapshots__/filter.spec.tsx.snap b/tests/js/spec/components/events/interfaces/breadcrumbs/__snapshots__/filter.spec.tsx.snap
+index 861f83e405..3f09c05a49 100644
+--- a/tests/js/spec/components/events/interfaces/breadcrumbs/__snapshots__/filter.spec.tsx.snap
++++ b/tests/js/spec/components/events/interfaces/breadcrumbs/__snapshots__/filter.spec.tsx.snap
+@@ -1679,11 +1679,11 @@ exports[`Filter default render 1`] = `
+                                   color="blue400"
+                                 >
+                                   <Component
+-                                    className="css-1f6oxrn-Tag-StyledTag eio8trv0"
++                                    className="css-1dx7owx-Tag-StyledTag eio8trv0"
+                                     color="blue400"
+                                   >
+                                     <div
+-                                      className="css-1f6oxrn-Tag-StyledTag eio8trv0"
++                                      className="css-1dx7owx-Tag-StyledTag eio8trv0"
+                                       color="blue400"
+                                     >
+                                       info
+@@ -1765,11 +1765,11 @@ exports[`Filter default render 1`] = `
+                                   color="red400"
+                                 >
+                                   <Component
+-                                    className="css-1muivxw-Tag-StyledTag eio8trv0"
++                                    className="css-eius55-Tag-StyledTag eio8trv0"
+                                     color="red400"
+                                   >
+                                     <div
+-                                      className="css-1muivxw-Tag-StyledTag eio8trv0"
++                                      className="css-eius55-Tag-StyledTag eio8trv0"
+                                       color="red400"
+                                     >
+                                       error

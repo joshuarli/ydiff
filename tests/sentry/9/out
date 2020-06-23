@@ -1,0 +1,49 @@
+[36mcommit 24ff1aa9e589590243f886e1ff41c9b53b4a58e1
+[0m[36mAuthor: Dan Fuller <dfuller@sentry.io>
+[0m[36mDate:   Mon Jun 22 11:33:32 2020 -0700
+[0m[36m
+[0m[36m    chore(subscriptions): Add logging about partitions/offsets when assigning/revoking partitions, and (#19474)
+[0m[36m    
+[0m[36m    when committing offsets
+[0m[36m    
+[0m[36m    I want to be able to see what the offsets are set to on the consumer so that we can come up with a
+[0m[36m    more permanent solution for the issues where our consumer lag monitor misfires due to low
+[0m[36m    transaction alert usage.
+[0m[36m
+[0m[36mdiff --git a/src/sentry/snuba/query_subscription_consumer.py b/src/sentry/snuba/query_subscription_consumer.py
+[0m[36mindex 1b824f8765..a7f57ae359 100644
+[0m[33m--- a/src/sentry/snuba/query_subscription_consumer.py
+[0m[33m+++ b/src/sentry/snuba/query_subscription_consumer.py
+[0m[1;34m@@ -87,12 +87,14 @@ class QuerySubscriptionConsumer(object):
+[0m[33m 87[0m [0m                else:[0m                                        [0m[33m 87[0m [0m                else:[0m
+[33m 88[0m [0m                    updated_offset = partition.offset[0m        [0m[33m 88[0m [0m                    updated_offset = partition.offset[0m
+[33m 89[0m [0m                self.offsets[partition.partition] = updated_ [0m[33m 89[0m [0m                self.offsets[partition.partition] = updated_
+[33m   [0m offset[0m                                                       [0m[33m   [0m offset[0m
+[33m   [0m                                                              [0m[33m 90[0m [32m            logger.info("query-subscription-consumer.on_assi[0m
+[33m   [0m                                                              [0m[33m   [0m [32mgn", extra={"offsets": self.offsets})[0m
+[33m 90[0m [0m[0m                                                             [0m[33m 91[0m [0m[0m
+[33m 91[0m [0m        def on_revoke(consumer, partitions):[0m                 [0m[33m 92[0m [0m        def on_revoke(consumer, partitions):[0m
+[33m 92[0m [0m            partition_numbers = [partition.partition for par [0m[33m 93[0m [0m            partition_numbers = [partition.partition for par
+[33m   [0m tition in partitions][0m                                        [0m[33m   [0m tition in partitions][0m
+[33m 93[0m [0m            self.commit_offsets(partition_numbers)[0m           [0m[33m 94[0m [0m            self.commit_offsets(partition_numbers)[0m
+[33m 94[0m [0m            for partition_number in partition_numbers:[0m       [0m[33m 95[0m [0m            for partition_number in partition_numbers:[0m
+[33m 95[0m [0m                self.offsets.pop(partition_number, None)[0m     [0m[33m 96[0m [0m                self.offsets.pop(partition_number, None)[0m
+[33m   [0m                                                              [0m[33m 97[0m [32m            logger.info("query-subscription-consumer.on_revo[0m
+[33m   [0m                                                              [0m[33m   [0m [32mke", extra={"offsets": self.offsets})[0m
+[33m 96[0m [0m[0m                                                             [0m[33m 98[0m [0m[0m
+[33m 97[0m [0m        self.consumer = Consumer(conf)[0m                       [0m[33m 99[0m [0m        self.consumer = Consumer(conf)[0m
+[33m 98[0m [0m        self.consumer.subscribe([self.topic], on_assign=on_a [0m[33m100[0m [0m        self.consumer.subscribe([self.topic], on_assign=on_a
+[33m   [0m ssign, on_revoke=on_revoke)[0m                                  [0m[33m   [0m ssign, on_revoke=on_revoke)[0m
+[1;34m@@ -131,6 +133,11 @@ class QuerySubscriptionConsumer(object):
+[0m[33m131[0m [0m        self.shutdown()[0m                                      [0m[33m133[0m [0m        self.shutdown()[0m
+[33m132[0m [0m[0m                                                             [0m[33m134[0m [0m[0m
+[33m133[0m [0m    def commit_offsets(self, partitions=None):[0m               [0m[33m135[0m [0m    def commit_offsets(self, partitions=None):[0m
+[33m   [0m                                                              [0m[33m136[0m [32m        logger.info([0m
+[33m   [0m                                                              [0m[33m137[0m [32m            "query-subscription-consumer.commit_offsets",[0m
+[33m   [0m                                                              [0m[33m138[0m [32m            extra={"offsets": self.offsets, "partitions": pa[0m
+[33m   [0m                                                              [0m[33m   [0m [32mrtitions},[0m
+[33m   [0m                                                              [0m[33m139[0m [32m        )[0m
+[33m   [0m                                                              [0m[33m140[0m [32m[0m
+[33m134[0m [0m        if self.offsets and self.consumer:[0m                   [0m[33m141[0m [0m        if self.offsets and self.consumer:[0m
+[33m135[0m [0m            if partitions is None:[0m                           [0m[33m142[0m [0m            if partitions is None:[0m
+[33m136[0m [0m                partitions = self.offsets.keys()[0m             [0m[33m143[0m [0m                partitions = self.offsets.keys()[0m

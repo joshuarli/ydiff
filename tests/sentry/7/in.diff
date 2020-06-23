@@ -1,0 +1,291 @@
+commit 48d81f61f905d0c92f840d3806b05f19965daddf
+Author: k-fish <6111995+k-fish@users.noreply.github.com>
+Date:   Mon Jun 22 12:28:37 2020 -0700
+
+    fix(discover): Fixed incorrect tags from showing in autocomplete (#19459)
+    
+    Fixed incorrect tags from showing in autocomplete
+    
+    `count()` for example was showing up in the autocomplete if you had visited discover before visiting the performance landing page. The search bar would then incorrectly show it as a recommendation
+    
+    This was caused by assigning into a reused object, I turned it into a proper field and switched field keys to an `Enum` so that it could be used with record to make sure the field tags and values correctly mapped to real field keys.
+    
+    * Remove export from enum and switch to generating FIELD_TAGS again
+    * Replace 'as const' and assert with direct typing
+
+diff --git a/src/sentry/static/sentry/app/utils/discover/fields.tsx b/src/sentry/static/sentry/app/utils/discover/fields.tsx
+index 7c0ea52762..69ae69024d 100644
+--- a/src/sentry/static/sentry/app/utils/discover/fields.tsx
++++ b/src/sentry/static/sentry/app/utils/discover/fields.tsx
+@@ -261,83 +261,153 @@ export type Aggregation = {
+   multiPlotType: PlotType;
+ };
+ 
++enum FieldKey {
++  CULPRIT = 'culprit',
++  DEVICE_ARCH = 'device.arch',
++  DEVICE_BATTERY_LEVEL = 'device.battery_level',
++  DEVICE_BRAND = 'device.brand',
++  DEVICE_CHARGING = 'device.charging',
++  DEVICE_LOCALE = 'device.locale',
++  DEVICE_NAME = 'device.name',
++  DEVICE_ONLINE = 'device.online',
++  DEVICE_ORIENTATION = 'device.orientation',
++  DEVICE_SIMULATOR = 'device.simulator',
++  DEVICE_UUID = 'device.uuid',
++  DIST = 'dist',
++  ENVIRONMENT = 'environment',
++  ERROR_HANDLED = 'error.handled',
++  ERROR_MECHANISM = 'error.mechanism',
++  ERROR_TYPE = 'error.type',
++  ERROR_VALUE = 'error.value',
++  EVENT_TYPE = 'event.type',
++  GEO_CITY = 'geo.city',
++  GEO_COUNTRY_CODE = 'geo.country_code',
++  GEO_REGION = 'geo.region',
++  HTTP_METHOD = 'http.method',
++  HTTP_URL = 'http.url',
++  ID = 'id',
++  ISSUE = 'issue',
++  LOCATION = 'location',
++  MESSAGE = 'message',
++  OS_BUILD = 'os.build',
++  OS_KERNEL_VERSION = 'os.kernel_version',
++  PLATFORM_NAME = 'platform.name',
++  PROJECT = 'project',
++  RELEASE = 'release',
++  SDK_NAME = 'sdk.name',
++  SDK_VERSION = 'sdk.version',
++  STACK_ABS_PATH = 'stack.abs_path',
++  STACK_COLNO = 'stack.colno',
++  STACK_FILENAME = 'stack.filename',
++  STACK_FUNCTION = 'stack.function',
++  STACK_IN_APP = 'stack.in_app',
++  STACK_LINENO = 'stack.lineno',
++  STACK_MODULE = 'stack.module',
++  STACK_PACKAGE = 'stack.package',
++  STACK_STACK_LEVEL = 'stack.stack_level',
++  TIME = 'time',
++  TIMESTAMP = 'timestamp',
++  TITLE = 'title',
++  TRACE = 'trace',
++  TRACE_PARENT_SPAN = 'trace.parent_span',
++  TRACE_SPAN = 'trace.span',
++  TRANSACTION = 'transaction',
++  TRANSACTION_DURATION = 'transaction.duration',
++  TRANSACTION_OP = 'transaction.op',
++  TRANSACTION_STATUS = 'transaction.status',
++  USER = 'user',
++  USER_EMAIL = 'user.email',
++  USER_ID = 'user.id',
++  USER_IP = 'user.ip',
++  USER_USERNAME = 'user.username',
++}
++
+ /**
+  * Refer to src/sentry/snuba/events.py, search for Columns
+  */
+-export const FIELDS = {
+-  id: 'string',
++export const FIELDS: Readonly<Record<FieldKey, ColumnType>> = {
++  [FieldKey.ID]: 'string',
+   // issue.id and project.id are omitted on purpose.
+   // Customers should use `issue` and `project` instead.
+-  timestamp: 'date',
+-  time: 'date',
+-
+-  culprit: 'string',
+-  location: 'string',
+-  message: 'string',
+-  'platform.name': 'string',
+-  environment: 'string',
+-  release: 'string',
+-  dist: 'string',
+-  title: 'string',
+-  'event.type': 'string',
++  [FieldKey.TIMESTAMP]: 'date',
++  [FieldKey.TIME]: 'date',
++
++  [FieldKey.CULPRIT]: 'string',
++  [FieldKey.LOCATION]: 'string',
++  [FieldKey.MESSAGE]: 'string',
++  [FieldKey.PLATFORM_NAME]: 'string',
++  [FieldKey.ENVIRONMENT]: 'string',
++  [FieldKey.RELEASE]: 'string',
++  [FieldKey.DIST]: 'string',
++  [FieldKey.TITLE]: 'string',
++  [FieldKey.EVENT_TYPE]: 'string',
+   // tags.key and tags.value are omitted on purpose as well.
+ 
+-  transaction: 'string',
+-  user: 'string',
+-  'user.id': 'string',
+-  'user.email': 'string',
+-  'user.username': 'string',
+-  'user.ip': 'string',
+-  'sdk.name': 'string',
+-  'sdk.version': 'string',
+-  'http.method': 'string',
+-  'http.url': 'string',
+-  'os.build': 'string',
+-  'os.kernel_version': 'string',
+-  'device.name': 'string',
+-  'device.brand': 'string',
+-  'device.locale': 'string',
+-  'device.uuid': 'string',
+-  'device.arch': 'string',
+-  'device.battery_level': 'number',
+-  'device.orientation': 'string',
+-  'device.simulator': 'boolean',
+-  'device.online': 'boolean',
+-  'device.charging': 'boolean',
+-  'geo.country_code': 'string',
+-  'geo.region': 'string',
+-  'geo.city': 'string',
+-  'error.type': 'string',
+-  'error.value': 'string',
+-  'error.mechanism': 'string',
+-  'error.handled': 'boolean',
+-  'stack.abs_path': 'string',
+-  'stack.filename': 'string',
+-  'stack.package': 'string',
+-  'stack.module': 'string',
+-  'stack.function': 'string',
+-  'stack.in_app': 'boolean',
+-  'stack.colno': 'number',
+-  'stack.lineno': 'number',
+-  'stack.stack_level': 'number',
++  [FieldKey.TRANSACTION]: 'string',
++  [FieldKey.USER]: 'string',
++  [FieldKey.USER_ID]: 'string',
++  [FieldKey.USER_EMAIL]: 'string',
++  [FieldKey.USER_USERNAME]: 'string',
++  [FieldKey.USER_IP]: 'string',
++  [FieldKey.SDK_NAME]: 'string',
++  [FieldKey.SDK_VERSION]: 'string',
++  [FieldKey.HTTP_METHOD]: 'string',
++  [FieldKey.HTTP_URL]: 'string',
++  [FieldKey.OS_BUILD]: 'string',
++  [FieldKey.OS_KERNEL_VERSION]: 'string',
++  [FieldKey.DEVICE_NAME]: 'string',
++  [FieldKey.DEVICE_BRAND]: 'string',
++  [FieldKey.DEVICE_LOCALE]: 'string',
++  [FieldKey.DEVICE_UUID]: 'string',
++  [FieldKey.DEVICE_ARCH]: 'string',
++  [FieldKey.DEVICE_BATTERY_LEVEL]: 'number',
++  [FieldKey.DEVICE_ORIENTATION]: 'string',
++  [FieldKey.DEVICE_SIMULATOR]: 'boolean',
++  [FieldKey.DEVICE_ONLINE]: 'boolean',
++  [FieldKey.DEVICE_CHARGING]: 'boolean',
++  [FieldKey.GEO_COUNTRY_CODE]: 'string',
++  [FieldKey.GEO_REGION]: 'string',
++  [FieldKey.GEO_CITY]: 'string',
++  [FieldKey.ERROR_TYPE]: 'string',
++  [FieldKey.ERROR_VALUE]: 'string',
++  [FieldKey.ERROR_MECHANISM]: 'string',
++  [FieldKey.ERROR_HANDLED]: 'boolean',
++  [FieldKey.STACK_ABS_PATH]: 'string',
++  [FieldKey.STACK_FILENAME]: 'string',
++  [FieldKey.STACK_PACKAGE]: 'string',
++  [FieldKey.STACK_MODULE]: 'string',
++  [FieldKey.STACK_FUNCTION]: 'string',
++  [FieldKey.STACK_IN_APP]: 'boolean',
++  [FieldKey.STACK_COLNO]: 'number',
++  [FieldKey.STACK_LINENO]: 'number',
++  [FieldKey.STACK_STACK_LEVEL]: 'number',
+   // contexts.key and contexts.value omitted on purpose.
+ 
+   // Transaction event fields.
+-  'transaction.duration': 'duration',
+-  'transaction.op': 'string',
+-  'transaction.status': 'string',
++  [FieldKey.TRANSACTION_DURATION]: 'duration',
++  [FieldKey.TRANSACTION_OP]: 'string',
++  [FieldKey.TRANSACTION_STATUS]: 'string',
+ 
+-  trace: 'string',
+-  'trace.span': 'string',
+-  'trace.parent_span': 'string',
++  [FieldKey.TRACE]: 'string',
++  [FieldKey.TRACE_SPAN]: 'string',
++  [FieldKey.TRACE_PARENT_SPAN]: 'string',
+ 
+   // Field alises defined in src/sentry/api/event_search.py
+-  project: 'string',
+-  issue: 'string',
+-} as const;
+-assert(FIELDS as Readonly<{[key in keyof typeof FIELDS]: ColumnType}>);
++  [FieldKey.PROJECT]: 'string',
++  [FieldKey.ISSUE]: 'string',
++};
++
++export type FieldTag = {
++  key: FieldKey;
++  name: FieldKey;
++};
++
++export const FIELD_TAGS = Object.freeze(
++  Object.fromEntries(Object.keys(FIELDS).map(item => [item, {key: item, name: item}]))
++);
+ 
+-export type FieldKey = keyof typeof FIELDS | string | '';
++// Allows for a less strict field key definition in cases we are returning custom strings as fields
++export type LooseFieldKey = FieldKey | string | '';
+ 
+ // This list should be removed with the tranaction-events feature flag.
+ export const TRACING_FIELDS = [
+diff --git a/src/sentry/static/sentry/app/views/events/searchBar.tsx b/src/sentry/static/sentry/app/views/events/searchBar.tsx
+index 2bee7646e3..10c503474e 100644
+--- a/src/sentry/static/sentry/app/views/events/searchBar.tsx
++++ b/src/sentry/static/sentry/app/views/events/searchBar.tsx
+@@ -12,7 +12,7 @@ import {defined} from 'app/utils';
+ import {fetchTagValues} from 'app/actionCreators/tags';
+ import SentryTypes from 'app/sentryTypes';
+ import SmartSearchBar, {SearchType} from 'app/components/smartSearchBar';
+-import {Field, FIELDS, TRACING_FIELDS} from 'app/utils/discover/fields';
++import {Field, FIELD_TAGS, TRACING_FIELDS} from 'app/utils/discover/fields';
+ import withApi from 'app/utils/withApi';
+ import withTags from 'app/utils/withTags';
+ import {Client} from 'app/api';
+@@ -23,10 +23,6 @@ const SEARCH_SPECIAL_CHARS_REGEXP = new RegExp(
+   'g'
+ );
+ 
+-const FIELD_TAGS = Object.fromEntries(
+-  Object.keys(FIELDS).map(item => [item, {key: item, name: item}])
+-);
+-
+ type SearchBarProps = Omit<React.ComponentProps<typeof SmartSearchBar>, 'tags'> & {
+   api: Client;
+   organization: Organization;
+@@ -101,7 +97,7 @@ class SearchBar extends React.PureComponent<SearchBarProps> {
+       : {};
+ 
+     const fieldTags = organization.features.includes('performance-view')
+-      ? assign(FIELD_TAGS, functionTags)
++      ? Object.assign({}, FIELD_TAGS, functionTags)
+       : omit(FIELD_TAGS, TRACING_FIELDS);
+ 
+     const combined = assign({}, tags, fieldTags);
+diff --git a/src/sentry/static/sentry/app/views/settings/incidentRules/metricField.tsx b/src/sentry/static/sentry/app/views/settings/incidentRules/metricField.tsx
+index 3acb977f8a..9ff83b3f82 100644
+--- a/src/sentry/static/sentry/app/views/settings/incidentRules/metricField.tsx
++++ b/src/sentry/static/sentry/app/views/settings/incidentRules/metricField.tsx
+@@ -16,7 +16,7 @@ import {
+   explodeFieldString,
+   generateFieldAsString,
+   AggregationKey,
+-  FieldKey,
++  LooseFieldKey,
+   AGGREGATIONS,
+   FIELDS,
+ } from 'app/utils/discover/fields';
+@@ -30,7 +30,7 @@ type Props = Omit<FormField['props'], 'children' | 'help'> & {
+ 
+ type OptionConfig = {
+   aggregations: AggregationKey[];
+-  fields: FieldKey[];
++  fields: LooseFieldKey[];
+ };
+ 
+ const errorFieldConfig: OptionConfig = {

@@ -1,0 +1,1561 @@
+[36mcommit b6b4a86dcb260ea82524a4c69b0797ce26376f34
+[0m[36mAuthor: Billy Vong <billyvg@users.noreply.github.com>
+[0m[36mDate:   Mon Jun 22 13:18:22 2020 -0700
+[0m[36m
+[0m[36m    ref(ts): Convert `<InstallWizard>` to typescript (#19314)
+[0m[36m    
+[0m[36m    * Converts `<InstallWizard>` to typescript
+[0m[36m    * Remove `setup-wizard.less` and convert to emotion
+[0m[36m    * Move to `app/views/admin`
+[0m[36m    * Move `app/options` to `app/views/admin`
+[0m[36m    
+[0m[36m    Old:
+[0m[36m    ![image](https://user-images.githubusercontent.com/79684/84430202-2b8d6e80-abde-11ea-8d27-7bbbe63b7d15.png)
+[0m[36m    
+[0m[36m    New:
+[0m[36m    ![image](https://user-images.githubusercontent.com/79684/84430146-144e8100-abde-11ea-847b-88912fb236f9.png)
+[0m[36m
+[0m[36mdiff --git a/src/sentry/static/sentry/app/utils/theme.tsx b/src/sentry/static/sentry/app/utils/theme.tsx
+[0m[36mindex ee6d2af9a5..7cf9c9d153 100644
+[0m[33m--- a/src/sentry/static/sentry/app/utils/theme.tsx
+[0m[33m+++ b/src/sentry/static/sentry/app/utils/theme.tsx
+[0m[1;34m@@ -241,6 +241,10 @@ const theme = {
+[0m[33m241[0m [0m[0m                                                             [0m[33m241[0m [0m[0m
+[33m242[0m [0m  // Try to keep these ordered plz[0m                           [0m[33m242[0m [0m  // Try to keep these ordered plz[0m
+[33m243[0m [0m  zIndex: {[0m                                                  [0m[33m243[0m [0m  zIndex: {[0m
+[33m   [0m                                                              [0m[33m244[0m [32m    // Generic z-index when you hope your component is isola[0m
+[33m   [0m                                                              [0m[33m   [0m [32mted and[0m
+[33m   [0m                                                              [0m[33m245[0m [32m    // does not need to battle others for z-index priority[0m
+[33m   [0m                                                              [0m[33m246[0m [32m    initial: 1,[0m
+[33m   [0m                                                              [0m[33m247[0m [32m[0m
+[33m244[0m [0m    breadcrumbs: {[0m                                           [0m[33m248[0m [0m    breadcrumbs: {[0m
+[33m245[0m [0m      header: 2,[0m                                             [0m[33m249[0m [0m      header: 2,[0m
+[33m246[0m [0m      gridCellError: 1,[0m                                      [0m[33m250[0m [0m      gridCellError: 1,[0m
+[36mdiff --git a/src/sentry/static/sentry/app/views/admin/adminSettings.jsx b/src/sentry/static/sentry/app/views/admin/adminSettings.jsx
+[0m[36mindex 28d24d7021..3bf7bc87db 100644
+[0m[33m--- a/src/sentry/static/sentry/app/views/admin/adminSettings.jsx
+[0m[33m+++ b/src/sentry/static/sentry/app/views/admin/adminSettings.jsx
+[0m[1;34m@@ -3,9 +3,10 @@ import isUndefined from 'lodash/isUndefined';
+[0m[33m 3[0m [0m[0m                                                              [0m[33m 3[0m [0m[0m
+[33m 4[0m [0mimport AsyncView from 'app/views/asyncView';[0m                  [0m[33m 4[0m [0mimport AsyncView from 'app/views/asyncView';[0m
+[33m 5[0m [0mimport {t} from 'app/locale';[0m                                 [0m[33m 5[0m [0mimport {t} from 'app/locale';[0m
+[33m 6[0m [1;31mimport {getOption, getOptionField} from 'app/options';[0m        [0m[33m  [0m 
+[33m 7[0m [0mimport {ApiForm} from 'app/components/forms';[0m                 [0m[33m 6[0m [0mimport {ApiForm} from 'app/components/forms';[0m
+[33m  [0m                                                               [0m[33m 7[0m [32m[0m
+[33m  [0m                                                               [0m[33m 8[0m [32mimport {getOption, getOptionField} from './options';[0m
+[33m 8[0m [0m[0m                                                              [0m[33m 9[0m [0m[0m
+[33m 9[0m [0mconst optionsAvailable = [[0m                                    [0m[33m10[0m [0mconst optionsAvailable = [[0m
+[33m10[0m [0m  'system.url-prefix',[0m                                        [0m[33m11[0m [0m  'system.url-prefix',[0m
+[33m11[0m [0m  'system.admin-email',[0m                                       [0m[33m12[0m [0m  'system.admin-email',[0m
+[36mdiff --git a/src/sentry/static/sentry/app/views/installWizard.jsx b/src/sentry/static/sentry/app/views/admin/installWizard/index.tsx
+[0m[36msimilarity index 61%
+[0m[36mrename from src/sentry/static/sentry/app/views/installWizard.jsx
+[0m[36mrename to src/sentry/static/sentry/app/views/admin/installWizard/index.tsx
+[0m[36mindex 0c8047e306..c30405e274 100644
+[0m[33m--- a/src/sentry/static/sentry/app/views/installWizard.jsx
+[0m[33m+++ b/src/sentry/static/sentry/app/views/admin/installWizard/index.tsx
+[0m[1;34m@@ -1,29 +1,27 @@
+[0m[33m  1[0m [1;31mimport PropTypes from 'prop-types';[0m                          [0m[33m   [0m 
+[33m  2[0m [0mimport React from 'react';[0m                                   [0m[33m  1[0m [0mimport React from 'react';[0m
+[33m  3[0m [0mimport DocumentTitle from 'react-document-title';[0m            [0m[33m  2[0m [0mimport DocumentTitle from 'react-document-title';[0m
+[33m   [0m                                                              [0m[33m  3[0m [32mimport {css} from '@emotion/core';[0m
+[33m   [0m                                                              [0m[33m  4[0m [32mimport styled from '@emotion/styled';[0m
+[33m  4[0m [0m[0m                                                             [0m[33m  5[0m [0m[0m
+[33m  5[0m [0mimport AsyncView from 'app/views/asyncView';[0m                 [0m[33m  6[0m [0mimport AsyncView from 'app/views/asyncView';[0m
+[33m  6[0m [0mimport {t} from 'app/locale';[0m                                [0m[33m  7[0m [0mimport {t} from 'app/locale';[0m
+[33m  7[0m [0mimport ConfigStore from 'app/stores/configStore';[0m            [0m[33m  8[0m [0mimport ConfigStore from 'app/stores/configStore';[0m
+[33m  8[0m [0mimport {ApiForm} from 'app/components/forms';[0m                [0m[33m  9[0m [0mimport {ApiForm} from 'app/components/forms';[0m
+[33m  9[0m [22m[7m[31mimport {getOptionDefault, getOptionField, getForm} from 'app[0m [0m[33m 10[0m [22m[7m[32mimport sentryPattern from 'app/../images/pattern/sentry-patt[0m
+[33m   [0m [31m[7m[22m/options';[0m                                                   [0m[33m   [0m [32m[7m[22mern.png';[0m
+[33m   [0m                                                              [0m[33m 11[0m [32mimport space from 'app/styles/space';[0m
+[33m   [0m                                                              [0m[33m 12[0m [32mimport Alert from 'app/components/alert';[0m
+[33m   [0m                                                              [0m[33m 13[0m [32mimport {IconWarning} from 'app/icons';[0m
+[33m 10[0m [0m[0m                                                             [0m[33m 14[0m [0m[0m
+[33m 11[0m [22m[7m[31mexport default class InstallWizard extends AsyncView {[0m       [0m[33m 15[0m [22m[7m[32mimport {getOptionDefault, getOptionField, getForm} from '../[0m
+[33m   [0m                                                              [0m[33m   [0m [32m[7m[22moptions';[0m
+[33m 12[0m [1;31m  static propTypes = {[0m                                       [0m[33m   [0m 
+[33m 13[0m [1;31m    onConfigured: PropTypes.func.isRequired,[0m                 [0m[33m   [0m 
+[33m 14[0m [1;31m  };[0m                                                         [0m[33m   [0m 
+[33m 15[0m [0m[0m                                                             [0m[33m 16[0m [0m[0m
+[33m 16[0m [22m[7m[31m  UNSAFE_componentWillMount() {[0m                              [0m[33m 17[0m [22m[7m[32mtype Props = {[0m
+[33m 17[0m [22m[7m[31m    super.UNSAFE_componentWillMount();[0m                       [0m[33m 18[0m [22m[7m[32m  onConfigured: () => void;[0m
+[33m 18[0m [22m[7m[31m    document.body.classList.add('install-wizard');[0m           [0m[33m 19[0m [22m[7m[32m} & AsyncView['props'];[0m
+[33m 19[0m [1;31m  }[0m                                                          [0m[33m   [0m 
+[33m 20[0m [0m[0m                                                             [0m[33m 20[0m [0m[0m
+[33m 21[0m [22m[7m[31m  componentWillUnmount() {[0m                                   [0m[33m 21[0m [22m[7m[32mtype State = {} & AsyncView['state'];[0m
+[33m 22[0m [1;31m    super.componentWillUnmount();[0m                            [0m[33m   [0m 
+[33m 23[0m [1;31m    document.body.classList.remove('install-wizard');[0m        [0m[33m   [0m 
+[33m 24[0m [1;31m  }[0m                                                          [0m[33m   [0m 
+[33m 25[0m [0m[0m                                                             [0m[33m 22[0m [0m[0m
+[33m 26[0m [22m[7m[31m  getEndpoints() {[0m                                           [0m[33m 23[0m [22m[7m[32mexport default class InstallWizard extends AsyncView<Props, [0m
+[33m   [0m                                                              [0m[33m   [0m [32m[7m[22mState> {[0m
+[33m   [0m                                                              [0m[33m 24[0m [32m  getEndpoints(): ReturnType<AsyncView['getEndpoints']> {[0m
+[33m 27[0m [0m    return [['data', '/internal/options/?query=is:required'] [0m[33m 25[0m [0m    return [['data', '/internal/options/?query=is:required']
+[33m   [0m ];[0m                                                           [0m[33m   [0m ];[0m
+[33m 28[0m [0m  }[0m                                                          [0m[33m 26[0m [0m  }[0m
+[33m 29[0m [0m[0m                                                             [0m[33m 27[0m [0m[0m
+[1;34m@@ -92,32 +90,31 @@ export default class InstallWizard extends AsyncView {
+[0m[33m 92[0m [0m    const version = ConfigStore.get('version');[0m              [0m[33m 90[0m [0m    const version = ConfigStore.get('version');[0m
+[33m 93[0m [0m    return ([0m                                                 [0m[33m 91[0m [0m    return ([0m
+[33m 94[0m [0m      <DocumentTitle title={this.getTitle()}>[0m                [0m[33m 92[0m [0m      <DocumentTitle title={this.getTitle()}>[0m
+[33m 95[0m [22m[7m[31m        <div className="app">[0m                                [0m[33m 93[0m [22m[7m[32m        <Wrapper>[0m
+[33m 96[0m [22m[7m[31m          <div className="pattern" />[0m                        [0m[33m 94[0m [22m[7m[32m          <Pattern />[0m
+[33m 97[0m [22m[7m[31m          <div className="setup-wizard">[0m                     [0m[33m 95[0m [22m[7m[32m          <SetupWizard>[0m
+[33m 98[0m [22m            <[7m[33mh1[0m[22m>[0m                                             [0m[33m 96[0m [22m            <[7m[33mHeading[0m[22m>[0m
+[33m 99[0m [0m              <span>{t('Welcome to Sentry')}</span>[0m          [0m[33m 97[0m [0m              <span>{t('Welcome to Sentry')}</span>[0m
+[33m100[0m [22m              <s[7m[33mmall[0m[22m>{version.current}</s[7m[33mmall[0m[22m>[0m               [0m[33m 98[0m [22m              <[7m[32mVer[0m[22ms[7m[33mion[0m[22m>{version.current}</[7m[32mVer[0m[22ms[7m[33mion[0m[22m>[0m
+[33m101[0m [22m            </[7m[33mh1[0m[22m>[0m                                            [0m[33m 99[0m [22m            </[7m[33mHeading[0m[22m>[0m
+[33m102[0m [0m            {this.state.loading[0m                              [0m[33m100[0m [0m            {this.state.loading[0m
+[33m103[0m [0m              ? this.renderLoading()[0m                         [0m[33m101[0m [0m              ? this.renderLoading()[0m
+[33m104[0m [0m              : this.state.error[0m                             [0m[33m102[0m [0m              : this.state.error[0m
+[33m105[0m [22m[7m[31m              ? this.renderError(new Error('Unable to load a[0m [0m[33m103[0m [22m[7m[32m              ? this.renderError()[0m
+[33m   [0m [31m[7m[22mll required endpoints'))[0m                                     [0m[33m   [0m 
+[33m106[0m [0m              : this.renderBody()}[0m                           [0m[33m104[0m [0m              : this.renderBody()}[0m
+[33m107[0m [22m[7m[31m          </div>[0m                                             [0m[33m105[0m [22m[7m[32m          </SetupWizard>[0m
+[33m108[0m [22m[7m[31m        </div>[0m                                               [0m[33m106[0m [22m[7m[32m        </Wrapper>[0m
+[33m109[0m [0m      </DocumentTitle>[0m                                       [0m[33m107[0m [0m      </DocumentTitle>[0m
+[33m110[0m [0m    );[0m                                                       [0m[33m108[0m [0m    );[0m
+[33m111[0m [0m  }[0m                                                          [0m[33m109[0m [0m  }[0m
+[33m112[0m [0m[0m                                                             [0m[33m110[0m [0m[0m
+[33m113[0m [0m  renderError() {[0m                                            [0m[33m111[0m [0m  renderError() {[0m
+[33m114[0m [0m    return ([0m                                                 [0m[33m112[0m [0m    return ([0m
+[33m115[0m [22m[7m[31m      <div className="loading-error">[0m                        [0m[33m113[0m [22m[7m[32m      <Alert type="error" icon={<IconWarning />}>[0m
+[33m116[0m [1;31m        <span className="icon-exclamation" />[0m                [0m[33m   [0m 
+[33m117[0m [0m        {t([0m                                                  [0m[33m114[0m [0m        {t([0m
+[33m118[0m [0m          'We were unable to load the required configuration [0m[33m115[0m [0m          'We were unable to load the required configuration
+[33m   [0m  from the Sentry server. Please take a look at the service l [0m[33m   [0m  from the Sentry server. Please take a look at the service l
+[33m   [0m ogs.'[0m                                                        [0m[33m   [0m ogs.'[0m
+[33m119[0m [0m        )}[0m                                                   [0m[33m116[0m [0m        )}[0m
+[33m120[0m [22m[7m[31m      </div>[0m                                                 [0m[33m117[0m [22m[7m[32m      </Alert>[0m
+[33m121[0m [0m    );[0m                                                       [0m[33m118[0m [0m    );[0m
+[33m122[0m [0m  }[0m                                                          [0m[33m119[0m [0m  }[0m
+[33m123[0m [0m[0m                                                             [0m[33m120[0m [0m[0m
+[1;34m@@ -137,3 +134,60 @@ export default class InstallWizard extends AsyncView {
+[0m[33m137[0m [0m    );[0m                                                       [0m[33m134[0m [0m    );[0m
+[33m138[0m [0m  }[0m                                                          [0m[33m135[0m [0m  }[0m
+[33m139[0m [0m}[0m                                                            [0m[33m136[0m [0m}[0m
+[33m   [0m                                                              [0m[33m137[0m [32m[0m
+[33m   [0m                                                              [0m[33m138[0m [32mconst Wrapper = styled('div')`[0m
+[33m   [0m                                                              [0m[33m139[0m [32m  display: flex;[0m
+[33m   [0m                                                              [0m[33m140[0m [32m  justify-content: center;[0m
+[33m   [0m                                                              [0m[33m141[0m [32m`;[0m
+[33m   [0m                                                              [0m[33m142[0m [32m[0m
+[33m   [0m                                                              [0m[33m143[0m [32mconst fixedStyle = css`[0m
+[33m   [0m                                                              [0m[33m144[0m [32m  position: fixed;[0m
+[33m   [0m                                                              [0m[33m145[0m [32m  top: 0;[0m
+[33m   [0m                                                              [0m[33m146[0m [32m  right: 0;[0m
+[33m   [0m                                                              [0m[33m147[0m [32m  bottom: 0;[0m
+[33m   [0m                                                              [0m[33m148[0m [32m  left: 0;[0m
+[33m   [0m                                                              [0m[33m149[0m [32m`;[0m
+[33m   [0m                                                              [0m[33m150[0m [32m[0m
+[33m   [0m                                                              [0m[33m151[0m [32mconst Pattern = styled('div')`[0m
+[33m   [0m                                                              [0m[33m152[0m [32m  &::before {[0m
+[33m   [0m                                                              [0m[33m153[0m [32m    ${fixedStyle}[0m
+[33m   [0m                                                              [0m[33m154[0m [32m    content: '';[0m
+[33m   [0m                                                              [0m[33m155[0m [32m    background-image: linear-gradient([0m
+[33m   [0m                                                              [0m[33m156[0m [32m      to right,[0m
+[33m   [0m                                                              [0m[33m157[0m [32m      ${p => p.theme.purple300} 0%,[0m
+[33m   [0m                                                              [0m[33m158[0m [32m      ${p => p.theme.purple400} 100%[0m
+[33m   [0m                                                              [0m[33m159[0m [32m    );[0m
+[33m   [0m                                                              [0m[33m160[0m [32m    background-repeat: repeat-y;[0m
+[33m   [0m                                                              [0m[33m161[0m [32m  }[0m
+[33m   [0m                                                              [0m[33m162[0m [32m[0m
+[33m   [0m                                                              [0m[33m163[0m [32m  &::after {[0m
+[33m   [0m                                                              [0m[33m164[0m [32m    ${fixedStyle}[0m
+[33m   [0m                                                              [0m[33m165[0m [32m    content: '';[0m
+[33m   [0m                                                              [0m[33m166[0m [32m    background: url(${sentryPattern});[0m
+[33m   [0m                                                              [0m[33m167[0m [32m    background-size: 400px;[0m
+[33m   [0m                                                              [0m[33m168[0m [32m    opacity: 0.8;[0m
+[33m   [0m                                                              [0m[33m169[0m [32m  }[0m
+[33m   [0m                                                              [0m[33m170[0m [32m`;[0m
+[33m   [0m                                                              [0m[33m171[0m [32m[0m
+[33m   [0m                                                              [0m[33m172[0m [32mconst Heading = styled('h1')`[0m
+[33m   [0m                                                              [0m[33m173[0m [32m  display: grid;[0m
+[33m   [0m                                                              [0m[33m174[0m [32m  grid-gap: ${space(1)};[0m
+[33m   [0m                                                              [0m[33m175[0m [32m  justify-content: space-between;[0m
+[33m   [0m                                                              [0m[33m176[0m [32m  grid-auto-flow: column;[0m
+[33m   [0m                                                              [0m[33m177[0m [32m  line-height: 36px;[0m
+[33m   [0m                                                              [0m[33m178[0m [32m`;[0m
+[33m   [0m                                                              [0m[33m179[0m [32m[0m
+[33m   [0m                                                              [0m[33m180[0m [32mconst Version = styled('small')`[0m
+[33m   [0m                                                              [0m[33m181[0m [32m  font-size: ${p => p.theme.fontSizeExtraLarge};[0m
+[33m   [0m                                                              [0m[33m182[0m [32m  line-height: inherit;[0m
+[33m   [0m                                                              [0m[33m183[0m [32m`;[0m
+[33m   [0m                                                              [0m[33m184[0m [32m[0m
+[33m   [0m                                                              [0m[33m185[0m [32mconst SetupWizard = styled('div')`[0m
+[33m   [0m                                                              [0m[33m186[0m [32m  background: ${p => p.theme.white};[0m
+[33m   [0m                                                              [0m[33m187[0m [32m  border-radius: ${p => p.theme.borderRadius};[0m
+[33m   [0m                                                              [0m[33m188[0m [32m  box-shadow: ${p => p.theme.dropShadowHeavy};[0m
+[33m   [0m                                                              [0m[33m189[0m [32m  margin-top: 40px;[0m
+[33m   [0m                                                              [0m[33m190[0m [32m  padding: 40px 40px 20px;[0m
+[33m   [0m                                                              [0m[33m191[0m [32m  width: 600px;[0m
+[33m   [0m                                                              [0m[33m192[0m [32m  z-index: ${p => p.theme.zIndex.initial};[0m
+[33m   [0m                                                              [0m[33m193[0m [32m`;[0m
+[36mdiff --git a/src/sentry/static/sentry/app/options.jsx b/src/sentry/static/sentry/app/views/admin/options.jsx
+[0m[36msimilarity index 100%
+[0m[36mrename from src/sentry/static/sentry/app/options.jsx
+[0m[36mrename to src/sentry/static/sentry/app/views/admin/options.jsx
+[0m[36mdiff --git a/src/sentry/static/sentry/app/views/app/index.tsx b/src/sentry/static/sentry/app/views/app/index.tsx
+[0m[36mindex 250662df75..53d909da80 100644
+[0m[33m--- a/src/sentry/static/sentry/app/views/app/index.tsx
+[0m[33m+++ b/src/sentry/static/sentry/app/views/app/index.tsx
+[0m[1;34m@@ -234,7 +234,7 @@ class App extends React.Component<Props, State> {
+[0m[33m234[0m [0m[0m                                                             [0m[33m234[0m [0m[0m
+[33m235[0m [0m    if (needsUpgrade) {[0m                                      [0m[33m235[0m [0m    if (needsUpgrade) {[0m
+[33m236[0m [0m      const InstallWizard = React.lazy(() =>[0m                 [0m[33m236[0m [0m      const InstallWizard = React.lazy(() =>[0m
+[33m237[0m [22m        import(/* webpackChunkName: "InstallWizard" */ 'app/[0m [0m[33m237[0m [22m        import(/* webpackChunkName: "InstallWizard" */ 'app/[0m
+[33m   [0m [22mviews/installWizard')[0m                                        [0m[33m   [0m [22mviews[7m[32m/admin[0m[22m/installWizard')[0m
+[33m238[0m [0m      );[0m                                                     [0m[33m238[0m [0m      );[0m
+[33m239[0m [0m[0m                                                             [0m[33m239[0m [0m[0m
+[33m240[0m [0m      return ([0m                                               [0m[33m240[0m [0m      return ([0m
+[36mdiff --git a/src/sentry/static/sentry/less/sentry.less b/src/sentry/static/sentry/less/sentry.less
+[0m[36mindex 32b3bdec52..a86341fc1f 100644
+[0m[33m--- a/src/sentry/static/sentry/less/sentry.less
+[0m[33m+++ b/src/sentry/static/sentry/less/sentry.less
+[0m[1;34m@@ -32,7 +32,6 @@
+[0m[33m32[0m [0m@import url('./organization.less');[0m                           [0m[33m32[0m [0m@import url('./organization.less');[0m
+[33m33[0m [0m@import url('./project-settings.less');[0m                       [0m[33m33[0m [0m@import url('./project-settings.less');[0m
+[33m34[0m [0m@import url('./releases.less');[0m                               [0m[33m34[0m [0m@import url('./releases.less');[0m
+[33m35[0m [1;31m@import url('./setup-wizard.less');[0m                           [0m[33m  [0m 
+[33m36[0m [0m@import url('./spacing.less');[0m                                [0m[33m35[0m [0m@import url('./spacing.less');[0m
+[33m37[0m [0m@import url('./stream.less');[0m                                 [0m[33m36[0m [0m@import url('./stream.less');[0m
+[33m38[0m [0m@import url('./group-similar.less');[0m                          [0m[33m37[0m [0m@import url('./group-similar.less');[0m
+[36mdiff --git a/src/sentry/static/sentry/less/setup-wizard.less b/src/sentry/static/sentry/less/setup-wizard.less
+[0m[36mdeleted file mode 100644
+[0m[36mindex 33cd39c0fa..0000000000
+[0m[33m--- a/src/sentry/static/sentry/less/setup-wizard.less
+[0m[33m+++ /dev/null
+[0m[1;34m@@ -1,69 +0,0 @@
+[0m[33m 1[0m [1;31m/**[0m                                                           [0m[33m  [0m 
+[33m 2[0m [1;31m* body.install-wizard[0m                                         [0m[33m  [0m 
+[33m 3[0m [1;31m* ===========================================================[0m [0m[33m  [0m 
+[33m  [0m [1;31m=================[0m                                             [0m[33m  [0m 
+[33m 4[0m [1;31m*/[0m                                                            [0m[33m  [0m 
+[33m 5[0m [1;31m[0m                                                              [0m[33m  [0m 
+[33m 6[0m [1;31mbody.install-wizard {[0m                                         [0m[33m  [0m 
+[33m 7[0m [1;31m  #gradient > .horizontal(#9f73c3, #6875be);[0m                  [0m[33m  [0m 
+[33m 8[0m [1;31m[0m                                                              [0m[33m  [0m 
+[33m 9[0m [1;31m  background-repeat: repeat-y;[0m                                [0m[33m  [0m 
+[33m10[0m [1;31m[0m                                                              [0m[33m  [0m 
+[33m11[0m [1;31m  .pattern {[0m                                                  [0m[33m  [0m 
+[33m12[0m [1;31m    position: fixed;[0m                                          [0m[33m  [0m 
+[33m13[0m [1;31m    top: 0;[0m                                                   [0m[33m  [0m 
+[33m14[0m [1;31m    right: 0;[0m                                                 [0m[33m  [0m 
+[33m15[0m [1;31m    bottom: 0;[0m                                                [0m[33m  [0m 
+[33m16[0m [1;31m    left: 0;[0m                                                  [0m[33m  [0m 
+[33m17[0m [1;31m    background: url(../images/pattern/sentry-pattern.png);[0m    [0m[33m  [0m 
+[33m18[0m [1;31m    background-size: 400px;[0m                                   [0m[33m  [0m 
+[33m19[0m [1;31m    opacity: 0.8;[0m                                             [0m[33m  [0m 
+[33m20[0m [1;31m  }[0m                                                           [0m[33m  [0m 
+[33m21[0m [1;31m}[0m                                                             [0m[33m  [0m 
+[33m22[0m [1;31m[0m                                                              [0m[33m  [0m 
+[33m23[0m [1;31m.setup-wizard {[0m                                               [0m[33m  [0m 
+[33m24[0m [1;31m  .clearfix;[0m                                                  [0m[33m  [0m 
+[33m25[0m [1;31m  background: #fff;[0m                                           [0m[33m  [0m 
+[33m26[0m [1;31m  width: 600px;[0m                                               [0m[33m  [0m 
+[33m27[0m [1;31m  padding: 40px 40px 20px;[0m                                    [0m[33m  [0m 
+[33m28[0m [1;31m  border-radius: 4px;[0m                                         [0m[33m  [0m 
+[33m29[0m [1;31m  box-shadow: 0 5px 30px rgba(0, 0, 0, 0.3);[0m                  [0m[33m  [0m 
+[33m30[0m [1;31m  position: absolute;[0m                                         [0m[33m  [0m 
+[33m31[0m [1;31m  top: 50px;[0m                                                  [0m[33m  [0m 
+[33m32[0m [1;31m  left: 50%;[0m                                                  [0m[33m  [0m 
+[33m33[0m [1;31m  margin-left: -300px;[0m                                        [0m[33m  [0m 
+[33m34[0m [1;31m  margin-bottom: 50px;[0m                                        [0m[33m  [0m 
+[33m35[0m [1;31m[0m                                                              [0m[33m  [0m 
+[33m36[0m [1;31m  h1 {[0m                                                        [0m[33m  [0m 
+[33m37[0m [1;31m    .clearfix;[0m                                                [0m[33m  [0m 
+[33m38[0m [1;31m    line-height: 36px;[0m                                        [0m[33m  [0m 
+[33m39[0m [1;31m[0m                                                              [0m[33m  [0m 
+[33m40[0m [1;31m    > span {[0m                                                  [0m[33m  [0m 
+[33m41[0m [1;31m      display: block;[0m                                         [0m[33m  [0m 
+[33m42[0m [1;31m      float: left;[0m                                            [0m[33m  [0m 
+[33m43[0m [1;31m    }[0m                                                         [0m[33m  [0m 
+[33m44[0m [1;31m    > small {[0m                                                 [0m[33m  [0m 
+[33m45[0m [1;31m      float: right;[0m                                           [0m[33m  [0m 
+[33m46[0m [1;31m      display: block;[0m                                         [0m[33m  [0m 
+[33m47[0m [1;31m      font-size: 18px;[0m                                        [0m[33m  [0m 
+[33m48[0m [1;31m      line-height: inherit;[0m                                   [0m[33m  [0m 
+[33m49[0m [1;31m    }[0m                                                         [0m[33m  [0m 
+[33m50[0m [1;31m  }[0m                                                           [0m[33m  [0m 
+[33m51[0m [1;31m[0m                                                              [0m[33m  [0m 
+[33m52[0m [1;31m  .loading {[0m                                                  [0m[33m  [0m 
+[33m53[0m [1;31m    margin: 0 0 20px;[0m                                         [0m[33m  [0m 
+[33m54[0m [1;31m  }[0m                                                           [0m[33m  [0m 
+[33m55[0m [1;31m[0m                                                              [0m[33m  [0m 
+[33m56[0m [1;31m  .loading-error {[0m                                            [0m[33m  [0m 
+[33m57[0m [1;31m    .clearfix;[0m                                                [0m[33m  [0m 
+[33m58[0m [1;31m    margin: 0 0 20px;[0m                                         [0m[33m  [0m 
+[33m59[0m [1;31m[0m                                                              [0m[33m  [0m 
+[33m60[0m [1;31m    .icon:before {[0m                                            [0m[33m  [0m 
+[33m61[0m [1;31m      float: left;[0m                                            [0m[33m  [0m 
+[33m62[0m [1;31m      display: block;[0m                                         [0m[33m  [0m 
+[33m63[0m [1;31m      font-size: 50px;[0m                                        [0m[33m  [0m 
+[33m64[0m [1;31m      margin-right: 10px;[0m                                     [0m[33m  [0m 
+[33m65[0m [1;31m      color: @red;[0m                                            [0m[33m  [0m 
+[33m66[0m [1;31m      content: '\e615';[0m                                       [0m[33m  [0m 
+[33m67[0m [1;31m    }[0m                                                         [0m[33m  [0m 
+[33m68[0m [1;31m  }[0m                                                           [0m[33m  [0m 
+[33m69[0m [1;31m}[0m                                                             [0m[33m  [0m 
+[36mdiff --git a/tests/js/spec/components/events/interfaces/breadcrumbs/__snapshots__/filter.spec.tsx.snap b/tests/js/spec/components/events/interfaces/breadcrumbs/__snapshots__/filter.spec.tsx.snap
+[0m[36mindex 3f09c05a49..d7838c85c4 100644
+[0m[33m--- a/tests/js/spec/components/events/interfaces/breadcrumbs/__snapshots__/filter.spec.tsx.snap
+[0m[33m+++ b/tests/js/spec/components/events/interfaces/breadcrumbs/__snapshots__/filter.spec.tsx.snap
+[0m[1;34m@@ -716,6 +716,7 @@ exports[`Filter default render 1`] = `
+[0m[33m716[0m [0m                      "globalSelectionHeader": 1009,[0m         [0m[33m716[0m [0m                      "globalSelectionHeader": 1009,[0m
+[33m717[0m [0m                      "header": 1000,[0m                        [0m[33m717[0m [0m                      "header": 1000,[0m
+[33m718[0m [0m                      "hovercard": 10002,[0m                    [0m[33m718[0m [0m                      "hovercard": 10002,[0m
+[33m   [0m                                                              [0m[33m719[0m [32m                      "initial": 1,[0m
+[33m719[0m [0m                      "modal": 10000,[0m                        [0m[33m720[0m [0m                      "modal": 10000,[0m
+[33m720[0m [0m                      "orgAndUserMenu": 1030,[0m                [0m[33m721[0m [0m                      "orgAndUserMenu": 1030,[0m
+[33m721[0m [0m                      "sentryErrorEmbed": 1090,[0m              [0m[33m722[0m [0m                      "sentryErrorEmbed": 1090,[0m
+[36mdiff --git a/tests/js/spec/views/__snapshots__/installWizard.spec.jsx.snap b/tests/js/spec/views/__snapshots__/installWizard.spec.jsx.snap
+[0m[36mdeleted file mode 100644
+[0m[36mindex 9eb8056d32..0000000000
+[0m[33m--- a/tests/js/spec/views/__snapshots__/installWizard.spec.jsx.snap
+[0m[33m+++ /dev/null
+[0m[1;34m@@ -1,558 +0,0 @@
+[0m[33m  1[0m [1;31m// Jest Snapshot v1, https://goo.gl/fbAQLP[0m                   [0m[33m   [0m 
+[33m  2[0m [1;31m[0m                                                             [0m[33m   [0m 
+[33m  3[0m [1;31mexports[`InstallWizard renders 1`] = `[0m                       [0m[33m   [0m 
+[33m  4[0m [1;31m<InstallWizard[0m                                               [0m[33m   [0m 
+[33m  5[0m [1;31m  onConfigured={[MockFunction]}[0m                              [0m[33m   [0m 
+[33m  6[0m [1;31m>[0m                                                            [0m[33m   [0m 
+[33m  7[0m [1;31m  <SideEffect(DocumentTitle)[0m                                 [0m[33m   [0m 
+[33m  8[0m [1;31m    title="Setup Sentry"[0m                                     [0m[33m   [0m 
+[33m  9[0m [1;31m  >[0m                                                          [0m[33m   [0m 
+[33m 10[0m [1;31m    <DocumentTitle[0m                                           [0m[33m   [0m 
+[33m 11[0m [1;31m      title="Setup Sentry"[0m                                   [0m[33m   [0m 
+[33m 12[0m [1;31m    >[0m                                                        [0m[33m   [0m 
+[33m 13[0m [1;31m      <div[0m                                                   [0m[33m   [0m 
+[33m 14[0m [1;31m        className="app"[0m                                      [0m[33m   [0m 
+[33m 15[0m [1;31m      >[0m                                                      [0m[33m   [0m 
+[33m 16[0m [1;31m        <div[0m                                                 [0m[33m   [0m 
+[33m 17[0m [1;31m          className="pattern"[0m                                [0m[33m   [0m 
+[33m 18[0m [1;31m        />[0m                                                   [0m[33m   [0m 
+[33m 19[0m [1;31m        <div[0m                                                 [0m[33m   [0m 
+[33m 20[0m [1;31m          className="setup-wizard"[0m                           [0m[33m   [0m 
+[33m 21[0m [1;31m        >[0m                                                    [0m[33m   [0m 
+[33m 22[0m [1;31m          <h1>[0m                                               [0m[33m   [0m 
+[33m 23[0m [1;31m            <span>[0m                                           [0m[33m   [0m 
+[33m 24[0m [1;31m              Welcome to Sentry[0m                              [0m[33m   [0m 
+[33m 25[0m [1;31m            </span>[0m                                          [0m[33m   [0m 
+[33m 26[0m [1;31m            <small>[0m                                          [0m[33m   [0m 
+[33m 27[0m [1;31m              1.33.7[0m                                         [0m[33m   [0m 
+[33m 28[0m [1;31m            </small>[0m                                         [0m[33m   [0m 
+[33m 29[0m [1;31m          </h1>[0m                                              [0m[33m   [0m 
+[33m 30[0m [1;31m          <ApiForm[0m                                           [0m[33m   [0m 
+[33m 31[0m [1;31m            apiEndpoint="/internal/options/?query=is:require[0m [0m[33m   [0m 
+[33m   [0m [1;31md"[0m                                                           [0m[33m   [0m 
+[33m 32[0m [1;31m            apiMethod="PUT"[0m                                  [0m[33m   [0m 
+[33m 33[0m [1;31m            cancelLabel="Cancel"[0m                             [0m[33m   [0m 
+[33m 34[0m [1;31m            className="form-stacked"[0m                         [0m[33m   [0m 
+[33m 35[0m [1;31m            errorMessage="Unable to save your changes. Pleas[0m [0m[33m   [0m 
+[33m   [0m [1;31me ensure all fields are valid and try again."[0m                [0m[33m   [0m 
+[33m 36[0m [1;31m            footerClass="form-actions align-right"[0m           [0m[33m   [0m 
+[33m 37[0m [1;31m            hideErrors={false}[0m                               [0m[33m   [0m 
+[33m 38[0m [1;31m            initialData={Object {}}[0m                          [0m[33m   [0m 
+[33m 39[0m [1;31m            onSubmitSuccess={[MockFunction]}[0m                 [0m[33m   [0m 
+[33m 40[0m [1;31m            requireChanges={false}[0m                           [0m[33m   [0m 
+[33m 41[0m [1;31m            resetOnError={false}[0m                             [0m[33m   [0m 
+[33m 42[0m [1;31m            submitDisabled={false}[0m                           [0m[33m   [0m 
+[33m 43[0m [1;31m            submitErrorMessage="There was an error saving yo[0m [0m[33m   [0m 
+[33m   [0m [1;31mur changes."[0m                                                 [0m[33m   [0m 
+[33m 44[0m [1;31m            submitLabel="Continue"[0m                           [0m[33m   [0m 
+[33m 45[0m [1;31m            submitLoadingMessage="Saving changes.."[0m          [0m[33m   [0m 
+[33m 46[0m [1;31m          >[0m                                                  [0m[33m   [0m 
+[33m 47[0m [1;31m            <StyledForm[0m                                      [0m[33m   [0m 
+[33m 48[0m [1;31m              className="form-stacked"[0m                       [0m[33m   [0m 
+[33m 49[0m [1;31m              onSubmit={[Function]}[0m                          [0m[33m   [0m 
+[33m 50[0m [1;31m            >[0m                                                [0m[33m   [0m 
+[33m 51[0m [1;31m              <form[0m                                          [0m[33m   [0m 
+[33m 52[0m [1;31m                className="form-stacked css-1z07nlv-StyledFo[0m [0m[33m   [0m 
+[33m   [0m [1;31mrm e18zovyk0"[0m                                                [0m[33m   [0m 
+[33m 53[0m [1;31m                onSubmit={[Function]}[0m                        [0m[33m   [0m 
+[33m 54[0m [1;31m              >[0m                                              [0m[33m   [0m 
+[33m 55[0m [1;31m                <p>[0m                                          [0m[33m   [0m 
+[33m 56[0m [1;31m                  Complete setup by filling out the required[0m [0m[33m   [0m 
+[33m   [0m [1;31m configuration.[0m                                              [0m[33m   [0m 
+[33m 57[0m [1;31m                </p>[0m                                         [0m[33m   [0m 
+[33m 58[0m [1;31m                <fieldset[0m                                    [0m[33m   [0m 
+[33m 59[0m [1;31m                  key="system"[0m                               [0m[33m   [0m 
+[33m 60[0m [1;31m                >[0m                                            [0m[33m   [0m 
+[33m 61[0m [1;31m                  <EmailField[0m                                [0m[33m   [0m 
+[33m 62[0m [1;31m                    allowEmpty={false}[0m                       [0m[33m   [0m 
+[33m 63[0m [1;31m                    component={[Function]}[0m                   [0m[33m   [0m 
+[33m 64[0m [1;31m                    default=""[0m                               [0m[33m   [0m 
+[33m 65[0m [1;31m                    disabled={false}[0m                         [0m[33m   [0m 
+[33m 66[0m [1;31m                    disabledReason={null}[0m                    [0m[33m   [0m 
+[33m 67[0m [1;31m                    help="The technical contact for this Sen[0m [0m[33m   [0m 
+[33m   [0m [1;31mtry installation."[0m                                           [0m[33m   [0m 
+[33m 68[0m [1;31m                    hideErrorMessage={false}[0m                 [0m[33m   [0m 
+[33m 69[0m [1;31m                    isSet={true}[0m                             [0m[33m   [0m 
+[33m 70[0m [1;31m                    key="system.admin-email"[0m                 [0m[33m   [0m 
+[33m 71[0m [1;31m                    label="Admin Email"[0m                      [0m[33m   [0m 
+[33m 72[0m [1;31m                    name="system.admin-email"[0m                [0m[33m   [0m 
+[33m 73[0m [1;31m                    placeholder="admin@example.com"[0m          [0m[33m   [0m 
+[33m 74[0m [1;31m                    required={true}[0m                          [0m[33m   [0m 
+[33m 75[0m [1;31m                  >[0m                                          [0m[33m   [0m 
+[33m 76[0m [1;31m                    <div[0m                                     [0m[33m   [0m 
+[33m 77[0m [1;31m                      className="control-group required"[0m     [0m[33m   [0m 
+[33m 78[0m [1;31m                    >[0m                                        [0m[33m   [0m 
+[33m 79[0m [1;31m                      <div[0m                                   [0m[33m   [0m 
+[33m 80[0m [1;31m                        className="controls"[0m                 [0m[33m   [0m 
+[33m 81[0m [1;31m                      >[0m                                      [0m[33m   [0m 
+[33m 82[0m [1;31m                        <label[0m                               [0m[33m   [0m 
+[33m 83[0m [1;31m                          className="control-label"[0m          [0m[33m   [0m 
+[33m 84[0m [1;31m                          htmlFor="id-system.admin-email"[0m    [0m[33m   [0m 
+[33m 85[0m [1;31m                        >[0m                                    [0m[33m   [0m 
+[33m 86[0m [1;31m                          Admin Email[0m                        [0m[33m   [0m 
+[33m 87[0m [1;31m                        </label>[0m                             [0m[33m   [0m 
+[33m 88[0m [1;31m                        <input[0m                               [0m[33m   [0m 
+[33m 89[0m [1;31m                          className="form-control"[0m           [0m[33m   [0m 
+[33m 90[0m [1;31m                          disabled={false}[0m                   [0m[33m   [0m 
+[33m 91[0m [1;31m                          id="id-system.admin-email"[0m         [0m[33m   [0m 
+[33m 92[0m [1;31m                          name="system.admin-email"[0m          [0m[33m   [0m 
+[33m 93[0m [1;31m                          onChange={[Function]}[0m              [0m[33m   [0m 
+[33m 94[0m [1;31m                          placeholder="admin@example.com"[0m    [0m[33m   [0m 
+[33m 95[0m [1;31m                          required={true}[0m                    [0m[33m   [0m 
+[33m 96[0m [1;31m                          type="email"[0m                       [0m[33m   [0m 
+[33m 97[0m [1;31m                          value=""[0m                           [0m[33m   [0m 
+[33m 98[0m [1;31m                        />[0m                                   [0m[33m   [0m 
+[33m 99[0m [1;31m                        <p[0m                                   [0m[33m   [0m 
+[33m100[0m [1;31m                          className="help-block"[0m             [0m[33m   [0m 
+[33m101[0m [1;31m                        >[0m                                    [0m[33m   [0m 
+[33m102[0m [1;31m                          The technical contact for this Sen[0m [0m[33m   [0m 
+[33m   [0m [1;31mtry installation.[0m                                            [0m[33m   [0m 
+[33m103[0m [1;31m                        </p>[0m                                 [0m[33m   [0m 
+[33m104[0m [1;31m                      </div>[0m                                 [0m[33m   [0m 
+[33m105[0m [1;31m                    </div>[0m                                   [0m[33m   [0m 
+[33m106[0m [1;31m                  </EmailField>[0m                              [0m[33m   [0m 
+[33m107[0m [1;31m                </fieldset>[0m                                  [0m[33m   [0m 
+[33m108[0m [1;31m                <fieldset[0m                                    [0m[33m   [0m 
+[33m109[0m [1;31m                  key="mail"[0m                                 [0m[33m   [0m 
+[33m110[0m [1;31m                >[0m                                            [0m[33m   [0m 
+[33m111[0m [1;31m                  <legend>[0m                                   [0m[33m   [0m 
+[33m112[0m [1;31m                    Outbound email[0m                           [0m[33m   [0m 
+[33m113[0m [1;31m                  </legend>[0m                                  [0m[33m   [0m 
+[33m114[0m [1;31m                  <EmailField[0m                                [0m[33m   [0m 
+[33m115[0m [1;31m                    allowEmpty={false}[0m                       [0m[33m   [0m 
+[33m116[0m [1;31m                    component={[Function]}[0m                   [0m[33m   [0m 
+[33m117[0m [1;31m                    default="root@localhost"[0m                 [0m[33m   [0m 
+[33m118[0m [1;31m                    defaultValue="sentry@localhost"[0m          [0m[33m   [0m 
+[33m119[0m [1;31m                    disabled={false}[0m                         [0m[33m   [0m 
+[33m120[0m [1;31m                    disabledReason={null}[0m                    [0m[33m   [0m 
+[33m121[0m [1;31m                    help="Email address to be used in From f[0m [0m[33m   [0m 
+[33m   [0m [1;31mor all outbound email."[0m                                      [0m[33m   [0m 
+[33m122[0m [1;31m                    hideErrorMessage={false}[0m                 [0m[33m   [0m 
+[33m123[0m [1;31m                    isSet={true}[0m                             [0m[33m   [0m 
+[33m124[0m [1;31m                    key="mail.from"[0m                          [0m[33m   [0m 
+[33m125[0m [1;31m                    label="Email From"[0m                       [0m[33m   [0m 
+[33m126[0m [1;31m                    name="mail.from"[0m                         [0m[33m   [0m 
+[33m127[0m [1;31m                    required={true}[0m                          [0m[33m   [0m 
+[33m128[0m [1;31m                  >[0m                                          [0m[33m   [0m 
+[33m129[0m [1;31m                    <div[0m                                     [0m[33m   [0m 
+[33m130[0m [1;31m                      className="control-group required"[0m     [0m[33m   [0m 
+[33m131[0m [1;31m                    >[0m                                        [0m[33m   [0m 
+[33m132[0m [1;31m                      <div[0m                                   [0m[33m   [0m 
+[33m133[0m [1;31m                        className="controls"[0m                 [0m[33m   [0m 
+[33m134[0m [1;31m                      >[0m                                      [0m[33m   [0m 
+[33m135[0m [1;31m                        <label[0m                               [0m[33m   [0m 
+[33m136[0m [1;31m                          className="control-label"[0m          [0m[33m   [0m 
+[33m137[0m [1;31m                          htmlFor="id-mail.from"[0m             [0m[33m   [0m 
+[33m138[0m [1;31m                        >[0m                                    [0m[33m   [0m 
+[33m139[0m [1;31m                          Email From[0m                         [0m[33m   [0m 
+[33m140[0m [1;31m                        </label>[0m                             [0m[33m   [0m 
+[33m141[0m [1;31m                        <input[0m                               [0m[33m   [0m 
+[33m142[0m [1;31m                          className="form-control"[0m           [0m[33m   [0m 
+[33m143[0m [1;31m                          disabled={false}[0m                   [0m[33m   [0m 
+[33m144[0m [1;31m                          id="id-mail.from"[0m                  [0m[33m   [0m 
+[33m145[0m [1;31m                          name="mail.from"[0m                   [0m[33m   [0m 
+[33m146[0m [1;31m                          onChange={[Function]}[0m              [0m[33m   [0m 
+[33m147[0m [1;31m                          required={true}[0m                    [0m[33m   [0m 
+[33m148[0m [1;31m                          type="email"[0m                       [0m[33m   [0m 
+[33m149[0m [1;31m                          value="sentry@localhost"[0m           [0m[33m   [0m 
+[33m150[0m [1;31m                        />[0m                                   [0m[33m   [0m 
+[33m151[0m [1;31m                        <p[0m                                   [0m[33m   [0m 
+[33m152[0m [1;31m                          className="help-block"[0m             [0m[33m   [0m 
+[33m153[0m [1;31m                        >[0m                                    [0m[33m   [0m 
+[33m154[0m [1;31m                          Email address to be used in From f[0m [0m[33m   [0m 
+[33m   [0m [1;31mor all outbound email.[0m                                       [0m[33m   [0m 
+[33m155[0m [1;31m                        </p>[0m                                 [0m[33m   [0m 
+[33m156[0m [1;31m                      </div>[0m                                 [0m[33m   [0m 
+[33m157[0m [1;31m                    </div>[0m                                   [0m[33m   [0m 
+[33m158[0m [1;31m                  </EmailField>[0m                              [0m[33m   [0m 
+[33m159[0m [1;31m                  <TextField[0m                                 [0m[33m   [0m 
+[33m160[0m [1;31m                    allowEmpty={false}[0m                       [0m[33m   [0m 
+[33m161[0m [1;31m                    default="localhost"[0m                      [0m[33m   [0m 
+[33m162[0m [1;31m                    defaultValue="localhost"[0m                 [0m[33m   [0m 
+[33m163[0m [1;31m                    disabled={false}[0m                         [0m[33m   [0m 
+[33m164[0m [1;31m                    disabledReason={null}[0m                    [0m[33m   [0m 
+[33m165[0m [1;31m                    hideErrorMessage={false}[0m                 [0m[33m   [0m 
+[33m166[0m [1;31m                    isSet={true}[0m                             [0m[33m   [0m 
+[33m167[0m [1;31m                    key="mail.host"[0m                          [0m[33m   [0m 
+[33m168[0m [1;31m                    label="SMTP Host"[0m                        [0m[33m   [0m 
+[33m169[0m [1;31m                    name="mail.host"[0m                         [0m[33m   [0m 
+[33m170[0m [1;31m                    placeholder="localhost"[0m                  [0m[33m   [0m 
+[33m171[0m [1;31m                    required={true}[0m                          [0m[33m   [0m 
+[33m172[0m [1;31m                  >[0m                                          [0m[33m   [0m 
+[33m173[0m [1;31m                    <div[0m                                     [0m[33m   [0m 
+[33m174[0m [1;31m                      className="control-group required"[0m     [0m[33m   [0m 
+[33m175[0m [1;31m                    >[0m                                        [0m[33m   [0m 
+[33m176[0m [1;31m                      <div[0m                                   [0m[33m   [0m 
+[33m177[0m [1;31m                        className="controls"[0m                 [0m[33m   [0m 
+[33m178[0m [1;31m                      >[0m                                      [0m[33m   [0m 
+[33m179[0m [1;31m                        <label[0m                               [0m[33m   [0m 
+[33m180[0m [1;31m                          className="control-label"[0m          [0m[33m   [0m 
+[33m181[0m [1;31m                          htmlFor="id-mail.host"[0m             [0m[33m   [0m 
+[33m182[0m [1;31m                        >[0m                                    [0m[33m   [0m 
+[33m183[0m [1;31m                          SMTP Host[0m                          [0m[33m   [0m 
+[33m184[0m [1;31m                        </label>[0m                             [0m[33m   [0m 
+[33m185[0m [1;31m                        <input[0m                               [0m[33m   [0m 
+[33m186[0m [1;31m                          className="form-control"[0m           [0m[33m   [0m 
+[33m187[0m [1;31m                          disabled={false}[0m                   [0m[33m   [0m 
+[33m188[0m [1;31m                          id="id-mail.host"[0m                  [0m[33m   [0m 
+[33m189[0m [1;31m                          name="mail.host"[0m                   [0m[33m   [0m 
+[33m190[0m [1;31m                          onChange={[Function]}[0m              [0m[33m   [0m 
+[33m191[0m [1;31m                          placeholder="localhost"[0m            [0m[33m   [0m 
+[33m192[0m [1;31m                          required={true}[0m                    [0m[33m   [0m 
+[33m193[0m [1;31m                          type="text"[0m                        [0m[33m   [0m 
+[33m194[0m [1;31m                          value="localhost"[0m                  [0m[33m   [0m 
+[33m195[0m [1;31m                        />[0m                                   [0m[33m   [0m 
+[33m196[0m [1;31m                      </div>[0m                                 [0m[33m   [0m 
+[33m197[0m [1;31m                    </div>[0m                                   [0m[33m   [0m 
+[33m198[0m [1;31m                  </TextField>[0m                               [0m[33m   [0m 
+[33m199[0m [1;31m                  <TextField[0m                                 [0m[33m   [0m 
+[33m200[0m [1;31m                    allowEmpty={false}[0m                       [0m[33m   [0m 
+[33m201[0m [1;31m                    default={25}[0m                             [0m[33m   [0m 
+[33m202[0m [1;31m                    defaultValue="25"[0m                        [0m[33m   [0m 
+[33m203[0m [1;31m                    disabled={false}[0m                         [0m[33m   [0m 
+[33m204[0m [1;31m                    disabledReason={null}[0m                    [0m[33m   [0m 
+[33m205[0m [1;31m                    hideErrorMessage={false}[0m                 [0m[33m   [0m 
+[33m206[0m [1;31m                    isSet={true}[0m                             [0m[33m   [0m 
+[33m207[0m [1;31m                    key="mail.port"[0m                          [0m[33m   [0m 
+[33m208[0m [1;31m                    label="SMTP Port"[0m                        [0m[33m   [0m 
+[33m209[0m [1;31m                    name="mail.port"[0m                         [0m[33m   [0m 
+[33m210[0m [1;31m                    placeholder="25"[0m                         [0m[33m   [0m 
+[33m211[0m [1;31m                    required={true}[0m                          [0m[33m   [0m 
+[33m212[0m [1;31m                  >[0m                                          [0m[33m   [0m 
+[33m213[0m [1;31m                    <div[0m                                     [0m[33m   [0m 
+[33m214[0m [1;31m                      className="control-group required"[0m     [0m[33m   [0m 
+[33m215[0m [1;31m                    >[0m                                        [0m[33m   [0m 
+[33m216[0m [1;31m                      <div[0m                                   [0m[33m   [0m 
+[33m217[0m [1;31m                        className="controls"[0m                 [0m[33m   [0m 
+[33m218[0m [1;31m                      >[0m                                      [0m[33m   [0m 
+[33m219[0m [1;31m                        <label[0m                               [0m[33m   [0m 
+[33m220[0m [1;31m                          className="control-label"[0m          [0m[33m   [0m 
+[33m221[0m [1;31m                          htmlFor="id-mail.port"[0m             [0m[33m   [0m 
+[33m222[0m [1;31m                        >[0m                                    [0m[33m   [0m 
+[33m223[0m [1;31m                          SMTP Port[0m                          [0m[33m   [0m 
+[33m224[0m [1;31m                        </label>[0m                             [0m[33m   [0m 
+[33m225[0m [1;31m                        <input[0m                               [0m[33m   [0m 
+[33m226[0m [1;31m                          className="form-control"[0m           [0m[33m   [0m 
+[33m227[0m [1;31m                          disabled={false}[0m                   [0m[33m   [0m 
+[33m228[0m [1;31m                          id="id-mail.port"[0m                  [0m[33m   [0m 
+[33m229[0m [1;31m                          name="mail.port"[0m                   [0m[33m   [0m 
+[33m230[0m [1;31m                          onChange={[Function]}[0m              [0m[33m   [0m 
+[33m231[0m [1;31m                          placeholder="25"[0m                   [0m[33m   [0m 
+[33m232[0m [1;31m                          required={true}[0m                    [0m[33m   [0m 
+[33m233[0m [1;31m                          type="text"[0m                        [0m[33m   [0m 
+[33m234[0m [1;31m                          value="25"[0m                         [0m[33m   [0m 
+[33m235[0m [1;31m                        />[0m                                   [0m[33m   [0m 
+[33m236[0m [1;31m                      </div>[0m                                 [0m[33m   [0m 
+[33m237[0m [1;31m                    </div>[0m                                   [0m[33m   [0m 
+[33m238[0m [1;31m                  </TextField>[0m                               [0m[33m   [0m 
+[33m239[0m [1;31m                  <TextField[0m                                 [0m[33m   [0m 
+[33m240[0m [1;31m                    allowEmpty={true}[0m                        [0m[33m   [0m 
+[33m241[0m [1;31m                    default=""[0m                               [0m[33m   [0m 
+[33m242[0m [1;31m                    defaultValue=""[0m                          [0m[33m   [0m 
+[33m243[0m [1;31m                    disabled={false}[0m                         [0m[33m   [0m 
+[33m244[0m [1;31m                    disabledReason={null}[0m                    [0m[33m   [0m 
+[33m245[0m [1;31m                    hideErrorMessage={false}[0m                 [0m[33m   [0m 
+[33m246[0m [1;31m                    isSet={true}[0m                             [0m[33m   [0m 
+[33m247[0m [1;31m                    key="mail.username"[0m                      [0m[33m   [0m 
+[33m248[0m [1;31m                    label="SMTP Username"[0m                    [0m[33m   [0m 
+[33m249[0m [1;31m                    name="mail.username"[0m                     [0m[33m   [0m 
+[33m250[0m [1;31m                    required={false}[0m                         [0m[33m   [0m 
+[33m251[0m [1;31m                  >[0m                                          [0m[33m   [0m 
+[33m252[0m [1;31m                    <div[0m                                     [0m[33m   [0m 
+[33m253[0m [1;31m                      className="control-group"[0m              [0m[33m   [0m 
+[33m254[0m [1;31m                    >[0m                                        [0m[33m   [0m 
+[33m255[0m [1;31m                      <div[0m                                   [0m[33m   [0m 
+[33m256[0m [1;31m                        className="controls"[0m                 [0m[33m   [0m 
+[33m257[0m [1;31m                      >[0m                                      [0m[33m   [0m 
+[33m258[0m [1;31m                        <label[0m                               [0m[33m   [0m 
+[33m259[0m [1;31m                          className="control-label"[0m          [0m[33m   [0m 
+[33m260[0m [1;31m                          htmlFor="id-mail.username"[0m         [0m[33m   [0m 
+[33m261[0m [1;31m                        >[0m                                    [0m[33m   [0m 
+[33m262[0m [1;31m                          SMTP Username[0m                      [0m[33m   [0m 
+[33m263[0m [1;31m                        </label>[0m                             [0m[33m   [0m 
+[33m264[0m [1;31m                        <input[0m                               [0m[33m   [0m 
+[33m265[0m [1;31m                          className="form-control"[0m           [0m[33m   [0m 
+[33m266[0m [1;31m                          disabled={false}[0m                   [0m[33m   [0m 
+[33m267[0m [1;31m                          id="id-mail.username"[0m              [0m[33m   [0m 
+[33m268[0m [1;31m                          name="mail.username"[0m               [0m[33m   [0m 
+[33m269[0m [1;31m                          onChange={[Function]}[0m              [0m[33m   [0m 
+[33m270[0m [1;31m                          required={false}[0m                   [0m[33m   [0m 
+[33m271[0m [1;31m                          type="text"[0m                        [0m[33m   [0m 
+[33m272[0m [1;31m                          value=""[0m                           [0m[33m   [0m 
+[33m273[0m [1;31m                        />[0m                                   [0m[33m   [0m 
+[33m274[0m [1;31m                      </div>[0m                                 [0m[33m   [0m 
+[33m275[0m [1;31m                    </div>[0m                                   [0m[33m   [0m 
+[33m276[0m [1;31m                  </TextField>[0m                               [0m[33m   [0m 
+[33m277[0m [1;31m                  <TextField[0m                                 [0m[33m   [0m 
+[33m278[0m [1;31m                    allowEmpty={true}[0m                        [0m[33m   [0m 
+[33m279[0m [1;31m                    default=""[0m                               [0m[33m   [0m 
+[33m280[0m [1;31m                    defaultValue=""[0m                          [0m[33m   [0m 
+[33m281[0m [1;31m                    disabled={false}[0m                         [0m[33m   [0m 
+[33m282[0m [1;31m                    disabledReason={null}[0m                    [0m[33m   [0m 
+[33m283[0m [1;31m                    hideErrorMessage={false}[0m                 [0m[33m   [0m 
+[33m284[0m [1;31m                    isSet={true}[0m                             [0m[33m   [0m 
+[33m285[0m [1;31m                    key="mail.password"[0m                      [0m[33m   [0m 
+[33m286[0m [1;31m                    label="SMTP Password"[0m                    [0m[33m   [0m 
+[33m287[0m [1;31m                    name="mail.password"[0m                     [0m[33m   [0m 
+[33m288[0m [1;31m                    required={false}[0m                         [0m[33m   [0m 
+[33m289[0m [1;31m                  >[0m                                          [0m[33m   [0m 
+[33m290[0m [1;31m                    <div[0m                                     [0m[33m   [0m 
+[33m291[0m [1;31m                      className="control-group"[0m              [0m[33m   [0m 
+[33m292[0m [1;31m                    >[0m                                        [0m[33m   [0m 
+[33m293[0m [1;31m                      <div[0m                                   [0m[33m   [0m 
+[33m294[0m [1;31m                        className="controls"[0m                 [0m[33m   [0m 
+[33m295[0m [1;31m                      >[0m                                      [0m[33m   [0m 
+[33m296[0m [1;31m                        <label[0m                               [0m[33m   [0m 
+[33m297[0m [1;31m                          className="control-label"[0m          [0m[33m   [0m 
+[33m298[0m [1;31m                          htmlFor="id-mail.password"[0m         [0m[33m   [0m 
+[33m299[0m [1;31m                        >[0m                                    [0m[33m   [0m 
+[33m300[0m [1;31m                          SMTP Password[0m                      [0m[33m   [0m 
+[33m301[0m [1;31m                        </label>[0m                             [0m[33m   [0m 
+[33m302[0m [1;31m                        <input[0m                               [0m[33m   [0m 
+[33m303[0m [1;31m                          className="form-control"[0m           [0m[33m   [0m 
+[33m304[0m [1;31m                          disabled={false}[0m                   [0m[33m   [0m 
+[33m305[0m [1;31m                          id="id-mail.password"[0m              [0m[33m   [0m 
+[33m306[0m [1;31m                          name="mail.password"[0m               [0m[33m   [0m 
+[33m307[0m [1;31m                          onChange={[Function]}[0m              [0m[33m   [0m 
+[33m308[0m [1;31m                          required={false}[0m                   [0m[33m   [0m 
+[33m309[0m [1;31m                          type="text"[0m                        [0m[33m   [0m 
+[33m310[0m [1;31m                          value=""[0m                           [0m[33m   [0m 
+[33m311[0m [1;31m                        />[0m                                   [0m[33m   [0m 
+[33m312[0m [1;31m                      </div>[0m                                 [0m[33m   [0m 
+[33m313[0m [1;31m                    </div>[0m                                   [0m[33m   [0m 
+[33m314[0m [1;31m                  </TextField>[0m                               [0m[33m   [0m 
+[33m315[0m [1;31m                  <BooleanField[0m                              [0m[33m   [0m 
+[33m316[0m [1;31m                    allowEmpty={true}[0m                        [0m[33m   [0m 
+[33m317[0m [1;31m                    component={[Function]}[0m                   [0m[33m   [0m 
+[33m318[0m [1;31m                    default={false}[0m                          [0m[33m   [0m 
+[33m319[0m [1;31m                    defaultValue={false}[0m                     [0m[33m   [0m 
+[33m320[0m [1;31m                    disabled={false}[0m                         [0m[33m   [0m 
+[33m321[0m [1;31m                    disabledReason={null}[0m                    [0m[33m   [0m 
+[33m322[0m [1;31m                    hideErrorMessage={false}[0m                 [0m[33m   [0m 
+[33m323[0m [1;31m                    isSet={true}[0m                             [0m[33m   [0m 
+[33m324[0m [1;31m                    key="mail.use-tls"[0m                       [0m[33m   [0m 
+[33m325[0m [1;31m                    label="Use TLS?"[0m                         [0m[33m   [0m 
+[33m326[0m [1;31m                    name="mail.use-tls"[0m                      [0m[33m   [0m 
+[33m327[0m [1;31m                    required={false}[0m                         [0m[33m   [0m 
+[33m328[0m [1;31m                  >[0m                                          [0m[33m   [0m 
+[33m329[0m [1;31m                    <div[0m                                     [0m[33m   [0m 
+[33m330[0m [1;31m                      className="control-group checkbox"[0m     [0m[33m   [0m 
+[33m331[0m [1;31m                    >[0m                                        [0m[33m   [0m 
+[33m332[0m [1;31m                      <div[0m                                   [0m[33m   [0m 
+[33m333[0m [1;31m                        className="controls"[0m                 [0m[33m   [0m 
+[33m334[0m [1;31m                      >[0m                                      [0m[33m   [0m 
+[33m335[0m [1;31m                        <label[0m                               [0m[33m   [0m 
+[33m336[0m [1;31m                          className="control-label"[0m          [0m[33m   [0m 
+[33m337[0m [1;31m                        >[0m                                    [0m[33m   [0m 
+[33m338[0m [1;31m                          <input[0m                             [0m[33m   [0m 
+[33m339[0m [1;31m                            checked={false}[0m                  [0m[33m   [0m 
+[33m340[0m [1;31m                            disabled={false}[0m                 [0m[33m   [0m 
+[33m341[0m [1;31m                            id="id-mail.use-tls"[0m             [0m[33m   [0m 
+[33m342[0m [1;31m                            onChange={[Function]}[0m            [0m[33m   [0m 
+[33m343[0m [1;31m                            type="checkbox"[0m                  [0m[33m   [0m 
+[33m344[0m [1;31m                          />[0m                                 [0m[33m   [0m 
+[33m345[0m [1;31m                          Use TLS?[0m                           [0m[33m   [0m 
+[33m346[0m [1;31m                        </label>[0m                             [0m[33m   [0m 
+[33m347[0m [1;31m                      </div>[0m                                 [0m[33m   [0m 
+[33m348[0m [1;31m                    </div>[0m                                   [0m[33m   [0m 
+[33m349[0m [1;31m                  </BooleanField>[0m                            [0m[33m   [0m 
+[33m350[0m [1;31m                </fieldset>[0m                                  [0m[33m   [0m 
+[33m351[0m [1;31m                <fieldset[0m                                    [0m[33m   [0m 
+[33m352[0m [1;31m                  key="auth"[0m                                 [0m[33m   [0m 
+[33m353[0m [1;31m                >[0m                                            [0m[33m   [0m 
+[33m354[0m [1;31m                  <legend>[0m                                   [0m[33m   [0m 
+[33m355[0m [1;31m                    Authentication[0m                           [0m[33m   [0m 
+[33m356[0m [1;31m                  </legend>[0m                                  [0m[33m   [0m 
+[33m357[0m [1;31m                  <BooleanField[0m                              [0m[33m   [0m 
+[33m358[0m [1;31m                    allowEmpty={true}[0m                        [0m[33m   [0m 
+[33m359[0m [1;31m                    component={[Function]}[0m                   [0m[33m   [0m 
+[33m360[0m [1;31m                    default={false}[0m                          [0m[33m   [0m 
+[33m361[0m [1;31m                    defaultValue={false}[0m                     [0m[33m   [0m 
+[33m362[0m [1;31m                    disabled={false}[0m                         [0m[33m   [0m 
+[33m363[0m [1;31m                    disabledReason={null}[0m                    [0m[33m   [0m 
+[33m364[0m [1;31m                    help="Allow anyone to create an account [0m [0m[33m   [0m 
+[33m   [0m [1;31mand access this Sentry installation."[0m                        [0m[33m   [0m 
+[33m365[0m [1;31m                    hideErrorMessage={false}[0m                 [0m[33m   [0m 
+[33m366[0m [1;31m                    isSet={true}[0m                             [0m[33m   [0m 
+[33m367[0m [1;31m                    key="auth.allow-registration"[0m            [0m[33m   [0m 
+[33m368[0m [1;31m                    label="Allow Registration"[0m               [0m[33m   [0m 
+[33m369[0m [1;31m                    name="auth.allow-registration"[0m           [0m[33m   [0m 
+[33m370[0m [1;31m                    required={false}[0m                         [0m[33m   [0m 
+[33m371[0m [1;31m                  >[0m                                          [0m[33m   [0m 
+[33m372[0m [1;31m                    <div[0m                                     [0m[33m   [0m 
+[33m373[0m [1;31m                      className="control-group checkbox"[0m     [0m[33m   [0m 
+[33m374[0m [1;31m                    >[0m                                        [0m[33m   [0m 
+[33m375[0m [1;31m                      <div[0m                                   [0m[33m   [0m 
+[33m376[0m [1;31m                        className="controls"[0m                 [0m[33m   [0m 
+[33m377[0m [1;31m                      >[0m                                      [0m[33m   [0m 
+[33m378[0m [1;31m                        <label[0m                               [0m[33m   [0m 
+[33m379[0m [1;31m                          className="control-label"[0m          [0m[33m   [0m 
+[33m380[0m [1;31m                        >[0m                                    [0m[33m   [0m 
+[33m381[0m [1;31m                          <input[0m                             [0m[33m   [0m 
+[33m382[0m [1;31m                            checked={false}[0m                  [0m[33m   [0m 
+[33m383[0m [1;31m                            disabled={false}[0m                 [0m[33m   [0m 
+[33m384[0m [1;31m                            id="id-auth.allow-registration"[0m  [0m[33m   [0m 
+[33m385[0m [1;31m                            onChange={[Function]}[0m            [0m[33m   [0m 
+[33m386[0m [1;31m                            type="checkbox"[0m                  [0m[33m   [0m 
+[33m387[0m [1;31m                          />[0m                                 [0m[33m   [0m 
+[33m388[0m [1;31m                          Allow Registration[0m                 [0m[33m   [0m 
+[33m389[0m [1;31m                        </label>[0m                             [0m[33m   [0m 
+[33m390[0m [1;31m                        <p[0m                                   [0m[33m   [0m 
+[33m391[0m [1;31m                          className="help-block"[0m             [0m[33m   [0m 
+[33m392[0m [1;31m                        >[0m                                    [0m[33m   [0m 
+[33m393[0m [1;31m                          Allow anyone to create an account [0m [0m[33m   [0m 
+[33m   [0m [1;31mand access this Sentry installation.[0m                         [0m[33m   [0m 
+[33m394[0m [1;31m                        </p>[0m                                 [0m[33m   [0m 
+[33m395[0m [1;31m                      </div>[0m                                 [0m[33m   [0m 
+[33m396[0m [1;31m                    </div>[0m                                   [0m[33m   [0m 
+[33m397[0m [1;31m                  </BooleanField>[0m                            [0m[33m   [0m 
+[33m398[0m [1;31m                </fieldset>[0m                                  [0m[33m   [0m 
+[33m399[0m [1;31m                <fieldset[0m                                    [0m[33m   [0m 
+[33m400[0m [1;31m                  key="beacon"[0m                               [0m[33m   [0m 
+[33m401[0m [1;31m                >[0m                                            [0m[33m   [0m 
+[33m402[0m [1;31m                  <legend>[0m                                   [0m[33m   [0m 
+[33m403[0m [1;31m                    Beacon[0m                                   [0m[33m   [0m 
+[33m404[0m [1;31m                  </legend>[0m                                  [0m[33m   [0m 
+[33m405[0m [1;31m                  <RadioBooleanField[0m                         [0m[33m   [0m 
+[33m406[0m [1;31m                    allowEmpty={true}[0m                        [0m[33m   [0m 
+[33m407[0m [1;31m                    component={[Function]}[0m                   [0m[33m   [0m 
+[33m408[0m [1;31m                    default={false}[0m                          [0m[33m   [0m 
+[33m409[0m [1;31m                    disabled={false}[0m                         [0m[33m   [0m 
+[33m410[0m [1;31m                    disabledReason={null}[0m                    [0m[33m   [0m 
+[33m411[0m [1;31m                    help={[0m                                   [0m[33m   [0m 
+[33m412[0m [1;31m                      <React.Fragment>[0m                       [0m[33m   [0m 
+[33m413[0m [1;31m                        <span>[0m                               [0m[33m   [0m 
+[33m414[0m [1;31m                          <span>[0m                             [0m[33m   [0m 
+[33m415[0m [1;31m                            If enabled, any stats reported t[0m [0m[33m   [0m 
+[33m   [0m [1;31mo sentry.io will exclude identifying information (such as yo[0m [0m[33m   [0m 
+[33m   [0m [1;31mur administrative email address). By anonymizing your instal[0m [0m[33m   [0m 
+[33m   [0m [1;31mlation the Sentry team will be unable to contact you about s[0m [0m[33m   [0m 
+[33m   [0m [1;31mecurity updates. For more information on what data is sent t[0m [0m[33m   [0m 
+[33m   [0m [1;31mo Sentry, see the [0m                                           [0m[33m   [0m 
+[33m416[0m [1;31m                          </span>[0m                            [0m[33m   [0m 
+[33m417[0m [1;31m                          <a[0m                                 [0m[33m   [0m 
+[33m418[0m [1;31m                            href="https://docs.sentry.io/ser[0m [0m[33m   [0m 
+[33m   [0m [1;31mver/beacon/"[0m                                                 [0m[33m   [0m 
+[33m419[0m [1;31m                          >[0m                                  [0m[33m   [0m 
+[33m420[0m [1;31m                            <span>[0m                           [0m[33m   [0m 
+[33m421[0m [1;31m                              documentation[0m                  [0m[33m   [0m 
+[33m422[0m [1;31m                            </span>[0m                          [0m[33m   [0m 
+[33m423[0m [1;31m                          </a>[0m                               [0m[33m   [0m 
+[33m424[0m [1;31m                          <span>[0m                             [0m[33m   [0m 
+[33m425[0m [1;31m                            .[0m                                [0m[33m   [0m 
+[33m426[0m [1;31m                          </span>[0m                            [0m[33m   [0m 
+[33m427[0m [1;31m                        </span>[0m                              [0m[33m   [0m 
+[33m428[0m [1;31m                      </React.Fragment>[0m                      [0m[33m   [0m 
+[33m429[0m [1;31m                    }[0m                                        [0m[33m   [0m 
+[33m430[0m [1;31m                    hideErrorMessage={false}[0m                 [0m[33m   [0m 
+[33m431[0m [1;31m                    isSet={true}[0m                             [0m[33m   [0m 
+[33m432[0m [1;31m                    key="beacon.anonymous"[0m                   [0m[33m   [0m 
+[33m433[0m [1;31m                    label="Usage Statistics"[0m                 [0m[33m   [0m 
+[33m434[0m [1;31m                    name="beacon.anonymous"[0m                  [0m[33m   [0m 
+[33m435[0m [1;31m                    noLabel="Send my contact information alo[0m [0m[33m   [0m 
+[33m   [0m [1;31mng with usage statistics"[0m                                    [0m[33m   [0m 
+[33m436[0m [1;31m                    required={false}[0m                         [0m[33m   [0m 
+[33m437[0m [1;31m                    yesFirst={false}[0m                         [0m[33m   [0m 
+[33m438[0m [1;31m                    yesLabel="Please keep my usage informati[0m [0m[33m   [0m 
+[33m   [0m [1;31mon anonymous"[0m                                                [0m[33m   [0m 
+[33m439[0m [1;31m                  >[0m                                          [0m[33m   [0m 
+[33m440[0m [1;31m                    <div[0m                                     [0m[33m   [0m 
+[33m441[0m [1;31m                      className="control-group"[0m              [0m[33m   [0m 
+[33m442[0m [1;31m                    >[0m                                        [0m[33m   [0m 
+[33m443[0m [1;31m                      <div[0m                                   [0m[33m   [0m 
+[33m444[0m [1;31m                        className="controls"[0m                 [0m[33m   [0m 
+[33m445[0m [1;31m                      >[0m                                      [0m[33m   [0m 
+[33m446[0m [1;31m                        <label[0m                               [0m[33m   [0m 
+[33m447[0m [1;31m                          className="control-label"[0m          [0m[33m   [0m 
+[33m448[0m [1;31m                          htmlFor="id-beacon.anonymous"[0m      [0m[33m   [0m 
+[33m449[0m [1;31m                        >[0m                                    [0m[33m   [0m 
+[33m450[0m [1;31m                          Usage Statistics[0m                   [0m[33m   [0m 
+[33m451[0m [1;31m                        </label>[0m                             [0m[33m   [0m 
+[33m452[0m [1;31m                        <p[0m                                   [0m[33m   [0m 
+[33m453[0m [1;31m                          className="help-block"[0m             [0m[33m   [0m 
+[33m454[0m [1;31m                        >[0m                                    [0m[33m   [0m 
+[33m455[0m [1;31m                          <span[0m                              [0m[33m   [0m 
+[33m456[0m [1;31m                            key="5"[0m                          [0m[33m   [0m 
+[33m457[0m [1;31m                          >[0m                                  [0m[33m   [0m 
+[33m458[0m [1;31m                            <span[0m                            [0m[33m   [0m 
+[33m459[0m [1;31m                              key="0"[0m                        [0m[33m   [0m 
+[33m460[0m [1;31m                            >[0m                                [0m[33m   [0m 
+[33m461[0m [1;31m                              If enabled, any stats reported[0m [0m[33m   [0m 
+[33m   [0m [1;31m to sentry.io will exclude identifying information (such as [0m [0m[33m   [0m 
+[33m   [0m [1;31myour administrative email address). By anonymizing your inst[0m [0m[33m   [0m 
+[33m   [0m [1;31mallation the Sentry team will be unable to contact you about[0m [0m[33m   [0m 
+[33m   [0m [1;31m security updates. For more information on what data is sent[0m [0m[33m   [0m 
+[33m   [0m [1;31m to Sentry, see the [0m                                         [0m[33m   [0m 
+[33m462[0m [1;31m                            </span>[0m                          [0m[33m   [0m 
+[33m463[0m [1;31m                            <a[0m                               [0m[33m   [0m 
+[33m464[0m [1;31m                              href="https://docs.sentry.io/s[0m [0m[33m   [0m 
+[33m   [0m [1;31merver/beacon/"[0m                                               [0m[33m   [0m 
+[33m465[0m [1;31m                              key="2"[0m                        [0m[33m   [0m 
+[33m466[0m [1;31m                            >[0m                                [0m[33m   [0m 
+[33m467[0m [1;31m                              <span[0m                          [0m[33m   [0m 
+[33m468[0m [1;31m                                key="1"[0m                      [0m[33m   [0m 
+[33m469[0m [1;31m                              >[0m                              [0m[33m   [0m 
+[33m470[0m [1;31m                                documentation[0m                [0m[33m   [0m 
+[33m471[0m [1;31m                              </span>[0m                        [0m[33m   [0m 
+[33m472[0m [1;31m                            </a>[0m                             [0m[33m   [0m 
+[33m473[0m [1;31m                            <span[0m                            [0m[33m   [0m 
+[33m474[0m [1;31m                              key="3"[0m                        [0m[33m   [0m 
+[33m475[0m [1;31m                            >[0m                                [0m[33m   [0m 
+[33m476[0m [1;31m                              .[0m                              [0m[33m   [0m 
+[33m477[0m [1;31m                            </span>[0m                          [0m[33m   [0m 
+[33m478[0m [1;31m                          </span>[0m                            [0m[33m   [0m 
+[33m479[0m [1;31m                        </p>[0m                                 [0m[33m   [0m 
+[33m480[0m [1;31m                        <div[0m                                 [0m[33m   [0m 
+[33m481[0m [1;31m                          className="control-group radio-boo[0m [0m[33m   [0m 
+[33m   [0m [1;31mlean"[0m                                                        [0m[33m   [0m 
+[33m482[0m [1;31m                        >[0m                                    [0m[33m   [0m 
+[33m483[0m [1;31m                          <div[0m                               [0m[33m   [0m 
+[33m484[0m [1;31m                            className="radio"[0m                [0m[33m   [0m 
+[33m485[0m [1;31m                            key="no"[0m                         [0m[33m   [0m 
+[33m486[0m [1;31m                          >[0m                                  [0m[33m   [0m 
+[33m487[0m [1;31m                            <label[0m                           [0m[33m   [0m 
+[33m488[0m [1;31m                              style={[0m                        [0m[33m   [0m 
+[33m489[0m [1;31m                                Object {[0m                     [0m[33m   [0m 
+[33m490[0m [1;31m                                  "fontWeight": "normal",[0m    [0m[33m   [0m 
+[33m491[0m [1;31m                                }[0m                            [0m[33m   [0m 
+[33m492[0m [1;31m                              }[0m                              [0m[33m   [0m 
+[33m493[0m [1;31m                            >[0m                                [0m[33m   [0m 
+[33m494[0m [1;31m                              <input[0m                         [0m[33m   [0m 
+[33m495[0m [1;31m                                checked={false}[0m              [0m[33m   [0m 
+[33m496[0m [1;31m                                disabled={false}[0m             [0m[33m   [0m 
+[33m497[0m [1;31m                                name="beacon.anonymous"[0m      [0m[33m   [0m 
+[33m498[0m [1;31m                                onChange={[Function]}[0m        [0m[33m   [0m 
+[33m499[0m [1;31m                                type="radio"[0m                 [0m[33m   [0m 
+[33m500[0m [1;31m                                value="false"[0m                [0m[33m   [0m 
+[33m501[0m [1;31m                              />[0m                             [0m[33m   [0m 
+[33m502[0m [1;31m                               [0m                              [0m[33m   [0m 
+[33m503[0m [1;31m                              Send my contact information al[0m [0m[33m   [0m 
+[33m   [0m [1;31mong with usage statistics[0m                                    [0m[33m   [0m 
+[33m504[0m [1;31m                            </label>[0m                         [0m[33m   [0m 
+[33m505[0m [1;31m                          </div>[0m                             [0m[33m   [0m 
+[33m506[0m [1;31m                          <div[0m                               [0m[33m   [0m 
+[33m507[0m [1;31m                            className="radio"[0m                [0m[33m   [0m 
+[33m508[0m [1;31m                            key="yes"[0m                        [0m[33m   [0m 
+[33m509[0m [1;31m                          >[0m                                  [0m[33m   [0m 
+[33m510[0m [1;31m                            <label[0m                           [0m[33m   [0m 
+[33m511[0m [1;31m                              style={[0m                        [0m[33m   [0m 
+[33m512[0m [1;31m                                Object {[0m                     [0m[33m   [0m 
+[33m513[0m [1;31m                                  "fontWeight": "normal",[0m    [0m[33m   [0m 
+[33m514[0m [1;31m                                }[0m                            [0m[33m   [0m 
+[33m515[0m [1;31m                              }[0m                              [0m[33m   [0m 
+[33m516[0m [1;31m                            >[0m                                [0m[33m   [0m 
+[33m517[0m [1;31m                              <input[0m                         [0m[33m   [0m 
+[33m518[0m [1;31m                                checked={false}[0m              [0m[33m   [0m 
+[33m519[0m [1;31m                                disabled={false}[0m             [0m[33m   [0m 
+[33m520[0m [1;31m                                name="beacon.anonymous"[0m      [0m[33m   [0m 
+[33m521[0m [1;31m                                onChange={[Function]}[0m        [0m[33m   [0m 
+[33m522[0m [1;31m                                type="radio"[0m                 [0m[33m   [0m 
+[33m523[0m [1;31m                                value="true"[0m                 [0m[33m   [0m 
+[33m524[0m [1;31m                              />[0m                             [0m[33m   [0m 
+[33m525[0m [1;31m                               [0m                              [0m[33m   [0m 
+[33m526[0m [1;31m                              Please keep my usage informati[0m [0m[33m   [0m 
+[33m   [0m [1;31mon anonymous[0m                                                 [0m[33m   [0m 
+[33m527[0m [1;31m                            </label>[0m                         [0m[33m   [0m 
+[33m528[0m [1;31m                          </div>[0m                             [0m[33m   [0m 
+[33m529[0m [1;31m                        </div>[0m                               [0m[33m   [0m 
+[33m530[0m [1;31m                      </div>[0m                                 [0m[33m   [0m 
+[33m531[0m [1;31m                    </div>[0m                                   [0m[33m   [0m 
+[33m532[0m [1;31m                  </RadioBooleanField>[0m                       [0m[33m   [0m 
+[33m533[0m [1;31m                </fieldset>[0m                                  [0m[33m   [0m 
+[33m534[0m [1;31m                <div[0m                                         [0m[33m   [0m 
+[33m535[0m [1;31m                  className="form-actions align-right"[0m       [0m[33m   [0m 
+[33m536[0m [1;31m                  style={[0m                                    [0m[33m   [0m 
+[33m537[0m [1;31m                    Object {[0m                                 [0m[33m   [0m 
+[33m538[0m [1;31m                      "marginTop": 25,[0m                       [0m[33m   [0m 
+[33m539[0m [1;31m                    }[0m                                        [0m[33m   [0m 
+[33m540[0m [1;31m                  }[0m                                          [0m[33m   [0m 
+[33m541[0m [1;31m                >[0m                                            [0m[33m   [0m 
+[33m542[0m [1;31m                  <button[0m                                    [0m[33m   [0m 
+[33m543[0m [1;31m                    className="btn btn-primary"[0m              [0m[33m   [0m 
+[33m544[0m [1;31m                    disabled={false}[0m                         [0m[33m   [0m 
+[33m545[0m [1;31m                    type="submit"[0m                            [0m[33m   [0m 
+[33m546[0m [1;31m                  >[0m                                          [0m[33m   [0m 
+[33m547[0m [1;31m                    Continue[0m                                 [0m[33m   [0m 
+[33m548[0m [1;31m                  </button>[0m                                  [0m[33m   [0m 
+[33m549[0m [1;31m                </div>[0m                                       [0m[33m   [0m 
+[33m550[0m [1;31m              </form>[0m                                        [0m[33m   [0m 
+[33m551[0m [1;31m            </StyledForm>[0m                                    [0m[33m   [0m 
+[33m552[0m [1;31m          </ApiForm>[0m                                         [0m[33m   [0m 
+[33m553[0m [1;31m        </div>[0m                                               [0m[33m   [0m 
+[33m554[0m [1;31m      </div>[0m                                                 [0m[33m   [0m 
+[33m555[0m [1;31m    </DocumentTitle>[0m                                         [0m[33m   [0m 
+[33m556[0m [1;31m  </SideEffect(DocumentTitle)>[0m                               [0m[33m   [0m 
+[33m557[0m [1;31m</InstallWizard>[0m                                             [0m[33m   [0m 
+[33m558[0m [1;31m`;[0m                                                           [0m[33m   [0m 
+[36mdiff --git a/tests/js/spec/views/admin/__snapshots__/installWizard.spec.jsx.snap b/tests/js/spec/views/admin/__snapshots__/installWizard.spec.jsx.snap
+[0m[36mnew file mode 100644
+[0m[36mindex 0000000000..5f10b50b1e
+[0m[33m--- /dev/null
+[0m[33m+++ b/tests/js/spec/views/admin/__snapshots__/installWizard.spec.jsx.snap
+[0m[1;34m@@ -0,0 +1,572 @@
+[0m[33m   [0m                                                              [0m[33m  1[0m [32m// Jest Snapshot v1, https://goo.gl/fbAQLP[0m
+[33m   [0m                                                              [0m[33m  2[0m [32m[0m
+[33m   [0m                                                              [0m[33m  3[0m [32mexports[`InstallWizard renders 1`] = `[0m
+[33m   [0m                                                              [0m[33m  4[0m [32m<InstallWizard[0m
+[33m   [0m                                                              [0m[33m  5[0m [32m  onConfigured={[MockFunction]}[0m
+[33m   [0m                                                              [0m[33m  6[0m [32m>[0m
+[33m   [0m                                                              [0m[33m  7[0m [32m  <SideEffect(DocumentTitle)[0m
+[33m   [0m                                                              [0m[33m  8[0m [32m    title="Setup Sentry"[0m
+[33m   [0m                                                              [0m[33m  9[0m [32m  >[0m
+[33m   [0m                                                              [0m[33m 10[0m [32m    <DocumentTitle[0m
+[33m   [0m                                                              [0m[33m 11[0m [32m      title="Setup Sentry"[0m
+[33m   [0m                                                              [0m[33m 12[0m [32m    >[0m
+[33m   [0m                                                              [0m[33m 13[0m [32m      <Wrapper>[0m
+[33m   [0m                                                              [0m[33m 14[0m [32m        <div[0m
+[33m   [0m                                                              [0m[33m 15[0m [32m          className="css-vttdei-Wrapper e1c7mu5x0"[0m
+[33m   [0m                                                              [0m[33m 16[0m [32m        >[0m
+[33m   [0m                                                              [0m[33m 17[0m [32m          <Pattern>[0m
+[33m   [0m                                                              [0m[33m 18[0m [32m            <div[0m
+[33m   [0m                                                              [0m[33m 19[0m [32m              className="css-xf94ab-Pattern-fixedStyle-fixed[0m
+[33m   [0m                                                              [0m[33m   [0m [32mStyle e1c7mu5x1"[0m
+[33m   [0m                                                              [0m[33m 20[0m [32m            />[0m
+[33m   [0m                                                              [0m[33m 21[0m [32m          </Pattern>[0m
+[33m   [0m                                                              [0m[33m 22[0m [32m          <SetupWizard>[0m
+[33m   [0m                                                              [0m[33m 23[0m [32m            <div[0m
+[33m   [0m                                                              [0m[33m 24[0m [32m              className="css-do021x-SetupWizard e1c7mu5x4"[0m
+[33m   [0m                                                              [0m[33m 25[0m [32m            >[0m
+[33m   [0m                                                              [0m[33m 26[0m [32m              <Heading>[0m
+[33m   [0m                                                              [0m[33m 27[0m [32m                <h1[0m
+[33m   [0m                                                              [0m[33m 28[0m [32m                  className="css-hclgk-Heading e1c7mu5x2"[0m
+[33m   [0m                                                              [0m[33m 29[0m [32m                >[0m
+[33m   [0m                                                              [0m[33m 30[0m [32m                  <span>[0m
+[33m   [0m                                                              [0m[33m 31[0m [32m                    Welcome to Sentry[0m
+[33m   [0m                                                              [0m[33m 32[0m [32m                  </span>[0m
+[33m   [0m                                                              [0m[33m 33[0m [32m                  <Version>[0m
+[33m   [0m                                                              [0m[33m 34[0m [32m                    <small[0m
+[33m   [0m                                                              [0m[33m 35[0m [32m                      className="css-qqvcsv-Version e1c7mu5x[0m
+[33m   [0m                                                              [0m[33m   [0m [32m3"[0m
+[33m   [0m                                                              [0m[33m 36[0m [32m                    >[0m
+[33m   [0m                                                              [0m[33m 37[0m [32m                      1.33.7[0m
+[33m   [0m                                                              [0m[33m 38[0m [32m                    </small>[0m
+[33m   [0m                                                              [0m[33m 39[0m [32m                  </Version>[0m
+[33m   [0m                                                              [0m[33m 40[0m [32m                </h1>[0m
+[33m   [0m                                                              [0m[33m 41[0m [32m              </Heading>[0m
+[33m   [0m                                                              [0m[33m 42[0m [32m              <ApiForm[0m
+[33m   [0m                                                              [0m[33m 43[0m [32m                apiEndpoint="/internal/options/?query=is:req[0m
+[33m   [0m                                                              [0m[33m   [0m [32muired"[0m
+[33m   [0m                                                              [0m[33m 44[0m [32m                apiMethod="PUT"[0m
+[33m   [0m                                                              [0m[33m 45[0m [32m                cancelLabel="Cancel"[0m
+[33m   [0m                                                              [0m[33m 46[0m [32m                className="form-stacked"[0m
+[33m   [0m                                                              [0m[33m 47[0m [32m                errorMessage="Unable to save your changes. P[0m
+[33m   [0m                                                              [0m[33m   [0m [32mlease ensure all fields are valid and try again."[0m
+[33m   [0m                                                              [0m[33m 48[0m [32m                footerClass="form-actions align-right"[0m
+[33m   [0m                                                              [0m[33m 49[0m [32m                hideErrors={false}[0m
+[33m   [0m                                                              [0m[33m 50[0m [32m                initialData={Object {}}[0m
+[33m   [0m                                                              [0m[33m 51[0m [32m                onSubmitSuccess={[MockFunction]}[0m
+[33m   [0m                                                              [0m[33m 52[0m [32m                requireChanges={false}[0m
+[33m   [0m                                                              [0m[33m 53[0m [32m                resetOnError={false}[0m
+[33m   [0m                                                              [0m[33m 54[0m [32m                submitDisabled={false}[0m
+[33m   [0m                                                              [0m[33m 55[0m [32m                submitErrorMessage="There was an error savin[0m
+[33m   [0m                                                              [0m[33m   [0m [32mg your changes."[0m
+[33m   [0m                                                              [0m[33m 56[0m [32m                submitLabel="Continue"[0m
+[33m   [0m                                                              [0m[33m 57[0m [32m                submitLoadingMessage="Saving changes.."[0m
+[33m   [0m                                                              [0m[33m 58[0m [32m              >[0m
+[33m   [0m                                                              [0m[33m 59[0m [32m                <StyledForm[0m
+[33m   [0m                                                              [0m[33m 60[0m [32m                  className="form-stacked"[0m
+[33m   [0m                                                              [0m[33m 61[0m [32m                  onSubmit={[Function]}[0m
+[33m   [0m                                                              [0m[33m 62[0m [32m                >[0m
+[33m   [0m                                                              [0m[33m 63[0m [32m                  <form[0m
+[33m   [0m                                                              [0m[33m 64[0m [32m                    className="form-stacked css-1z07nlv-Styl[0m
+[33m   [0m                                                              [0m[33m   [0m [32medForm e18zovyk0"[0m
+[33m   [0m                                                              [0m[33m 65[0m [32m                    onSubmit={[Function]}[0m
+[33m   [0m                                                              [0m[33m 66[0m [32m                  >[0m
+[33m   [0m                                                              [0m[33m 67[0m [32m                    <p>[0m
+[33m   [0m                                                              [0m[33m 68[0m [32m                      Complete setup by filling out the requ[0m
+[33m   [0m                                                              [0m[33m   [0m [32mired configuration.[0m
+[33m   [0m                                                              [0m[33m 69[0m [32m                    </p>[0m
+[33m   [0m                                                              [0m[33m 70[0m [32m                    <fieldset[0m
+[33m   [0m                                                              [0m[33m 71[0m [32m                      key="system"[0m
+[33m   [0m                                                              [0m[33m 72[0m [32m                    >[0m
+[33m   [0m                                                              [0m[33m 73[0m [32m                      <EmailField[0m
+[33m   [0m                                                              [0m[33m 74[0m [32m                        allowEmpty={false}[0m
+[33m   [0m                                                              [0m[33m 75[0m [32m                        component={[Function]}[0m
+[33m   [0m                                                              [0m[33m 76[0m [32m                        default=""[0m
+[33m   [0m                                                              [0m[33m 77[0m [32m                        disabled={false}[0m
+[33m   [0m                                                              [0m[33m 78[0m [32m                        disabledReason={null}[0m
+[33m   [0m                                                              [0m[33m 79[0m [32m                        help="The technical contact for this[0m
+[33m   [0m                                                              [0m[33m   [0m [32m Sentry installation."[0m
+[33m   [0m                                                              [0m[33m 80[0m [32m                        hideErrorMessage={false}[0m
+[33m   [0m                                                              [0m[33m 81[0m [32m                        isSet={true}[0m
+[33m   [0m                                                              [0m[33m 82[0m [32m                        key="system.admin-email"[0m
+[33m   [0m                                                              [0m[33m 83[0m [32m                        label="Admin Email"[0m
+[33m   [0m                                                              [0m[33m 84[0m [32m                        name="system.admin-email"[0m
+[33m   [0m                                                              [0m[33m 85[0m [32m                        placeholder="admin@example.com"[0m
+[33m   [0m                                                              [0m[33m 86[0m [32m                        required={true}[0m
+[33m   [0m                                                              [0m[33m 87[0m [32m                      >[0m
+[33m   [0m                                                              [0m[33m 88[0m [32m                        <div[0m
+[33m   [0m                                                              [0m[33m 89[0m [32m                          className="control-group required"[0m
+[33m   [0m                                                              [0m[33m 90[0m [32m                        >[0m
+[33m   [0m                                                              [0m[33m 91[0m [32m                          <div[0m
+[33m   [0m                                                              [0m[33m 92[0m [32m                            className="controls"[0m
+[33m   [0m                                                              [0m[33m 93[0m [32m                          >[0m
+[33m   [0m                                                              [0m[33m 94[0m [32m                            <label[0m
+[33m   [0m                                                              [0m[33m 95[0m [32m                              className="control-label"[0m
+[33m   [0m                                                              [0m[33m 96[0m [32m                              htmlFor="id-system.admin-email[0m
+[33m   [0m                                                              [0m[33m   [0m [32m"[0m
+[33m   [0m                                                              [0m[33m 97[0m [32m                            >[0m
+[33m   [0m                                                              [0m[33m 98[0m [32m                              Admin Email[0m
+[33m   [0m                                                              [0m[33m 99[0m [32m                            </label>[0m
+[33m   [0m                                                              [0m[33m100[0m [32m                            <input[0m
+[33m   [0m                                                              [0m[33m101[0m [32m                              className="form-control"[0m
+[33m   [0m                                                              [0m[33m102[0m [32m                              disabled={false}[0m
+[33m   [0m                                                              [0m[33m103[0m [32m                              id="id-system.admin-email"[0m
+[33m   [0m                                                              [0m[33m104[0m [32m                              name="system.admin-email"[0m
+[33m   [0m                                                              [0m[33m105[0m [32m                              onChange={[Function]}[0m
+[33m   [0m                                                              [0m[33m106[0m [32m                              placeholder="admin@example.com[0m
+[33m   [0m                                                              [0m[33m   [0m [32m"[0m
+[33m   [0m                                                              [0m[33m107[0m [32m                              required={true}[0m
+[33m   [0m                                                              [0m[33m108[0m [32m                              type="email"[0m
+[33m   [0m                                                              [0m[33m109[0m [32m                              value=""[0m
+[33m   [0m                                                              [0m[33m110[0m [32m                            />[0m
+[33m   [0m                                                              [0m[33m111[0m [32m                            <p[0m
+[33m   [0m                                                              [0m[33m112[0m [32m                              className="help-block"[0m
+[33m   [0m                                                              [0m[33m113[0m [32m                            >[0m
+[33m   [0m                                                              [0m[33m114[0m [32m                              The technical contact for this[0m
+[33m   [0m                                                              [0m[33m   [0m [32m Sentry installation.[0m
+[33m   [0m                                                              [0m[33m115[0m [32m                            </p>[0m
+[33m   [0m                                                              [0m[33m116[0m [32m                          </div>[0m
+[33m   [0m                                                              [0m[33m117[0m [32m                        </div>[0m
+[33m   [0m                                                              [0m[33m118[0m [32m                      </EmailField>[0m
+[33m   [0m                                                              [0m[33m119[0m [32m                    </fieldset>[0m
+[33m   [0m                                                              [0m[33m120[0m [32m                    <fieldset[0m
+[33m   [0m                                                              [0m[33m121[0m [32m                      key="mail"[0m
+[33m   [0m                                                              [0m[33m122[0m [32m                    >[0m
+[33m   [0m                                                              [0m[33m123[0m [32m                      <legend>[0m
+[33m   [0m                                                              [0m[33m124[0m [32m                        Outbound email[0m
+[33m   [0m                                                              [0m[33m125[0m [32m                      </legend>[0m
+[33m   [0m                                                              [0m[33m126[0m [32m                      <EmailField[0m
+[33m   [0m                                                              [0m[33m127[0m [32m                        allowEmpty={false}[0m
+[33m   [0m                                                              [0m[33m128[0m [32m                        component={[Function]}[0m
+[33m   [0m                                                              [0m[33m129[0m [32m                        default="root@localhost"[0m
+[33m   [0m                                                              [0m[33m130[0m [32m                        defaultValue="sentry@localhost"[0m
+[33m   [0m                                                              [0m[33m131[0m [32m                        disabled={false}[0m
+[33m   [0m                                                              [0m[33m132[0m [32m                        disabledReason={null}[0m
+[33m   [0m                                                              [0m[33m133[0m [32m                        help="Email address to be used in Fr[0m
+[33m   [0m                                                              [0m[33m   [0m [32mom for all outbound email."[0m
+[33m   [0m                                                              [0m[33m134[0m [32m                        hideErrorMessage={false}[0m
+[33m   [0m                                                              [0m[33m135[0m [32m                        isSet={true}[0m
+[33m   [0m                                                              [0m[33m136[0m [32m                        key="mail.from"[0m
+[33m   [0m                                                              [0m[33m137[0m [32m                        label="Email From"[0m
+[33m   [0m                                                              [0m[33m138[0m [32m                        name="mail.from"[0m
+[33m   [0m                                                              [0m[33m139[0m [32m                        required={true}[0m
+[33m   [0m                                                              [0m[33m140[0m [32m                      >[0m
+[33m   [0m                                                              [0m[33m141[0m [32m                        <div[0m
+[33m   [0m                                                              [0m[33m142[0m [32m                          className="control-group required"[0m
+[33m   [0m                                                              [0m[33m143[0m [32m                        >[0m
+[33m   [0m                                                              [0m[33m144[0m [32m                          <div[0m
+[33m   [0m                                                              [0m[33m145[0m [32m                            className="controls"[0m
+[33m   [0m                                                              [0m[33m146[0m [32m                          >[0m
+[33m   [0m                                                              [0m[33m147[0m [32m                            <label[0m
+[33m   [0m                                                              [0m[33m148[0m [32m                              className="control-label"[0m
+[33m   [0m                                                              [0m[33m149[0m [32m                              htmlFor="id-mail.from"[0m
+[33m   [0m                                                              [0m[33m150[0m [32m                            >[0m
+[33m   [0m                                                              [0m[33m151[0m [32m                              Email From[0m
+[33m   [0m                                                              [0m[33m152[0m [32m                            </label>[0m
+[33m   [0m                                                              [0m[33m153[0m [32m                            <input[0m
+[33m   [0m                                                              [0m[33m154[0m [32m                              className="form-control"[0m
+[33m   [0m                                                              [0m[33m155[0m [32m                              disabled={false}[0m
+[33m   [0m                                                              [0m[33m156[0m [32m                              id="id-mail.from"[0m
+[33m   [0m                                                              [0m[33m157[0m [32m                              name="mail.from"[0m
+[33m   [0m                                                              [0m[33m158[0m [32m                              onChange={[Function]}[0m
+[33m   [0m                                                              [0m[33m159[0m [32m                              required={true}[0m
+[33m   [0m                                                              [0m[33m160[0m [32m                              type="email"[0m
+[33m   [0m                                                              [0m[33m161[0m [32m                              value="sentry@localhost"[0m
+[33m   [0m                                                              [0m[33m162[0m [32m                            />[0m
+[33m   [0m                                                              [0m[33m163[0m [32m                            <p[0m
+[33m   [0m                                                              [0m[33m164[0m [32m                              className="help-block"[0m
+[33m   [0m                                                              [0m[33m165[0m [32m                            >[0m
+[33m   [0m                                                              [0m[33m166[0m [32m                              Email address to be used in Fr[0m
+[33m   [0m                                                              [0m[33m   [0m [32mom for all outbound email.[0m
+[33m   [0m                                                              [0m[33m167[0m [32m                            </p>[0m
+[33m   [0m                                                              [0m[33m168[0m [32m                          </div>[0m
+[33m   [0m                                                              [0m[33m169[0m [32m                        </div>[0m
+[33m   [0m                                                              [0m[33m170[0m [32m                      </EmailField>[0m
+[33m   [0m                                                              [0m[33m171[0m [32m                      <TextField[0m
+[33m   [0m                                                              [0m[33m172[0m [32m                        allowEmpty={false}[0m
+[33m   [0m                                                              [0m[33m173[0m [32m                        default="localhost"[0m
+[33m   [0m                                                              [0m[33m174[0m [32m                        defaultValue="localhost"[0m
+[33m   [0m                                                              [0m[33m175[0m [32m                        disabled={false}[0m
+[33m   [0m                                                              [0m[33m176[0m [32m                        disabledReason={null}[0m
+[33m   [0m                                                              [0m[33m177[0m [32m                        hideErrorMessage={false}[0m
+[33m   [0m                                                              [0m[33m178[0m [32m                        isSet={true}[0m
+[33m   [0m                                                              [0m[33m179[0m [32m                        key="mail.host"[0m
+[33m   [0m                                                              [0m[33m180[0m [32m                        label="SMTP Host"[0m
+[33m   [0m                                                              [0m[33m181[0m [32m                        name="mail.host"[0m
+[33m   [0m                                                              [0m[33m182[0m [32m                        placeholder="localhost"[0m
+[33m   [0m                                                              [0m[33m183[0m [32m                        required={true}[0m
+[33m   [0m                                                              [0m[33m184[0m [32m                      >[0m
+[33m   [0m                                                              [0m[33m185[0m [32m                        <div[0m
+[33m   [0m                                                              [0m[33m186[0m [32m                          className="control-group required"[0m
+[33m   [0m                                                              [0m[33m187[0m [32m                        >[0m
+[33m   [0m                                                              [0m[33m188[0m [32m                          <div[0m
+[33m   [0m                                                              [0m[33m189[0m [32m                            className="controls"[0m
+[33m   [0m                                                              [0m[33m190[0m [32m                          >[0m
+[33m   [0m                                                              [0m[33m191[0m [32m                            <label[0m
+[33m   [0m                                                              [0m[33m192[0m [32m                              className="control-label"[0m
+[33m   [0m                                                              [0m[33m193[0m [32m                              htmlFor="id-mail.host"[0m
+[33m   [0m                                                              [0m[33m194[0m [32m                            >[0m
+[33m   [0m                                                              [0m[33m195[0m [32m                              SMTP Host[0m
+[33m   [0m                                                              [0m[33m196[0m [32m                            </label>[0m
+[33m   [0m                                                              [0m[33m197[0m [32m                            <input[0m
+[33m   [0m                                                              [0m[33m198[0m [32m                              className="form-control"[0m
+[33m   [0m                                                              [0m[33m199[0m [32m                              disabled={false}[0m
+[33m   [0m                                                              [0m[33m200[0m [32m                              id="id-mail.host"[0m
+[33m   [0m                                                              [0m[33m201[0m [32m                              name="mail.host"[0m
+[33m   [0m                                                              [0m[33m202[0m [32m                              onChange={[Function]}[0m
+[33m   [0m                                                              [0m[33m203[0m [32m                              placeholder="localhost"[0m
+[33m   [0m                                                              [0m[33m204[0m [32m                              required={true}[0m
+[33m   [0m                                                              [0m[33m205[0m [32m                              type="text"[0m
+[33m   [0m                                                              [0m[33m206[0m [32m                              value="localhost"[0m
+[33m   [0m                                                              [0m[33m207[0m [32m                            />[0m
+[33m   [0m                                                              [0m[33m208[0m [32m                          </div>[0m
+[33m   [0m                                                              [0m[33m209[0m [32m                        </div>[0m
+[33m   [0m                                                              [0m[33m210[0m [32m                      </TextField>[0m
+[33m   [0m                                                              [0m[33m211[0m [32m                      <TextField[0m
+[33m   [0m                                                              [0m[33m212[0m [32m                        allowEmpty={false}[0m
+[33m   [0m                                                              [0m[33m213[0m [32m                        default={25}[0m
+[33m   [0m                                                              [0m[33m214[0m [32m                        defaultValue="25"[0m
+[33m   [0m                                                              [0m[33m215[0m [32m                        disabled={false}[0m
+[33m   [0m                                                              [0m[33m216[0m [32m                        disabledReason={null}[0m
+[33m   [0m                                                              [0m[33m217[0m [32m                        hideErrorMessage={false}[0m
+[33m   [0m                                                              [0m[33m218[0m [32m                        isSet={true}[0m
+[33m   [0m                                                              [0m[33m219[0m [32m                        key="mail.port"[0m
+[33m   [0m                                                              [0m[33m220[0m [32m                        label="SMTP Port"[0m
+[33m   [0m                                                              [0m[33m221[0m [32m                        name="mail.port"[0m
+[33m   [0m                                                              [0m[33m222[0m [32m                        placeholder="25"[0m
+[33m   [0m                                                              [0m[33m223[0m [32m                        required={true}[0m
+[33m   [0m                                                              [0m[33m224[0m [32m                      >[0m
+[33m   [0m                                                              [0m[33m225[0m [32m                        <div[0m
+[33m   [0m                                                              [0m[33m226[0m [32m                          className="control-group required"[0m
+[33m   [0m                                                              [0m[33m227[0m [32m                        >[0m
+[33m   [0m                                                              [0m[33m228[0m [32m                          <div[0m
+[33m   [0m                                                              [0m[33m229[0m [32m                            className="controls"[0m
+[33m   [0m                                                              [0m[33m230[0m [32m                          >[0m
+[33m   [0m                                                              [0m[33m231[0m [32m                            <label[0m
+[33m   [0m                                                              [0m[33m232[0m [32m                              className="control-label"[0m
+[33m   [0m                                                              [0m[33m233[0m [32m                              htmlFor="id-mail.port"[0m
+[33m   [0m                                                              [0m[33m234[0m [32m                            >[0m
+[33m   [0m                                                              [0m[33m235[0m [32m                              SMTP Port[0m
+[33m   [0m                                                              [0m[33m236[0m [32m                            </label>[0m
+[33m   [0m                                                              [0m[33m237[0m [32m                            <input[0m
+[33m   [0m                                                              [0m[33m238[0m [32m                              className="form-control"[0m
+[33m   [0m                                                              [0m[33m239[0m [32m                              disabled={false}[0m
+[33m   [0m                                                              [0m[33m240[0m [32m                              id="id-mail.port"[0m
+[33m   [0m                                                              [0m[33m241[0m [32m                              name="mail.port"[0m
+[33m   [0m                                                              [0m[33m242[0m [32m                              onChange={[Function]}[0m
+[33m   [0m                                                              [0m[33m243[0m [32m                              placeholder="25"[0m
+[33m   [0m                                                              [0m[33m244[0m [32m                              required={true}[0m
+[33m   [0m                                                              [0m[33m245[0m [32m                              type="text"[0m
+[33m   [0m                                                              [0m[33m246[0m [32m                              value="25"[0m
+[33m   [0m                                                              [0m[33m247[0m [32m                            />[0m
+[33m   [0m                                                              [0m[33m248[0m [32m                          </div>[0m
+[33m   [0m                                                              [0m[33m249[0m [32m                        </div>[0m
+[33m   [0m                                                              [0m[33m250[0m [32m                      </TextField>[0m
+[33m   [0m                                                              [0m[33m251[0m [32m                      <TextField[0m
+[33m   [0m                                                              [0m[33m252[0m [32m                        allowEmpty={true}[0m
+[33m   [0m                                                              [0m[33m253[0m [32m                        default=""[0m
+[33m   [0m                                                              [0m[33m254[0m [32m                        defaultValue=""[0m
+[33m   [0m                                                              [0m[33m255[0m [32m                        disabled={false}[0m
+[33m   [0m                                                              [0m[33m256[0m [32m                        disabledReason={null}[0m
+[33m   [0m                                                              [0m[33m257[0m [32m                        hideErrorMessage={false}[0m
+[33m   [0m                                                              [0m[33m258[0m [32m                        isSet={true}[0m
+[33m   [0m                                                              [0m[33m259[0m [32m                        key="mail.username"[0m
+[33m   [0m                                                              [0m[33m260[0m [32m                        label="SMTP Username"[0m
+[33m   [0m                                                              [0m[33m261[0m [32m                        name="mail.username"[0m
+[33m   [0m                                                              [0m[33m262[0m [32m                        required={false}[0m
+[33m   [0m                                                              [0m[33m263[0m [32m                      >[0m
+[33m   [0m                                                              [0m[33m264[0m [32m                        <div[0m
+[33m   [0m                                                              [0m[33m265[0m [32m                          className="control-group"[0m
+[33m   [0m                                                              [0m[33m266[0m [32m                        >[0m
+[33m   [0m                                                              [0m[33m267[0m [32m                          <div[0m
+[33m   [0m                                                              [0m[33m268[0m [32m                            className="controls"[0m
+[33m   [0m                                                              [0m[33m269[0m [32m                          >[0m
+[33m   [0m                                                              [0m[33m270[0m [32m                            <label[0m
+[33m   [0m                                                              [0m[33m271[0m [32m                              className="control-label"[0m
+[33m   [0m                                                              [0m[33m272[0m [32m                              htmlFor="id-mail.username"[0m
+[33m   [0m                                                              [0m[33m273[0m [32m                            >[0m
+[33m   [0m                                                              [0m[33m274[0m [32m                              SMTP Username[0m
+[33m   [0m                                                              [0m[33m275[0m [32m                            </label>[0m
+[33m   [0m                                                              [0m[33m276[0m [32m                            <input[0m
+[33m   [0m                                                              [0m[33m277[0m [32m                              className="form-control"[0m
+[33m   [0m                                                              [0m[33m278[0m [32m                              disabled={false}[0m
+[33m   [0m                                                              [0m[33m279[0m [32m                              id="id-mail.username"[0m
+[33m   [0m                                                              [0m[33m280[0m [32m                              name="mail.username"[0m
+[33m   [0m                                                              [0m[33m281[0m [32m                              onChange={[Function]}[0m
+[33m   [0m                                                              [0m[33m282[0m [32m                              required={false}[0m
+[33m   [0m                                                              [0m[33m283[0m [32m                              type="text"[0m
+[33m   [0m                                                              [0m[33m284[0m [32m                              value=""[0m
+[33m   [0m                                                              [0m[33m285[0m [32m                            />[0m
+[33m   [0m                                                              [0m[33m286[0m [32m                          </div>[0m
+[33m   [0m                                                              [0m[33m287[0m [32m                        </div>[0m
+[33m   [0m                                                              [0m[33m288[0m [32m                      </TextField>[0m
+[33m   [0m                                                              [0m[33m289[0m [32m                      <TextField[0m
+[33m   [0m                                                              [0m[33m290[0m [32m                        allowEmpty={true}[0m
+[33m   [0m                                                              [0m[33m291[0m [32m                        default=""[0m
+[33m   [0m                                                              [0m[33m292[0m [32m                        defaultValue=""[0m
+[33m   [0m                                                              [0m[33m293[0m [32m                        disabled={false}[0m
+[33m   [0m                                                              [0m[33m294[0m [32m                        disabledReason={null}[0m
+[33m   [0m                                                              [0m[33m295[0m [32m                        hideErrorMessage={false}[0m
+[33m   [0m                                                              [0m[33m296[0m [32m                        isSet={true}[0m
+[33m   [0m                                                              [0m[33m297[0m [32m                        key="mail.password"[0m
+[33m   [0m                                                              [0m[33m298[0m [32m                        label="SMTP Password"[0m
+[33m   [0m                                                              [0m[33m299[0m [32m                        name="mail.password"[0m
+[33m   [0m                                                              [0m[33m300[0m [32m                        required={false}[0m
+[33m   [0m                                                              [0m[33m301[0m [32m                      >[0m
+[33m   [0m                                                              [0m[33m302[0m [32m                        <div[0m
+[33m   [0m                                                              [0m[33m303[0m [32m                          className="control-group"[0m
+[33m   [0m                                                              [0m[33m304[0m [32m                        >[0m
+[33m   [0m                                                              [0m[33m305[0m [32m                          <div[0m
+[33m   [0m                                                              [0m[33m306[0m [32m                            className="controls"[0m
+[33m   [0m                                                              [0m[33m307[0m [32m                          >[0m
+[33m   [0m                                                              [0m[33m308[0m [32m                            <label[0m
+[33m   [0m                                                              [0m[33m309[0m [32m                              className="control-label"[0m
+[33m   [0m                                                              [0m[33m310[0m [32m                              htmlFor="id-mail.password"[0m
+[33m   [0m                                                              [0m[33m311[0m [32m                            >[0m
+[33m   [0m                                                              [0m[33m312[0m [32m                              SMTP Password[0m
+[33m   [0m                                                              [0m[33m313[0m [32m                            </label>[0m
+[33m   [0m                                                              [0m[33m314[0m [32m                            <input[0m
+[33m   [0m                                                              [0m[33m315[0m [32m                              className="form-control"[0m
+[33m   [0m                                                              [0m[33m316[0m [32m                              disabled={false}[0m
+[33m   [0m                                                              [0m[33m317[0m [32m                              id="id-mail.password"[0m
+[33m   [0m                                                              [0m[33m318[0m [32m                              name="mail.password"[0m
+[33m   [0m                                                              [0m[33m319[0m [32m                              onChange={[Function]}[0m
+[33m   [0m                                                              [0m[33m320[0m [32m                              required={false}[0m
+[33m   [0m                                                              [0m[33m321[0m [32m                              type="text"[0m
+[33m   [0m                                                              [0m[33m322[0m [32m                              value=""[0m
+[33m   [0m                                                              [0m[33m323[0m [32m                            />[0m
+[33m   [0m                                                              [0m[33m324[0m [32m                          </div>[0m
+[33m   [0m                                                              [0m[33m325[0m [32m                        </div>[0m
+[33m   [0m                                                              [0m[33m326[0m [32m                      </TextField>[0m
+[33m   [0m                                                              [0m[33m327[0m [32m                      <BooleanField[0m
+[33m   [0m                                                              [0m[33m328[0m [32m                        allowEmpty={true}[0m
+[33m   [0m                                                              [0m[33m329[0m [32m                        component={[Function]}[0m
+[33m   [0m                                                              [0m[33m330[0m [32m                        default={false}[0m
+[33m   [0m                                                              [0m[33m331[0m [32m                        defaultValue={false}[0m
+[33m   [0m                                                              [0m[33m332[0m [32m                        disabled={false}[0m
+[33m   [0m                                                              [0m[33m333[0m [32m                        disabledReason={null}[0m
+[33m   [0m                                                              [0m[33m334[0m [32m                        hideErrorMessage={false}[0m
+[33m   [0m                                                              [0m[33m335[0m [32m                        isSet={true}[0m
+[33m   [0m                                                              [0m[33m336[0m [32m                        key="mail.use-tls"[0m
+[33m   [0m                                                              [0m[33m337[0m [32m                        label="Use TLS?"[0m
+[33m   [0m                                                              [0m[33m338[0m [32m                        name="mail.use-tls"[0m
+[33m   [0m                                                              [0m[33m339[0m [32m                        required={false}[0m
+[33m   [0m                                                              [0m[33m340[0m [32m                      >[0m
+[33m   [0m                                                              [0m[33m341[0m [32m                        <div[0m
+[33m   [0m                                                              [0m[33m342[0m [32m                          className="control-group checkbox"[0m
+[33m   [0m                                                              [0m[33m343[0m [32m                        >[0m
+[33m   [0m                                                              [0m[33m344[0m [32m                          <div[0m
+[33m   [0m                                                              [0m[33m345[0m [32m                            className="controls"[0m
+[33m   [0m                                                              [0m[33m346[0m [32m                          >[0m
+[33m   [0m                                                              [0m[33m347[0m [32m                            <label[0m
+[33m   [0m                                                              [0m[33m348[0m [32m                              className="control-label"[0m
+[33m   [0m                                                              [0m[33m349[0m [32m                            >[0m
+[33m   [0m                                                              [0m[33m350[0m [32m                              <input[0m
+[33m   [0m                                                              [0m[33m351[0m [32m                                checked={false}[0m
+[33m   [0m                                                              [0m[33m352[0m [32m                                disabled={false}[0m
+[33m   [0m                                                              [0m[33m353[0m [32m                                id="id-mail.use-tls"[0m
+[33m   [0m                                                              [0m[33m354[0m [32m                                onChange={[Function]}[0m
+[33m   [0m                                                              [0m[33m355[0m [32m                                type="checkbox"[0m
+[33m   [0m                                                              [0m[33m356[0m [32m                              />[0m
+[33m   [0m                                                              [0m[33m357[0m [32m                              Use TLS?[0m
+[33m   [0m                                                              [0m[33m358[0m [32m                            </label>[0m
+[33m   [0m                                                              [0m[33m359[0m [32m                          </div>[0m
+[33m   [0m                                                              [0m[33m360[0m [32m                        </div>[0m
+[33m   [0m                                                              [0m[33m361[0m [32m                      </BooleanField>[0m
+[33m   [0m                                                              [0m[33m362[0m [32m                    </fieldset>[0m
+[33m   [0m                                                              [0m[33m363[0m [32m                    <fieldset[0m
+[33m   [0m                                                              [0m[33m364[0m [32m                      key="auth"[0m
+[33m   [0m                                                              [0m[33m365[0m [32m                    >[0m
+[33m   [0m                                                              [0m[33m366[0m [32m                      <legend>[0m
+[33m   [0m                                                              [0m[33m367[0m [32m                        Authentication[0m
+[33m   [0m                                                              [0m[33m368[0m [32m                      </legend>[0m
+[33m   [0m                                                              [0m[33m369[0m [32m                      <BooleanField[0m
+[33m   [0m                                                              [0m[33m370[0m [32m                        allowEmpty={true}[0m
+[33m   [0m                                                              [0m[33m371[0m [32m                        component={[Function]}[0m
+[33m   [0m                                                              [0m[33m372[0m [32m                        default={false}[0m
+[33m   [0m                                                              [0m[33m373[0m [32m                        defaultValue={false}[0m
+[33m   [0m                                                              [0m[33m374[0m [32m                        disabled={false}[0m
+[33m   [0m                                                              [0m[33m375[0m [32m                        disabledReason={null}[0m
+[33m   [0m                                                              [0m[33m376[0m [32m                        help="Allow anyone to create an acco[0m
+[33m   [0m                                                              [0m[33m   [0m [32munt and access this Sentry installation."[0m
+[33m   [0m                                                              [0m[33m377[0m [32m                        hideErrorMessage={false}[0m
+[33m   [0m                                                              [0m[33m378[0m [32m                        isSet={true}[0m
+[33m   [0m                                                              [0m[33m379[0m [32m                        key="auth.allow-registration"[0m
+[33m   [0m                                                              [0m[33m380[0m [32m                        label="Allow Registration"[0m
+[33m   [0m                                                              [0m[33m381[0m [32m                        name="auth.allow-registration"[0m
+[33m   [0m                                                              [0m[33m382[0m [32m                        required={false}[0m
+[33m   [0m                                                              [0m[33m383[0m [32m                      >[0m
+[33m   [0m                                                              [0m[33m384[0m [32m                        <div[0m
+[33m   [0m                                                              [0m[33m385[0m [32m                          className="control-group checkbox"[0m
+[33m   [0m                                                              [0m[33m386[0m [32m                        >[0m
+[33m   [0m                                                              [0m[33m387[0m [32m                          <div[0m
+[33m   [0m                                                              [0m[33m388[0m [32m                            className="controls"[0m
+[33m   [0m                                                              [0m[33m389[0m [32m                          >[0m
+[33m   [0m                                                              [0m[33m390[0m [32m                            <label[0m
+[33m   [0m                                                              [0m[33m391[0m [32m                              className="control-label"[0m
+[33m   [0m                                                              [0m[33m392[0m [32m                            >[0m
+[33m   [0m                                                              [0m[33m393[0m [32m                              <input[0m
+[33m   [0m                                                              [0m[33m394[0m [32m                                checked={false}[0m
+[33m   [0m                                                              [0m[33m395[0m [32m                                disabled={false}[0m
+[33m   [0m                                                              [0m[33m396[0m [32m                                id="id-auth.allow-registrati[0m
+[33m   [0m                                                              [0m[33m   [0m [32mon"[0m
+[33m   [0m                                                              [0m[33m397[0m [32m                                onChange={[Function]}[0m
+[33m   [0m                                                              [0m[33m398[0m [32m                                type="checkbox"[0m
+[33m   [0m                                                              [0m[33m399[0m [32m                              />[0m
+[33m   [0m                                                              [0m[33m400[0m [32m                              Allow Registration[0m
+[33m   [0m                                                              [0m[33m401[0m [32m                            </label>[0m
+[33m   [0m                                                              [0m[33m402[0m [32m                            <p[0m
+[33m   [0m                                                              [0m[33m403[0m [32m                              className="help-block"[0m
+[33m   [0m                                                              [0m[33m404[0m [32m                            >[0m
+[33m   [0m                                                              [0m[33m405[0m [32m                              Allow anyone to create an acco[0m
+[33m   [0m                                                              [0m[33m   [0m [32munt and access this Sentry installation.[0m
+[33m   [0m                                                              [0m[33m406[0m [32m                            </p>[0m
+[33m   [0m                                                              [0m[33m407[0m [32m                          </div>[0m
+[33m   [0m                                                              [0m[33m408[0m [32m                        </div>[0m
+[33m   [0m                                                              [0m[33m409[0m [32m                      </BooleanField>[0m
+[33m   [0m                                                              [0m[33m410[0m [32m                    </fieldset>[0m
+[33m   [0m                                                              [0m[33m411[0m [32m                    <fieldset[0m
+[33m   [0m                                                              [0m[33m412[0m [32m                      key="beacon"[0m
+[33m   [0m                                                              [0m[33m413[0m [32m                    >[0m
+[33m   [0m                                                              [0m[33m414[0m [32m                      <legend>[0m
+[33m   [0m                                                              [0m[33m415[0m [32m                        Beacon[0m
+[33m   [0m                                                              [0m[33m416[0m [32m                      </legend>[0m
+[33m   [0m                                                              [0m[33m417[0m [32m                      <RadioBooleanField[0m
+[33m   [0m                                                              [0m[33m418[0m [32m                        allowEmpty={true}[0m
+[33m   [0m                                                              [0m[33m419[0m [32m                        component={[Function]}[0m
+[33m   [0m                                                              [0m[33m420[0m [32m                        default={false}[0m
+[33m   [0m                                                              [0m[33m421[0m [32m                        disabled={false}[0m
+[33m   [0m                                                              [0m[33m422[0m [32m                        disabledReason={null}[0m
+[33m   [0m                                                              [0m[33m423[0m [32m                        help={[0m
+[33m   [0m                                                              [0m[33m424[0m [32m                          <React.Fragment>[0m
+[33m   [0m                                                              [0m[33m425[0m [32m                            <span>[0m
+[33m   [0m                                                              [0m[33m426[0m [32m                              <span>[0m
+[33m   [0m                                                              [0m[33m427[0m [32m                                If enabled, any stats report[0m
+[33m   [0m                                                              [0m[33m   [0m [32med to sentry.io will exclude identifying information (such a[0m
+[33m   [0m                                                              [0m[33m   [0m [32ms your administrative email address). By anonymizing your in[0m
+[33m   [0m                                                              [0m[33m   [0m [32mstallation the Sentry team will be unable to contact you abo[0m
+[33m   [0m                                                              [0m[33m   [0m [32mut security updates. For more information on what data is se[0m
+[33m   [0m                                                              [0m[33m   [0m [32mnt to Sentry, see the [0m
+[33m   [0m                                                              [0m[33m428[0m [32m                              </span>[0m
+[33m   [0m                                                              [0m[33m429[0m [32m                              <a[0m
+[33m   [0m                                                              [0m[33m430[0m [32m                                href="https://docs.sentry.io[0m
+[33m   [0m                                                              [0m[33m   [0m [32m/server/beacon/"[0m
+[33m   [0m                                                              [0m[33m431[0m [32m                              >[0m
+[33m   [0m                                                              [0m[33m432[0m [32m                                <span>[0m
+[33m   [0m                                                              [0m[33m433[0m [32m                                  documentation[0m
+[33m   [0m                                                              [0m[33m434[0m [32m                                </span>[0m
+[33m   [0m                                                              [0m[33m435[0m [32m                              </a>[0m
+[33m   [0m                                                              [0m[33m436[0m [32m                              <span>[0m
+[33m   [0m                                                              [0m[33m437[0m [32m                                .[0m
+[33m   [0m                                                              [0m[33m438[0m [32m                              </span>[0m
+[33m   [0m                                                              [0m[33m439[0m [32m                            </span>[0m
+[33m   [0m                                                              [0m[33m440[0m [32m                          </React.Fragment>[0m
+[33m   [0m                                                              [0m[33m441[0m [32m                        }[0m
+[33m   [0m                                                              [0m[33m442[0m [32m                        hideErrorMessage={false}[0m
+[33m   [0m                                                              [0m[33m443[0m [32m                        isSet={true}[0m
+[33m   [0m                                                              [0m[33m444[0m [32m                        key="beacon.anonymous"[0m
+[33m   [0m                                                              [0m[33m445[0m [32m                        label="Usage Statistics"[0m
+[33m   [0m                                                              [0m[33m446[0m [32m                        name="beacon.anonymous"[0m
+[33m   [0m                                                              [0m[33m447[0m [32m                        noLabel="Send my contact information[0m
+[33m   [0m                                                              [0m[33m   [0m [32m along with usage statistics"[0m
+[33m   [0m                                                              [0m[33m448[0m [32m                        required={false}[0m
+[33m   [0m                                                              [0m[33m449[0m [32m                        yesFirst={false}[0m
+[33m   [0m                                                              [0m[33m450[0m [32m                        yesLabel="Please keep my usage infor[0m
+[33m   [0m                                                              [0m[33m   [0m [32mmation anonymous"[0m
+[33m   [0m                                                              [0m[33m451[0m [32m                      >[0m
+[33m   [0m                                                              [0m[33m452[0m [32m                        <div[0m
+[33m   [0m                                                              [0m[33m453[0m [32m                          className="control-group"[0m
+[33m   [0m                                                              [0m[33m454[0m [32m                        >[0m
+[33m   [0m                                                              [0m[33m455[0m [32m                          <div[0m
+[33m   [0m                                                              [0m[33m456[0m [32m                            className="controls"[0m
+[33m   [0m                                                              [0m[33m457[0m [32m                          >[0m
+[33m   [0m                                                              [0m[33m458[0m [32m                            <label[0m
+[33m   [0m                                                              [0m[33m459[0m [32m                              className="control-label"[0m
+[33m   [0m                                                              [0m[33m460[0m [32m                              htmlFor="id-beacon.anonymous"[0m
+[33m   [0m                                                              [0m[33m461[0m [32m                            >[0m
+[33m   [0m                                                              [0m[33m462[0m [32m                              Usage Statistics[0m
+[33m   [0m                                                              [0m[33m463[0m [32m                            </label>[0m
+[33m   [0m                                                              [0m[33m464[0m [32m                            <p[0m
+[33m   [0m                                                              [0m[33m465[0m [32m                              className="help-block"[0m
+[33m   [0m                                                              [0m[33m466[0m [32m                            >[0m
+[33m   [0m                                                              [0m[33m467[0m [32m                              <span[0m
+[33m   [0m                                                              [0m[33m468[0m [32m                                key="5"[0m
+[33m   [0m                                                              [0m[33m469[0m [32m                              >[0m
+[33m   [0m                                                              [0m[33m470[0m [32m                                <span[0m
+[33m   [0m                                                              [0m[33m471[0m [32m                                  key="0"[0m
+[33m   [0m                                                              [0m[33m472[0m [32m                                >[0m
+[33m   [0m                                                              [0m[33m473[0m [32m                                  If enabled, any stats repo[0m
+[33m   [0m                                                              [0m[33m   [0m [32mrted to sentry.io will exclude identifying information (such[0m
+[33m   [0m                                                              [0m[33m   [0m [32m as your administrative email address). By anonymizing your [0m
+[33m   [0m                                                              [0m[33m   [0m [32minstallation the Sentry team will be unable to contact you a[0m
+[33m   [0m                                                              [0m[33m   [0m [32mbout security updates. For more information on what data is [0m
+[33m   [0m                                                              [0m[33m   [0m [32msent to Sentry, see the [0m
+[33m   [0m                                                              [0m[33m474[0m [32m                                </span>[0m
+[33m   [0m                                                              [0m[33m475[0m [32m                                <a[0m
+[33m   [0m                                                              [0m[33m476[0m [32m                                  href="https://docs.sentry.[0m
+[33m   [0m                                                              [0m[33m   [0m [32mio/server/beacon/"[0m
+[33m   [0m                                                              [0m[33m477[0m [32m                                  key="2"[0m
+[33m   [0m                                                              [0m[33m478[0m [32m                                >[0m
+[33m   [0m                                                              [0m[33m479[0m [32m                                  <span[0m
+[33m   [0m                                                              [0m[33m480[0m [32m                                    key="1"[0m
+[33m   [0m                                                              [0m[33m481[0m [32m                                  >[0m
+[33m   [0m                                                              [0m[33m482[0m [32m                                    documentation[0m
+[33m   [0m                                                              [0m[33m483[0m [32m                                  </span>[0m
+[33m   [0m                                                              [0m[33m484[0m [32m                                </a>[0m
+[33m   [0m                                                              [0m[33m485[0m [32m                                <span[0m
+[33m   [0m                                                              [0m[33m486[0m [32m                                  key="3"[0m
+[33m   [0m                                                              [0m[33m487[0m [32m                                >[0m
+[33m   [0m                                                              [0m[33m488[0m [32m                                  .[0m
+[33m   [0m                                                              [0m[33m489[0m [32m                                </span>[0m
+[33m   [0m                                                              [0m[33m490[0m [32m                              </span>[0m
+[33m   [0m                                                              [0m[33m491[0m [32m                            </p>[0m
+[33m   [0m                                                              [0m[33m492[0m [32m                            <div[0m
+[33m   [0m                                                              [0m[33m493[0m [32m                              className="control-group radio[0m
+[33m   [0m                                                              [0m[33m   [0m [32m-boolean"[0m
+[33m   [0m                                                              [0m[33m494[0m [32m                            >[0m
+[33m   [0m                                                              [0m[33m495[0m [32m                              <div[0m
+[33m   [0m                                                              [0m[33m496[0m [32m                                className="radio"[0m
+[33m   [0m                                                              [0m[33m497[0m [32m                                key="no"[0m
+[33m   [0m                                                              [0m[33m498[0m [32m                              >[0m
+[33m   [0m                                                              [0m[33m499[0m [32m                                <label[0m
+[33m   [0m                                                              [0m[33m500[0m [32m                                  style={[0m
+[33m   [0m                                                              [0m[33m501[0m [32m                                    Object {[0m
+[33m   [0m                                                              [0m[33m502[0m [32m                                      "fontWeight": "normal"[0m
+[33m   [0m                                                              [0m[33m   [0m [32m,[0m
+[33m   [0m                                                              [0m[33m503[0m [32m                                    }[0m
+[33m   [0m                                                              [0m[33m504[0m [32m                                  }[0m
+[33m   [0m                                                              [0m[33m505[0m [32m                                >[0m
+[33m   [0m                                                              [0m[33m506[0m [32m                                  <input[0m
+[33m   [0m                                                              [0m[33m507[0m [32m                                    checked={false}[0m
+[33m   [0m                                                              [0m[33m508[0m [32m                                    disabled={false}[0m
+[33m   [0m                                                              [0m[33m509[0m [32m                                    name="beacon.anonymous"[0m
+[33m   [0m                                                              [0m[33m510[0m [32m                                    onChange={[Function]}[0m
+[33m   [0m                                                              [0m[33m511[0m [32m                                    type="radio"[0m
+[33m   [0m                                                              [0m[33m512[0m [32m                                    value="false"[0m
+[33m   [0m                                                              [0m[33m513[0m [32m                                  />[0m
+[33m   [0m                                                              [0m[33m514[0m [32m                                   [0m
+[33m   [0m                                                              [0m[33m515[0m [32m                                  Send my contact informatio[0m
+[33m   [0m                                                              [0m[33m   [0m [32mn along with usage statistics[0m
+[33m   [0m                                                              [0m[33m516[0m [32m                                </label>[0m
+[33m   [0m                                                              [0m[33m517[0m [32m                              </div>[0m
+[33m   [0m                                                              [0m[33m518[0m [32m                              <div[0m
+[33m   [0m                                                              [0m[33m519[0m [32m                                className="radio"[0m
+[33m   [0m                                                              [0m[33m520[0m [32m                                key="yes"[0m
+[33m   [0m                                                              [0m[33m521[0m [32m                              >[0m
+[33m   [0m                                                              [0m[33m522[0m [32m                                <label[0m
+[33m   [0m                                                              [0m[33m523[0m [32m                                  style={[0m
+[33m   [0m                                                              [0m[33m524[0m [32m                                    Object {[0m
+[33m   [0m                                                              [0m[33m525[0m [32m                                      "fontWeight": "normal"[0m
+[33m   [0m                                                              [0m[33m   [0m [32m,[0m
+[33m   [0m                                                              [0m[33m526[0m [32m                                    }[0m
+[33m   [0m                                                              [0m[33m527[0m [32m                                  }[0m
+[33m   [0m                                                              [0m[33m528[0m [32m                                >[0m
+[33m   [0m                                                              [0m[33m529[0m [32m                                  <input[0m
+[33m   [0m                                                              [0m[33m530[0m [32m                                    checked={false}[0m
+[33m   [0m                                                              [0m[33m531[0m [32m                                    disabled={false}[0m
+[33m   [0m                                                              [0m[33m532[0m [32m                                    name="beacon.anonymous"[0m
+[33m   [0m                                                              [0m[33m533[0m [32m                                    onChange={[Function]}[0m
+[33m   [0m                                                              [0m[33m534[0m [32m                                    type="radio"[0m
+[33m   [0m                                                              [0m[33m535[0m [32m                                    value="true"[0m
+[33m   [0m                                                              [0m[33m536[0m [32m                                  />[0m
+[33m   [0m                                                              [0m[33m537[0m [32m                                   [0m
+[33m   [0m                                                              [0m[33m538[0m [32m                                  Please keep my usage infor[0m
+[33m   [0m                                                              [0m[33m   [0m [32mmation anonymous[0m
+[33m   [0m                                                              [0m[33m539[0m [32m                                </label>[0m
+[33m   [0m                                                              [0m[33m540[0m [32m                              </div>[0m
+[33m   [0m                                                              [0m[33m541[0m [32m                            </div>[0m
+[33m   [0m                                                              [0m[33m542[0m [32m                          </div>[0m
+[33m   [0m                                                              [0m[33m543[0m [32m                        </div>[0m
+[33m   [0m                                                              [0m[33m544[0m [32m                      </RadioBooleanField>[0m
+[33m   [0m                                                              [0m[33m545[0m [32m                    </fieldset>[0m
+[33m   [0m                                                              [0m[33m546[0m [32m                    <div[0m
+[33m   [0m                                                              [0m[33m547[0m [32m                      className="form-actions align-right"[0m
+[33m   [0m                                                              [0m[33m548[0m [32m                      style={[0m
+[33m   [0m                                                              [0m[33m549[0m [32m                        Object {[0m
+[33m   [0m                                                              [0m[33m550[0m [32m                          "marginTop": 25,[0m
+[33m   [0m                                                              [0m[33m551[0m [32m                        }[0m
+[33m   [0m                                                              [0m[33m552[0m [32m                      }[0m
+[33m   [0m                                                              [0m[33m553[0m [32m                    >[0m
+[33m   [0m                                                              [0m[33m554[0m [32m                      <button[0m
+[33m   [0m                                                              [0m[33m555[0m [32m                        className="btn btn-primary"[0m
+[33m   [0m                                                              [0m[33m556[0m [32m                        disabled={false}[0m
+[33m   [0m                                                              [0m[33m557[0m [32m                        type="submit"[0m
+[33m   [0m                                                              [0m[33m558[0m [32m                      >[0m
+[33m   [0m                                                              [0m[33m559[0m [32m                        Continue[0m
+[33m   [0m                                                              [0m[33m560[0m [32m                      </button>[0m
+[33m   [0m                                                              [0m[33m561[0m [32m                    </div>[0m
+[33m   [0m                                                              [0m[33m562[0m [32m                  </form>[0m
+[33m   [0m                                                              [0m[33m563[0m [32m                </StyledForm>[0m
+[33m   [0m                                                              [0m[33m564[0m [32m              </ApiForm>[0m
+[33m   [0m                                                              [0m[33m565[0m [32m            </div>[0m
+[33m   [0m                                                              [0m[33m566[0m [32m          </SetupWizard>[0m
+[33m   [0m                                                              [0m[33m567[0m [32m        </div>[0m
+[33m   [0m                                                              [0m[33m568[0m [32m      </Wrapper>[0m
+[33m   [0m                                                              [0m[33m569[0m [32m    </DocumentTitle>[0m
+[33m   [0m                                                              [0m[33m570[0m [32m  </SideEffect(DocumentTitle)>[0m
+[33m   [0m                                                              [0m[33m571[0m [32m</InstallWizard>[0m
+[33m   [0m                                                              [0m[33m572[0m [32m`;[0m
+[36mdiff --git a/tests/js/spec/views/installWizard.spec.jsx b/tests/js/spec/views/admin/installWizard.spec.jsx
+[0m[36msimilarity index 85%
+[0m[36mrename from tests/js/spec/views/installWizard.spec.jsx
+[0m[36mrename to tests/js/spec/views/admin/installWizard.spec.jsx
+[0m[36mindex aaf2c7156b..ce5d5491f1 100644
+[0m[33m--- a/tests/js/spec/views/installWizard.spec.jsx
+[0m[33m+++ b/tests/js/spec/views/admin/installWizard.spec.jsx
+[0m[1;34m@@ -1,9 +1,9 @@
+[0m[33m 1[0m [0mimport React from 'react';[0m                                    [0m[33m 1[0m [0mimport React from 'react';[0m
+[33m 2[0m [0m[0m                                                              [0m[33m 2[0m [0m[0m
+[33m 3[0m [22mimport {mount} from 'sentry-test/enzyme';[0m                     [0m[33m 3[0m [22mimport {mount[7m[32mWithTheme[0m[22m} from 'sentry-test/enzyme';[0m
+[33m 4[0m [0m[0m                                                              [0m[33m 4[0m [0m[0m
+[33m 5[0m [0mimport ConfigStore from 'app/stores/configStore';[0m             [0m[33m 5[0m [0mimport ConfigStore from 'app/stores/configStore';[0m
+[33m 6[0m [22mimport InstallWizard from 'app/views/installWizard';[0m          [0m[33m 6[0m [22mimport InstallWizard from 'app/views[7m[32m/admin[0m[22m/installWizard';[0m
+[33m 7[0m [0m[0m                                                              [0m[33m 7[0m [0m[0m
+[33m 8[0m [0mjest.mock('app/stores/configStore', () => ({[0m                  [0m[33m 8[0m [0mjest.mock('app/stores/configStore', () => ({[0m
+[33m 9[0m [0m  get: jest.fn(),[0m                                             [0m[33m 9[0m [0m  get: jest.fn(),[0m
+[1;34m@@ -28,7 +28,7 @@ describe('InstallWizard', function() {
+[0m[33m28[0m [0m  beforeEach(function() {});[0m                                  [0m[33m28[0m [0m  beforeEach(function() {});[0m
+[33m29[0m [0m[0m                                                              [0m[33m29[0m [0m[0m
+[33m30[0m [0m  it('renders', function() {[0m                                  [0m[33m30[0m [0m  it('renders', function() {[0m
+[33m31[0m [22m    const wrapper = mount(<InstallWizard onConfigured={jest.f[0m [0m[33m31[0m [22m    const wrapper = mount[7m[32mWithTheme[0m[22m(<InstallWizard onConfigure[0m
+[33m  [0m [22mn()} />);[0m                                                     [0m[33m  [0m [22md={jest.fn()} />);[0m
+[33m32[0m [0m    expect(wrapper).toMatchSnapshot();[0m                        [0m[33m32[0m [0m    expect(wrapper).toMatchSnapshot();[0m
+[33m33[0m [0m  });[0m                                                         [0m[33m33[0m [0m  });[0m
+[33m34[0m [0m[0m                                                              [0m[33m34[0m [0m[0m
+[1;34m@@ -49,7 +49,7 @@ describe('InstallWizard', function() {
+[0m[33m49[0m [0m        },[0m                                                    [0m[33m49[0m [0m        },[0m
+[33m50[0m [0m      }),[0m                                                     [0m[33m50[0m [0m      }),[0m
+[33m51[0m [0m    });[0m                                                       [0m[33m51[0m [0m    });[0m
+[33m52[0m [22m    const wrapper = mount(<InstallWizard onConfigured={jest.f[0m [0m[33m52[0m [22m    const wrapper = mount[7m[32mWithTheme[0m[22m(<InstallWizard onConfigure[0m
+[33m  [0m [22mn()} />);[0m                                                     [0m[33m  [0m [22md={jest.fn()} />);[0m
+[33m53[0m [0m[0m                                                              [0m[33m53[0m [0m[0m
+[33m54[0m [0m    expect([0m                                                   [0m[33m54[0m [0m    expect([0m
+[33m55[0m [0m      wrapper.find('input[name="beacon.anonymous"][value="fal [0m[33m55[0m [0m      wrapper.find('input[name="beacon.anonymous"][value="fal
+[33m  [0m se"]').prop('checked')[0m                                        [0m[33m  [0m se"]').prop('checked')[0m
+[1;34m@@ -77,7 +77,7 @@ describe('InstallWizard', function() {
+[0m[33m77[0m [0m        },[0m                                                    [0m[33m77[0m [0m        },[0m
+[33m78[0m [0m      }),[0m                                                     [0m[33m78[0m [0m      }),[0m
+[33m79[0m [0m    });[0m                                                       [0m[33m79[0m [0m    });[0m
+[33m80[0m [22m    const wrapper = mount(<InstallWizard onConfigured={jest.f[0m [0m[33m80[0m [22m    const wrapper = mount[7m[32mWithTheme[0m[22m(<InstallWizard onConfigure[0m
+[33m  [0m [22mn()} />);[0m                                                     [0m[33m  [0m [22md={jest.fn()} />);[0m
+[33m81[0m [0m[0m                                                              [0m[33m81[0m [0m[0m
+[33m82[0m [0m    expect([0m                                                   [0m[33m82[0m [0m    expect([0m
+[33m83[0m [0m      wrapper.find('input[name="beacon.anonymous"][value="fal [0m[33m83[0m [0m      wrapper.find('input[name="beacon.anonymous"][value="fal
+[33m  [0m se"]').prop('checked')[0m                                        [0m[33m  [0m se"]').prop('checked')[0m

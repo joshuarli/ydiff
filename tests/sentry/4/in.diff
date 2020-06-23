@@ -1,0 +1,99 @@
+commit cc5f484cb765464f1030645ee529a7115498bc00
+Author: Dan Fuller <dfuller@sentry.io>
+Date:   Mon Jun 22 13:25:38 2020 -0700
+
+    fix(metric_alerts): Fix snapshots that contain float values. (#19472)
+    
+    When we started supporting floats in metric alerts we forgot to make sure snapshots handled them
+    correctly. Since the model was set to an array of IntegerField it was silently converting the floats
+    to ints. This fixes that issue. We have some invalid historical snapshots, but they look like
+    they're all in Sentry so I'll leave them as is.
+    
+    Surprisingly we don't need a migration for this. The tool generates no changes.
+
+diff --git a/src/sentry/incidents/models.py b/src/sentry/incidents/models.py
+index 320222c8c5..0686df61eb 100644
+--- a/src/sentry/incidents/models.py
++++ b/src/sentry/incidents/models.py
+@@ -219,7 +219,7 @@ class TimeSeriesSnapshot(Model):
+ 
+     start = models.DateTimeField()
+     end = models.DateTimeField()
+-    values = ArrayField(of=ArrayField(models.IntegerField()))
++    values = ArrayField(of=ArrayField(models.FloatField()))
+     period = models.IntegerField()
+     date_added = models.DateTimeField(default=timezone.now)
+ 
+@@ -234,7 +234,15 @@ class TimeSeriesSnapshot(Model):
+         and 'count' keys.
+         :return:
+         """
+-        return {"data": [{"time": time, "count": count} for time, count in self.values]}
++        # We store the values here as floats so that we can support percentage stats.
++        # We don't want to return the time as a float, and to keep things consistent
++        # with what Snuba returns we cast floats to ints when they're whole numbers.
++        return {
++            "data": [
++                {"time": int(time), "count": count if not count.is_integer() else int(count)}
++                for time, count in self.values
++            ]
++        }
+ 
+ 
+ class IncidentActivityType(Enum):
+diff --git a/tests/sentry/incidents/test_logic.py b/tests/sentry/incidents/test_logic.py
+index 23c42bac84..1346641edd 100644
+--- a/tests/sentry/incidents/test_logic.py
++++ b/tests/sentry/incidents/test_logic.py
+@@ -63,10 +63,12 @@ from sentry.incidents.models import (
+     IncidentActivityType,
+     IncidentProject,
+     PendingIncidentSnapshot,
++    IncidentSnapshot,
+     IncidentStatus,
+     IncidentStatusMethod,
+     IncidentSubscription,
+     IncidentType,
++    TimeSeriesSnapshot,
+ )
+ from sentry.snuba.models import QueryDatasets
+ from sentry.models.integration import Integration
+@@ -618,6 +620,38 @@ class GetIncidentStatsTest(TestCase, BaseIncidentsTest):
+         )
+         self.run_test(open_incident)
+ 
++    def test_floats(self):
++        alert_rule = self.create_alert_rule(
++            self.organization, dataset=QueryDatasets.TRANSACTIONS, aggregate="p75()"
++        )
++        incident = self.create_incident(
++            self.organization,
++            title="Hi",
++            date_started=timezone.now() - timedelta(days=30),
++            alert_rule=alert_rule,
++        )
++        update_incident_status(
++            incident, IncidentStatus.CLOSED, status_method=IncidentStatusMethod.RULE_TRIGGERED
++        )
++        time_series_values = [[0, 1], [1, 5], [2, 5.5]]
++        time_series_snapshot = TimeSeriesSnapshot.objects.create(
++            start=timezone.now() - timedelta(hours=1),
++            end=timezone.now(),
++            values=time_series_values,
++            period=3000,
++        )
++        IncidentSnapshot.objects.create(
++            incident=incident,
++            event_stats_snapshot=time_series_snapshot,
++            unique_users=1234,
++            total_events=4567,
++        )
++
++        incident_stats = get_incident_stats(incident, windowed_stats=True)
++        assert incident_stats["event_stats"].data["data"] == [
++            {"time": time, "count": count} for time, count in time_series_values
++        ]
++
+ 
+ class CreateAlertRuleTest(TestCase, BaseIncidentsTest):
+     def test(self):

@@ -1,0 +1,19 @@
+commit 32d42cb465e28d19c8ca3d5da17b31236c8753b4
+Author: Matej Minar <matej.minar@sentry.io>
+Date:   Mon Jun 22 22:51:22 2020 +0200
+
+    fix(ui): Do not send query param to artifacts endpoint (#19495)
+
+diff --git a/src/sentry/static/sentry/app/views/releases/detail/releaseArtifacts.jsx b/src/sentry/static/sentry/app/views/releases/detail/releaseArtifacts.jsx
+index ce7761ed79..ffda3848d9 100644
+--- a/src/sentry/static/sentry/app/views/releases/detail/releaseArtifacts.jsx
++++ b/src/sentry/static/sentry/app/views/releases/detail/releaseArtifacts.jsx
+@@ -65,7 +65,7 @@ class ReleaseArtifacts extends React.Component {
+     this.props.api.request(this.getFilesEndpoint(), {
+       method: 'GET',
+       // We need to omit global selection header url params because they are not supported
+-      data: omit(this.props.location.query, Object.values(URL_PARAM)),
++      data: omit(this.props.location.query, [...Object.values(URL_PARAM), 'query']),
+       success: (data, _, jqXHR) => {
+         this.setState({
+           error: false,

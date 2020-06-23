@@ -1,0 +1,1172 @@
+commit 58ee47408b4ee8d987a6d9a4e35c3562b9497a9c
+Author: Gaurav Gupta <gaurav5430@gmail.com>
+Date:   Tue Jun 23 02:52:25 2020 +0530
+
+    fix(ui): make sidebar links without href keyboard accessible (#19463)
+    
+    some sidebar links like "Help" , "What's New" and "Collapse" were not keyboard accessible although they are interactive
+    Although they were links, but there was no href, and so interactions were not enabled by the browser
+    added a default href="#" for these links. Also on click of these links, we need to preventDefault to prevent the page from reloading
+
+diff --git a/src/sentry/static/sentry/app/components/sidebar/sidebarItem.tsx b/src/sentry/static/sentry/app/components/sidebar/sidebarItem.tsx
+index a916097741..e4588d7fe7 100644
+--- a/src/sentry/static/sentry/app/components/sidebar/sidebarItem.tsx
++++ b/src/sentry/static/sentry/app/components/sidebar/sidebarItem.tsx
+@@ -104,9 +104,10 @@ const SidebarItem = ({
+       <StyledSidebarItem
+         data-test-id={props['data-test-id']}
+         active={isActive ? 'true' : undefined}
+-        to={(to ? to : href) || ''}
++        to={(to ? to : href) || '#'}
+         className={className}
+         onClick={(event: React.MouseEvent<HTMLAnchorElement>) => {
++          !(to || href) && event.preventDefault();
+           typeof onClick === 'function' && onClick(id, event);
+           showIsNew && localStorage.setItem(isNewSeenKey, 'true');
+         }}
+diff --git a/tests/js/spec/components/sidebar/__snapshots__/index.spec.jsx.snap b/tests/js/spec/components/sidebar/__snapshots__/index.spec.jsx.snap
+index 1bb1685343..4c5e6aff22 100644
+--- a/tests/js/spec/components/sidebar/__snapshots__/index.spec.jsx.snap
++++ b/tests/js/spec/components/sidebar/__snapshots__/index.spec.jsx.snap
+@@ -2312,6 +2312,18 @@ exports[`Sidebar can have onboarding feature 1`] = `
+                                         Array [
+                                           "/settings/org-slug/",
+                                         ],
++                                        Array [
++                                          "#",
++                                        ],
++                                        Array [
++                                          "#",
++                                        ],
++                                        Array [
++                                          "#",
++                                        ],
++                                        Array [
++                                          "#",
++                                        ],
+                                         Array [
+                                           "/organizations/org-slug/projects/",
+                                         ],
+@@ -2333,6 +2345,15 @@ exports[`Sidebar can have onboarding feature 1`] = `
+                                         Array [
+                                           "/settings/org-slug/",
+                                         ],
++                                        Array [
++                                          "#",
++                                        ],
++                                        Array [
++                                          "#",
++                                        ],
++                                        Array [
++                                          "#",
++                                        ],
+                                         Array [
+                                           "/organizations/org-slug/projects/",
+                                         ],
+@@ -2354,6 +2375,15 @@ exports[`Sidebar can have onboarding feature 1`] = `
+                                         Array [
+                                           "/settings/org-slug/",
+                                         ],
++                                        Array [
++                                          "#",
++                                        ],
++                                        Array [
++                                          "#",
++                                        ],
++                                        Array [
++                                          "#",
++                                        ],
+                                         Array [
+                                           "/organizations/org-slug/projects/",
+                                         ],
+@@ -2375,6 +2405,15 @@ exports[`Sidebar can have onboarding feature 1`] = `
+                                         Array [
+                                           "/settings/org-slug/",
+                                         ],
++                                        Array [
++                                          "#",
++                                        ],
++                                        Array [
++                                          "#",
++                                        ],
++                                        Array [
++                                          "#",
++                                        ],
+                                         Array [
+                                           "/organizations/org-slug/projects/",
+                                         ],
+@@ -2399,6 +2438,15 @@ exports[`Sidebar can have onboarding feature 1`] = `
+                                         Array [
+                                           "https://forum.sentry.io/",
+                                         ],
++                                        Array [
++                                          "#",
++                                        ],
++                                        Array [
++                                          "#",
++                                        ],
++                                        Array [
++                                          "#",
++                                        ],
+                                       ],
+                                       "results": Array [
+                                         Object {
+@@ -2557,6 +2605,70 @@ exports[`Sidebar can have onboarding feature 1`] = `
+                                           "type": "return",
+                                           "value": undefined,
+                                         },
++                                        Object {
++                                          "type": "return",
++                                          "value": undefined,
++                                        },
++                                        Object {
++                                          "type": "return",
++                                          "value": undefined,
++                                        },
++                                        Object {
++                                          "type": "return",
++                                          "value": undefined,
++                                        },
++                                        Object {
++                                          "type": "return",
++                                          "value": undefined,
++                                        },
++                                        Object {
++                                          "type": "return",
++                                          "value": undefined,
++                                        },
++                                        Object {
++                                          "type": "return",
++                                          "value": undefined,
++                                        },
++                                        Object {
++                                          "type": "return",
++                                          "value": undefined,
++                                        },
++                                        Object {
++                                          "type": "return",
++                                          "value": undefined,
++                                        },
++                                        Object {
++                                          "type": "return",
++                                          "value": undefined,
++                                        },
++                                        Object {
++                                          "type": "return",
++                                          "value": undefined,
++                                        },
++                                        Object {
++                                          "type": "return",
++                                          "value": undefined,
++                                        },
++                                        Object {
++                                          "type": "return",
++                                          "value": undefined,
++                                        },
++                                        Object {
++                                          "type": "return",
++                                          "value": undefined,
++                                        },
++                                        Object {
++                                          "type": "return",
++                                          "value": undefined,
++                                        },
++                                        Object {
++                                          "type": "return",
++                                          "value": undefined,
++                                        },
++                                        Object {
++                                          "type": "return",
++                                          "value": undefined,
++                                        },
+                                       ],
+                                     },
+                                     "go": [MockFunction],
+@@ -2864,6 +2976,18 @@ exports[`Sidebar can have onboarding feature 1`] = `
+                                         Array [
+                                           "/settings/org-slug/",
+                                         ],
++                                        Array [
++                                          "#",
++                                        ],
++                                        Array [
++                                          "#",
++                                        ],
++                                        Array [
++                                          "#",
++                                        ],
++                                        Array [
++                                          "#",
++                                        ],
+                                         Array [
+                                           "/organizations/org-slug/projects/",
+                                         ],
+@@ -2885,6 +3009,15 @@ exports[`Sidebar can have onboarding feature 1`] = `
+                                         Array [
+                                           "/settings/org-slug/",
+                                         ],
++                                        Array [
++                                          "#",
++                                        ],
++                                        Array [
++                                          "#",
++                                        ],
++                                        Array [
++                                          "#",
++                                        ],
+                                         Array [
+                                           "/organizations/org-slug/projects/",
+                                         ],
+@@ -2906,6 +3039,15 @@ exports[`Sidebar can have onboarding feature 1`] = `
+                                         Array [
+                                           "/settings/org-slug/",
+                                         ],
++                                        Array [
++                                          "#",
++                                        ],
++                                        Array [
++                                          "#",
++                                        ],
++                                        Array [
++                                          "#",
++                                        ],
+                                         Array [
+                                           "/organizations/org-slug/projects/",
+                                         ],
+@@ -2927,6 +3069,15 @@ exports[`Sidebar can have onboarding feature 1`] = `
+                                         Array [
+                                           "/settings/org-slug/",
+                                         ],
++                                        Array [
++                                          "#",
++                                        ],
++                                        Array [
++                                          "#",
++                                        ],
++                                        Array [
++                                          "#",
++                                        ],
+                                         Array [
+                                           "/organizations/org-slug/projects/",
+                                         ],
+@@ -2951,6 +3102,15 @@ exports[`Sidebar can have onboarding feature 1`] = `
+                                         Array [
+                                           "https://forum.sentry.io/",
+                                         ],
++                                        Array [
++                                          "#",
++                                        ],
++                                        Array [
++                                          "#",
++                                        ],
++                                        Array [
++                                          "#",
++                                        ],
+                                       ],
+                                       "results": Array [
+                                         Object {
+@@ -3109,6 +3269,70 @@ exports[`Sidebar can have onboarding feature 1`] = `
+                                           "type": "return",
+                                           "value": undefined,
+                                         },
++                                        Object {
++                                          "type": "return",
++                                          "value": undefined,
++                                        },
++                                        Object {
++                                          "type": "return",
++                                          "value": undefined,
++                                        },
++                                        Object {
++                                          "type": "return",
++                                          "value": undefined,
++                                        },
++                                        Object {
++                                          "type": "return",
++                                          "value": undefined,
++                                        },
++                                        Object {
++                                          "type": "return",
++                                          "value": undefined,
++                                        },
++                                        Object {
++                                          "type": "return",
++                                          "value": undefined,
++                                        },
++                                        Object {
++                                          "type": "return",
++                                          "value": undefined,
++                                        },
++                                        Object {
++                                          "type": "return",
++                                          "value": undefined,
++                                        },
++                                        Object {
++                                          "type": "return",
++                                          "value": undefined,
++                                        },
++                                        Object {
++                                          "type": "return",
++                                          "value": undefined,
++                                        },
++                                        Object {
++                                          "type": "return",
++                                          "value": undefined,
++                                        },
++                                        Object {
++                                          "type": "return",
++                                          "value": undefined,
++                                        },
++                                        Object {
++                                          "type": "return",
++                                          "value": undefined,
++                                        },
++                                        Object {
++                                          "type": "return",
++                                          "value": undefined,
++                                        },
++                                        Object {
++                                          "type": "return",
++                                          "value": undefined,
++                                        },
++                                        Object {
++                                          "type": "return",
++                                          "value": undefined,
++                                        },
+                                       ],
+                                     },
+                                     "go": [MockFunction],
+@@ -3799,6 +4023,18 @@ exports[`Sidebar can have onboarding feature 1`] = `
+                                         Array [
+                                           "/settings/org-slug/",
+                                         ],
++                                        Array [
++                                          "#",
++                                        ],
++                                        Array [
++                                          "#",
++                                        ],
++                                        Array [
++                                          "#",
++                                        ],
++                                        Array [
++                                          "#",
++                                        ],
+                                         Array [
+                                           "/organizations/org-slug/projects/",
+                                         ],
+@@ -3820,6 +4056,15 @@ exports[`Sidebar can have onboarding feature 1`] = `
+                                         Array [
+                                           "/settings/org-slug/",
+                                         ],
++                                        Array [
++                                          "#",
++                                        ],
++                                        Array [
++                                          "#",
++                                        ],
++                                        Array [
++                                          "#",
++                                        ],
+                                         Array [
+                                           "/organizations/org-slug/projects/",
+                                         ],
+@@ -3841,6 +4086,15 @@ exports[`Sidebar can have onboarding feature 1`] = `
+                                         Array [
+                                           "/settings/org-slug/",
+                                         ],
++                                        Array [
++                                          "#",
++                                        ],
++                                        Array [
++                                          "#",
++                                        ],
++                                        Array [
++                                          "#",
++                                        ],
+                                         Array [
+                                           "/organizations/org-slug/projects/",
+                                         ],
+@@ -3862,6 +4116,15 @@ exports[`Sidebar can have onboarding feature 1`] = `
+                                         Array [
+                                           "/settings/org-slug/",
+                                         ],
++                                        Array [
++                                          "#",
++                                        ],
++                                        Array [
++                                          "#",
++                                        ],
++                                        Array [
++                                          "#",
++                                        ],
+                                         Array [
+                                           "/organizations/org-slug/projects/",
+                                         ],
+@@ -3886,6 +4149,15 @@ exports[`Sidebar can have onboarding feature 1`] = `
+                                         Array [
+                                           "https://forum.sentry.io/",
+                                         ],
++                                        Array [
++                                          "#",
++                                        ],
++                                        Array [
++                                          "#",
++                                        ],
++                                        Array [
++                                          "#",
++                                        ],
+                                       ],
+                                       "results": Array [
+                                         Object {
+@@ -4044,38 +4316,102 @@ exports[`Sidebar can have onboarding feature 1`] = `
+                                           "type": "return",
+                                           "value": undefined,
+                                         },
+-                                      ],
+-                                    },
+-                                    "go": [MockFunction],
+-                                    "goBack": [MockFunction],
+-                                    "goForward": [MockFunction],
+-                                    "isActive": [MockFunction],
+-                                    "listen": [MockFunction],
+-                                    "location": Object {
+-                                      "query": Object {},
+-                                    },
+-                                    "push": [MockFunction],
+-                                    "replace": [MockFunction],
+-                                    "setRouteLeaveHook": [MockFunction],
+-                                  }
+-                                }
+-                                task={
+-                                  Object {
+-                                    "SupplementComponent": [Function],
+-                                    "actionType": "app",
+-                                    "description": "Install the appropriate Sentry SDK for your application",
+-                                    "detailedDescription": "Choose your platform and send an event.",
+-                                    "display": true,
+-                                    "location": "/settings/org-slug/projects/:projectId/install/",
+-                                    "requisiteTasks": Array [
+-                                      Object {
+-                                        "actionType": "app",
+-                                        "description": "Create your first Sentry project",
+-                                        "detailedDescription": "Follow our quick and easy steps to set up a project and start sending errors.",
+-                                        "display": true,
+-                                        "location": "/organizations/org-slug/projects/new/",
+-                                        "requisiteTasks": Array [],
+-                                        "requisites": Array [],
++                                        Object {
++                                          "type": "return",
++                                          "value": undefined,
++                                        },
++                                        Object {
++                                          "type": "return",
++                                          "value": undefined,
++                                        },
++                                        Object {
++                                          "type": "return",
++                                          "value": undefined,
++                                        },
++                                        Object {
++                                          "type": "return",
++                                          "value": undefined,
++                                        },
++                                        Object {
++                                          "type": "return",
++                                          "value": undefined,
++                                        },
++                                        Object {
++                                          "type": "return",
++                                          "value": undefined,
++                                        },
++                                        Object {
++                                          "type": "return",
++                                          "value": undefined,
++                                        },
++                                        Object {
++                                          "type": "return",
++                                          "value": undefined,
++                                        },
++                                        Object {
++                                          "type": "return",
++                                          "value": undefined,
++                                        },
++                                        Object {
++                                          "type": "return",
++                                          "value": undefined,
++                                        },
++                                        Object {
++                                          "type": "return",
++                                          "value": undefined,
++                                        },
++                                        Object {
++                                          "type": "return",
++                                          "value": undefined,
++                                        },
++                                        Object {
++                                          "type": "return",
++                                          "value": undefined,
++                                        },
++                                        Object {
++                                          "type": "return",
++                                          "value": undefined,
++                                        },
++                                        Object {
++                                          "type": "return",
++                                          "value": undefined,
++                                        },
++                                        Object {
++                                          "type": "return",
++                                          "value": undefined,
++                                        },
++                                      ],
++                                    },
++                                    "go": [MockFunction],
++                                    "goBack": [MockFunction],
++                                    "goForward": [MockFunction],
++                                    "isActive": [MockFunction],
++                                    "listen": [MockFunction],
++                                    "location": Object {
++                                      "query": Object {},
++                                    },
++                                    "push": [MockFunction],
++                                    "replace": [MockFunction],
++                                    "setRouteLeaveHook": [MockFunction],
++                                  }
++                                }
++                                task={
++                                  Object {
++                                    "SupplementComponent": [Function],
++                                    "actionType": "app",
++                                    "description": "Install the appropriate Sentry SDK for your application",
++                                    "detailedDescription": "Choose your platform and send an event.",
++                                    "display": true,
++                                    "location": "/settings/org-slug/projects/:projectId/install/",
++                                    "requisiteTasks": Array [
++                                      Object {
++                                        "actionType": "app",
++                                        "description": "Create your first Sentry project",
++                                        "detailedDescription": "Follow our quick and easy steps to set up a project and start sending errors.",
++                                        "display": true,
++                                        "location": "/organizations/org-slug/projects/new/",
++                                        "requisiteTasks": Array [],
++                                        "requisites": Array [],
+                                         "skippable": false,
+                                         "task": "create_project",
+                                         "title": "Create a project",
+@@ -4573,6 +4909,18 @@ exports[`Sidebar can have onboarding feature 1`] = `
+                                         Array [
+                                           "/settings/org-slug/",
+                                         ],
++                                        Array [
++                                          "#",
++                                        ],
++                                        Array [
++                                          "#",
++                                        ],
++                                        Array [
++                                          "#",
++                                        ],
++                                        Array [
++                                          "#",
++                                        ],
+                                         Array [
+                                           "/organizations/org-slug/projects/",
+                                         ],
+@@ -4594,6 +4942,15 @@ exports[`Sidebar can have onboarding feature 1`] = `
+                                         Array [
+                                           "/settings/org-slug/",
+                                         ],
++                                        Array [
++                                          "#",
++                                        ],
++                                        Array [
++                                          "#",
++                                        ],
++                                        Array [
++                                          "#",
++                                        ],
+                                         Array [
+                                           "/organizations/org-slug/projects/",
+                                         ],
+@@ -4615,6 +4972,15 @@ exports[`Sidebar can have onboarding feature 1`] = `
+                                         Array [
+                                           "/settings/org-slug/",
+                                         ],
++                                        Array [
++                                          "#",
++                                        ],
++                                        Array [
++                                          "#",
++                                        ],
++                                        Array [
++                                          "#",
++                                        ],
+                                         Array [
+                                           "/organizations/org-slug/projects/",
+                                         ],
+@@ -4636,6 +5002,15 @@ exports[`Sidebar can have onboarding feature 1`] = `
+                                         Array [
+                                           "/settings/org-slug/",
+                                         ],
++                                        Array [
++                                          "#",
++                                        ],
++                                        Array [
++                                          "#",
++                                        ],
++                                        Array [
++                                          "#",
++                                        ],
+                                         Array [
+                                           "/organizations/org-slug/projects/",
+                                         ],
+@@ -4660,6 +5035,15 @@ exports[`Sidebar can have onboarding feature 1`] = `
+                                         Array [
+                                           "https://forum.sentry.io/",
+                                         ],
++                                        Array [
++                                          "#",
++                                        ],
++                                        Array [
++                                          "#",
++                                        ],
++                                        Array [
++                                          "#",
++                                        ],
+                                       ],
+                                       "results": Array [
+                                         Object {
+@@ -4818,6 +5202,70 @@ exports[`Sidebar can have onboarding feature 1`] = `
+                                           "type": "return",
+                                           "value": undefined,
+                                         },
++                                        Object {
++                                          "type": "return",
++                                          "value": undefined,
++                                        },
++                                        Object {
++                                          "type": "return",
++                                          "value": undefined,
++                                        },
++                                        Object {
++                                          "type": "return",
++                                          "value": undefined,
++                                        },
++                                        Object {
++                                          "type": "return",
++                                          "value": undefined,
++                                        },
++                                        Object {
++                                          "type": "return",
++                                          "value": undefined,
++                                        },
++                                        Object {
++                                          "type": "return",
++                                          "value": undefined,
++                                        },
++                                        Object {
++                                          "type": "return",
++                                          "value": undefined,
++                                        },
++                                        Object {
++                                          "type": "return",
++                                          "value": undefined,
++                                        },
++                                        Object {
++                                          "type": "return",
++                                          "value": undefined,
++                                        },
++                                        Object {
++                                          "type": "return",
++                                          "value": undefined,
++                                        },
++                                        Object {
++                                          "type": "return",
++                                          "value": undefined,
++                                        },
++                                        Object {
++                                          "type": "return",
++                                          "value": undefined,
++                                        },
++                                        Object {
++                                          "type": "return",
++                                          "value": undefined,
++                                        },
++                                        Object {
++                                          "type": "return",
++                                          "value": undefined,
++                                        },
++                                        Object {
++                                          "type": "return",
++                                          "value": undefined,
++                                        },
++                                        Object {
++                                          "type": "return",
++                                          "value": undefined,
++                                        },
+                                       ],
+                                     },
+                                     "go": [MockFunction],
+@@ -5367,6 +5815,18 @@ exports[`Sidebar can have onboarding feature 1`] = `
+                                         Array [
+                                           "/settings/org-slug/",
+                                         ],
++                                        Array [
++                                          "#",
++                                        ],
++                                        Array [
++                                          "#",
++                                        ],
++                                        Array [
++                                          "#",
++                                        ],
++                                        Array [
++                                          "#",
++                                        ],
+                                         Array [
+                                           "/organizations/org-slug/projects/",
+                                         ],
+@@ -5388,6 +5848,15 @@ exports[`Sidebar can have onboarding feature 1`] = `
+                                         Array [
+                                           "/settings/org-slug/",
+                                         ],
++                                        Array [
++                                          "#",
++                                        ],
++                                        Array [
++                                          "#",
++                                        ],
++                                        Array [
++                                          "#",
++                                        ],
+                                         Array [
+                                           "/organizations/org-slug/projects/",
+                                         ],
+@@ -5409,6 +5878,15 @@ exports[`Sidebar can have onboarding feature 1`] = `
+                                         Array [
+                                           "/settings/org-slug/",
+                                         ],
++                                        Array [
++                                          "#",
++                                        ],
++                                        Array [
++                                          "#",
++                                        ],
++                                        Array [
++                                          "#",
++                                        ],
+                                         Array [
+                                           "/organizations/org-slug/projects/",
+                                         ],
+@@ -5430,6 +5908,15 @@ exports[`Sidebar can have onboarding feature 1`] = `
+                                         Array [
+                                           "/settings/org-slug/",
+                                         ],
++                                        Array [
++                                          "#",
++                                        ],
++                                        Array [
++                                          "#",
++                                        ],
++                                        Array [
++                                          "#",
++                                        ],
+                                         Array [
+                                           "/organizations/org-slug/projects/",
+                                         ],
+@@ -5454,6 +5941,15 @@ exports[`Sidebar can have onboarding feature 1`] = `
+                                         Array [
+                                           "https://forum.sentry.io/",
+                                         ],
++                                        Array [
++                                          "#",
++                                        ],
++                                        Array [
++                                          "#",
++                                        ],
++                                        Array [
++                                          "#",
++                                        ],
+                                       ],
+                                       "results": Array [
+                                         Object {
+@@ -5612,6 +6108,70 @@ exports[`Sidebar can have onboarding feature 1`] = `
+                                           "type": "return",
+                                           "value": undefined,
+                                         },
++                                        Object {
++                                          "type": "return",
++                                          "value": undefined,
++                                        },
++                                        Object {
++                                          "type": "return",
++                                          "value": undefined,
++                                        },
++                                        Object {
++                                          "type": "return",
++                                          "value": undefined,
++                                        },
++                                        Object {
++                                          "type": "return",
++                                          "value": undefined,
++                                        },
++                                        Object {
++                                          "type": "return",
++                                          "value": undefined,
++                                        },
++                                        Object {
++                                          "type": "return",
++                                          "value": undefined,
++                                        },
++                                        Object {
++                                          "type": "return",
++                                          "value": undefined,
++                                        },
++                                        Object {
++                                          "type": "return",
++                                          "value": undefined,
++                                        },
++                                        Object {
++                                          "type": "return",
++                                          "value": undefined,
++                                        },
++                                        Object {
++                                          "type": "return",
++                                          "value": undefined,
++                                        },
++                                        Object {
++                                          "type": "return",
++                                          "value": undefined,
++                                        },
++                                        Object {
++                                          "type": "return",
++                                          "value": undefined,
++                                        },
++                                        Object {
++                                          "type": "return",
++                                          "value": undefined,
++                                        },
++                                        Object {
++                                          "type": "return",
++                                          "value": undefined,
++                                        },
++                                        Object {
++                                          "type": "return",
++                                          "value": undefined,
++                                        },
++                                        Object {
++                                          "type": "return",
++                                          "value": undefined,
++                                        },
+                                       ],
+                                     },
+                                     "go": [MockFunction],
+@@ -6163,6 +6723,18 @@ exports[`Sidebar can have onboarding feature 1`] = `
+                                         Array [
+                                           "/settings/org-slug/",
+                                         ],
++                                        Array [
++                                          "#",
++                                        ],
++                                        Array [
++                                          "#",
++                                        ],
++                                        Array [
++                                          "#",
++                                        ],
++                                        Array [
++                                          "#",
++                                        ],
+                                         Array [
+                                           "/organizations/org-slug/projects/",
+                                         ],
+@@ -6184,6 +6756,15 @@ exports[`Sidebar can have onboarding feature 1`] = `
+                                         Array [
+                                           "/settings/org-slug/",
+                                         ],
++                                        Array [
++                                          "#",
++                                        ],
++                                        Array [
++                                          "#",
++                                        ],
++                                        Array [
++                                          "#",
++                                        ],
+                                         Array [
+                                           "/organizations/org-slug/projects/",
+                                         ],
+@@ -6205,6 +6786,15 @@ exports[`Sidebar can have onboarding feature 1`] = `
+                                         Array [
+                                           "/settings/org-slug/",
+                                         ],
++                                        Array [
++                                          "#",
++                                        ],
++                                        Array [
++                                          "#",
++                                        ],
++                                        Array [
++                                          "#",
++                                        ],
+                                         Array [
+                                           "/organizations/org-slug/projects/",
+                                         ],
+@@ -6226,6 +6816,15 @@ exports[`Sidebar can have onboarding feature 1`] = `
+                                         Array [
+                                           "/settings/org-slug/",
+                                         ],
++                                        Array [
++                                          "#",
++                                        ],
++                                        Array [
++                                          "#",
++                                        ],
++                                        Array [
++                                          "#",
++                                        ],
+                                         Array [
+                                           "/organizations/org-slug/projects/",
+                                         ],
+@@ -6250,6 +6849,15 @@ exports[`Sidebar can have onboarding feature 1`] = `
+                                         Array [
+                                           "https://forum.sentry.io/",
+                                         ],
++                                        Array [
++                                          "#",
++                                        ],
++                                        Array [
++                                          "#",
++                                        ],
++                                        Array [
++                                          "#",
++                                        ],
+                                       ],
+                                       "results": Array [
+                                         Object {
+@@ -6408,6 +7016,70 @@ exports[`Sidebar can have onboarding feature 1`] = `
+                                           "type": "return",
+                                           "value": undefined,
+                                         },
++                                        Object {
++                                          "type": "return",
++                                          "value": undefined,
++                                        },
++                                        Object {
++                                          "type": "return",
++                                          "value": undefined,
++                                        },
++                                        Object {
++                                          "type": "return",
++                                          "value": undefined,
++                                        },
++                                        Object {
++                                          "type": "return",
++                                          "value": undefined,
++                                        },
++                                        Object {
++                                          "type": "return",
++                                          "value": undefined,
++                                        },
++                                        Object {
++                                          "type": "return",
++                                          "value": undefined,
++                                        },
++                                        Object {
++                                          "type": "return",
++                                          "value": undefined,
++                                        },
++                                        Object {
++                                          "type": "return",
++                                          "value": undefined,
++                                        },
++                                        Object {
++                                          "type": "return",
++                                          "value": undefined,
++                                        },
++                                        Object {
++                                          "type": "return",
++                                          "value": undefined,
++                                        },
++                                        Object {
++                                          "type": "return",
++                                          "value": undefined,
++                                        },
++                                        Object {
++                                          "type": "return",
++                                          "value": undefined,
++                                        },
++                                        Object {
++                                          "type": "return",
++                                          "value": undefined,
++                                        },
++                                        Object {
++                                          "type": "return",
++                                          "value": undefined,
++                                        },
++                                        Object {
++                                          "type": "return",
++                                          "value": undefined,
++                                        },
++                                        Object {
++                                          "type": "return",
++                                          "value": undefined,
++                                        },
+                                       ],
+                                     },
+                                     "go": [MockFunction],
+@@ -6874,6 +7546,18 @@ exports[`Sidebar can have onboarding feature 1`] = `
+                                         Array [
+                                           "/settings/org-slug/",
+                                         ],
++                                        Array [
++                                          "#",
++                                        ],
++                                        Array [
++                                          "#",
++                                        ],
++                                        Array [
++                                          "#",
++                                        ],
++                                        Array [
++                                          "#",
++                                        ],
+                                         Array [
+                                           "/organizations/org-slug/projects/",
+                                         ],
+@@ -6895,6 +7579,15 @@ exports[`Sidebar can have onboarding feature 1`] = `
+                                         Array [
+                                           "/settings/org-slug/",
+                                         ],
++                                        Array [
++                                          "#",
++                                        ],
++                                        Array [
++                                          "#",
++                                        ],
++                                        Array [
++                                          "#",
++                                        ],
+                                         Array [
+                                           "/organizations/org-slug/projects/",
+                                         ],
+@@ -6916,6 +7609,15 @@ exports[`Sidebar can have onboarding feature 1`] = `
+                                         Array [
+                                           "/settings/org-slug/",
+                                         ],
++                                        Array [
++                                          "#",
++                                        ],
++                                        Array [
++                                          "#",
++                                        ],
++                                        Array [
++                                          "#",
++                                        ],
+                                         Array [
+                                           "/organizations/org-slug/projects/",
+                                         ],
+@@ -6937,6 +7639,15 @@ exports[`Sidebar can have onboarding feature 1`] = `
+                                         Array [
+                                           "/settings/org-slug/",
+                                         ],
++                                        Array [
++                                          "#",
++                                        ],
++                                        Array [
++                                          "#",
++                                        ],
++                                        Array [
++                                          "#",
++                                        ],
+                                         Array [
+                                           "/organizations/org-slug/projects/",
+                                         ],
+@@ -6961,6 +7672,15 @@ exports[`Sidebar can have onboarding feature 1`] = `
+                                         Array [
+                                           "https://forum.sentry.io/",
+                                         ],
++                                        Array [
++                                          "#",
++                                        ],
++                                        Array [
++                                          "#",
++                                        ],
++                                        Array [
++                                          "#",
++                                        ],
+                                       ],
+                                       "results": Array [
+                                         Object {
+@@ -7119,6 +7839,70 @@ exports[`Sidebar can have onboarding feature 1`] = `
+                                           "type": "return",
+                                           "value": undefined,
+                                         },
++                                        Object {
++                                          "type": "return",
++                                          "value": undefined,
++                                        },
++                                        Object {
++                                          "type": "return",
++                                          "value": undefined,
++                                        },
++                                        Object {
++                                          "type": "return",
++                                          "value": undefined,
++                                        },
++                                        Object {
++                                          "type": "return",
++                                          "value": undefined,
++                                        },
++                                        Object {
++                                          "type": "return",
++                                          "value": undefined,
++                                        },
++                                        Object {
++                                          "type": "return",
++                                          "value": undefined,
++                                        },
++                                        Object {
++                                          "type": "return",
++                                          "value": undefined,
++                                        },
++                                        Object {
++                                          "type": "return",
++                                          "value": undefined,
++                                        },
++                                        Object {
++                                          "type": "return",
++                                          "value": undefined,
++                                        },
++                                        Object {
++                                          "type": "return",
++                                          "value": undefined,
++                                        },
++                                        Object {
++                                          "type": "return",
++                                          "value": undefined,
++                                        },
++                                        Object {
++                                          "type": "return",
++                                          "value": undefined,
++                                        },
++                                        Object {
++                                          "type": "return",
++                                          "value": undefined,
++                                        },
++                                        Object {
++                                          "type": "return",
++                                          "value": undefined,
++                                        },
++                                        Object {
++                                          "type": "return",
++                                          "value": undefined,
++                                        },
++                                        Object {
++                                          "type": "return",
++                                          "value": undefined,
++                                        },
+                                       ],
+                                     },
+                                     "go": [MockFunction],

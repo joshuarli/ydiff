@@ -1,0 +1,375 @@
+commit b3e365e5db58046244d52cad596d0dd390d9c59c
+Author: k-fish <6111995+k-fish@users.noreply.github.com>
+Date:   Mon Jun 22 11:53:59 2020 -0700
+
+    ref(ts): Convert `scoreBar` to typescript (#19434)
+    
+    This converts the `scoreBar` component to typescript
+    
+    * ref(ts): Convert `scoreBar` to typescript
+    * Switch ScoreBar to be a functional component
+
+diff --git a/src/sentry/static/sentry/app/components/scoreBar.jsx b/src/sentry/static/sentry/app/components/scoreBar.jsx
+deleted file mode 100644
+index 049556bf76..0000000000
+--- a/src/sentry/static/sentry/app/components/scoreBar.jsx
++++ /dev/null
+@@ -1,77 +0,0 @@
+-import PropTypes from 'prop-types';
+-import React from 'react';
+-import styled from '@emotion/styled';
+-
+-import theme from 'app/utils/theme';
+-
+-class ScoreBar extends React.Component {
+-  static propTypes = {
+-    vertical: PropTypes.bool,
+-    score: PropTypes.number.isRequired,
+-    /** Array of strings */
+-    palette: PropTypes.arrayOf(PropTypes.string),
+-    /** Array of classNames whose index maps to score */
+-    paletteClassNames: PropTypes.arrayOf(PropTypes.string),
+-    size: PropTypes.number,
+-    thickness: PropTypes.number,
+-    radius: PropTypes.number,
+-  };
+-
+-  static defaultProps = {
+-    size: 40,
+-    thickness: 4,
+-    radius: 3,
+-    palette: theme.similarity.colors,
+-  };
+-
+-  render() {
+-    const {className, vertical, palette, score, size, thickness, radius} = this.props;
+-    const maxScore = palette.length;
+-
+-    // Make sure score is between 0 and maxScore
+-    const scoreInBounds = score >= maxScore ? maxScore : score <= 0 ? 0 : score;
+-    // Make sure paletteIndex is 0 based
+-    const paletteIndex = scoreInBounds - 1;
+-
+-    // Size of bar, depends on orientation, although we could just apply a transformation via css
+-    const barProps = {
+-      vertical,
+-      thickness,
+-      size,
+-      radius,
+-    };
+-
+-    return (
+-      <div className={className}>
+-        {[...Array(scoreInBounds)].map((_j, i) => (
+-          <Bar {...barProps} key={i} color={palette[paletteIndex]} />
+-        ))}
+-        {[...Array(maxScore - scoreInBounds)].map((_j, i) => (
+-          <Bar key={`empty-${i}`} {...barProps} empty />
+-        ))}
+-      </div>
+-    );
+-  }
+-}
+-
+-const StyledScoreBar = styled(ScoreBar)`
+-  display: flex;
+-
+-  ${p =>
+-    p.vertical
+-      ? `flex-direction: column-reverse;
+-    justify-content: flex-end;`
+-      : 'min-width: 80px;'};
+-`;
+-
+-const Bar = styled('div')`
+-  border-radius: ${p => p.radius}px;
+-  margin: 2px;
+-  ${p => p.empty && `background-color: ${p.theme.similarity.empty};`};
+-  ${p => p.color && `background-color: ${p.color};`};
+-
+-  width: ${p => (!p.vertical ? p.thickness : p.size)}px;
+-  height: ${p => (!p.vertical ? p.size : p.thickness)}px;
+-`;
+-
+-export default StyledScoreBar;
+diff --git a/src/sentry/static/sentry/app/components/scoreBar.tsx b/src/sentry/static/sentry/app/components/scoreBar.tsx
+new file mode 100644
+index 0000000000..968ac64120
+--- /dev/null
++++ b/src/sentry/static/sentry/app/components/scoreBar.tsx
+@@ -0,0 +1,95 @@
++import PropTypes from 'prop-types';
++import React from 'react';
++import styled from '@emotion/styled';
++
++import theme from 'app/utils/theme';
++
++type Props = {
++  score: number;
++  size?: number;
++  thickness?: number;
++  radius?: number;
++  palette?: Readonly<string[]>;
++  className?: string;
++  paletteClassNames?: string[];
++  vertical?: boolean;
++};
++
++const ScoreBar = ({
++  score,
++  className,
++  vertical,
++  size = 40,
++  thickness = 4,
++  radius = 3,
++  palette = theme.similarity.colors,
++}: Props) => {
++  const maxScore = palette.length;
++
++  // Make sure score is between 0 and maxScore
++  const scoreInBounds = score >= maxScore ? maxScore : score <= 0 ? 0 : score;
++  // Make sure paletteIndex is 0 based
++  const paletteIndex = scoreInBounds - 1;
++
++  // Size of bar, depends on orientation, although we could just apply a transformation via css
++  const barProps = {
++    vertical,
++    thickness,
++    size,
++    radius,
++  };
++
++  return (
++    <div className={className}>
++      {[...Array(scoreInBounds)].map((_j, i) => (
++        <Bar {...barProps} key={i} color={palette[paletteIndex]} />
++      ))}
++      {[...Array(maxScore - scoreInBounds)].map((_j, i) => (
++        <Bar key={`empty-${i}`} {...barProps} empty />
++      ))}
++    </div>
++  );
++};
++
++ScoreBar.propTypes = {
++  vertical: PropTypes.bool,
++  score: PropTypes.number.isRequired,
++  /** Array of strings */
++  palette: PropTypes.arrayOf(PropTypes.string),
++  /** Array of classNames whose index maps to score */
++  paletteClassNames: PropTypes.arrayOf(PropTypes.string),
++  size: PropTypes.number,
++  thickness: PropTypes.number,
++  radius: PropTypes.number,
++};
++
++const StyledScoreBar = styled(ScoreBar)`
++  display: flex;
++
++  ${p =>
++    p.vertical
++      ? `flex-direction: column-reverse;
++    justify-content: flex-end;`
++      : 'min-width: 80px;'};
++`;
++
++type BarProps = {
++  radius: number;
++  size: number;
++  thickness: number;
++  color?: string;
++  empty?: boolean;
++  vertical?: boolean;
++};
++
++const Bar = styled('div')<BarProps>`
++  border-radius: ${p => p.radius}px;
++  margin: 2px;
++  ${p => p.empty && `background-color: ${p.theme.similarity.empty};`};
++  ${p => p.color && `background-color: ${p.color};`};
++
++  width: ${p => (!p.vertical ? p.thickness : p.size)}px;
++  height: ${p => (!p.vertical ? p.size : p.thickness)}px;
++`;
++
++export default StyledScoreBar;
+diff --git a/tests/js/spec/views/organizationGroupDetails/__snapshots__/groupSimilar.spec.jsx.snap b/tests/js/spec/views/organizationGroupDetails/__snapshots__/groupSimilar.spec.jsx.snap
+index be35bc42ae..7b7e51ca00 100644
+--- a/tests/js/spec/views/organizationGroupDetails/__snapshots__/groupSimilar.spec.jsx.snap
++++ b/tests/js/spec/views/organizationGroupDetails/__snapshots__/groupSimilar.spec.jsx.snap
+@@ -1669,40 +1669,16 @@ exports[`Issues Similar View renders with mocked data 1`] = `
+                               onMouseLeave={[Function]}
+                             >
+                               <StyledScoreBar
+-                                palette={
+-                                  Array [
+-                                    "#ec5e44",
+-                                    "#f38259",
+-                                    "#f9a66d",
+-                                    "#98b480",
+-                                    "#57be8c",
+-                                  ]
+-                                }
+-                                radius={3}
+                                 score={4}
+-                                size={40}
+-                                thickness={4}
+                                 vertical={true}
+                               >
+                                 <ScoreBar
+-                                  className="css-tics7q-StyledScoreBar eecxaw40"
+-                                  palette={
+-                                    Array [
+-                                      "#ec5e44",
+-                                      "#f38259",
+-                                      "#f9a66d",
+-                                      "#98b480",
+-                                      "#57be8c",
+-                                    ]
+-                                  }
+-                                  radius={3}
++                                  className="css-tics7q-StyledScoreBar e1h9dyli0"
+                                   score={4}
+-                                  size={40}
+-                                  thickness={4}
+                                   vertical={true}
+                                 >
+                                   <div
+-                                    className="css-tics7q-StyledScoreBar eecxaw40"
++                                    className="css-tics7q-StyledScoreBar e1h9dyli0"
+                                   >
+                                     <Bar
+                                       color="#98b480"
+@@ -1713,7 +1689,7 @@ exports[`Issues Similar View renders with mocked data 1`] = `
+                                       vertical={true}
+                                     >
+                                       <div
+-                                        className="css-1gui0xz-Bar eecxaw41"
++                                        className="css-1gui0xz-Bar e1h9dyli1"
+                                         color="#98b480"
+                                         radius={3}
+                                         size={40}
+@@ -1728,7 +1704,7 @@ exports[`Issues Similar View renders with mocked data 1`] = `
+                                       vertical={true}
+                                     >
+                                       <div
+-                                        className="css-1gui0xz-Bar eecxaw41"
++                                        className="css-1gui0xz-Bar e1h9dyli1"
+                                         color="#98b480"
+                                         radius={3}
+                                         size={40}
+@@ -1743,7 +1719,7 @@ exports[`Issues Similar View renders with mocked data 1`] = `
+                                       vertical={true}
+                                     >
+                                       <div
+-                                        className="css-1gui0xz-Bar eecxaw41"
++                                        className="css-1gui0xz-Bar e1h9dyli1"
+                                         color="#98b480"
+                                         radius={3}
+                                         size={40}
+@@ -1758,7 +1734,7 @@ exports[`Issues Similar View renders with mocked data 1`] = `
+                                       vertical={true}
+                                     >
+                                       <div
+-                                        className="css-1gui0xz-Bar eecxaw41"
++                                        className="css-1gui0xz-Bar e1h9dyli1"
+                                         color="#98b480"
+                                         radius={3}
+                                         size={40}
+@@ -1773,7 +1749,7 @@ exports[`Issues Similar View renders with mocked data 1`] = `
+                                       vertical={true}
+                                     >
+                                       <div
+-                                        className="css-3fvo9r-Bar eecxaw41"
++                                        className="css-3fvo9r-Bar e1h9dyli1"
+                                         radius={3}
+                                         size={40}
+                                       />
+@@ -1807,40 +1783,16 @@ exports[`Issues Similar View renders with mocked data 1`] = `
+                               onMouseLeave={[Function]}
+                             >
+                               <StyledScoreBar
+-                                palette={
+-                                  Array [
+-                                    "#ec5e44",
+-                                    "#f38259",
+-                                    "#f9a66d",
+-                                    "#98b480",
+-                                    "#57be8c",
+-                                  ]
+-                                }
+-                                radius={3}
+                                 score={0}
+-                                size={40}
+-                                thickness={4}
+                                 vertical={true}
+                               >
+                                 <ScoreBar
+-                                  className="css-tics7q-StyledScoreBar eecxaw40"
+-                                  palette={
+-                                    Array [
+-                                      "#ec5e44",
+-                                      "#f38259",
+-                                      "#f9a66d",
+-                                      "#98b480",
+-                                      "#57be8c",
+-                                    ]
+-                                  }
+-                                  radius={3}
++                                  className="css-tics7q-StyledScoreBar e1h9dyli0"
+                                   score={0}
+-                                  size={40}
+-                                  thickness={4}
+                                   vertical={true}
+                                 >
+                                   <div
+-                                    className="css-tics7q-StyledScoreBar eecxaw40"
++                                    className="css-tics7q-StyledScoreBar e1h9dyli0"
+                                   >
+                                     <Bar
+                                       empty={true}
+@@ -1851,7 +1803,7 @@ exports[`Issues Similar View renders with mocked data 1`] = `
+                                       vertical={true}
+                                     >
+                                       <div
+-                                        className="css-3fvo9r-Bar eecxaw41"
++                                        className="css-3fvo9r-Bar e1h9dyli1"
+                                         radius={3}
+                                         size={40}
+                                       />
+@@ -1865,7 +1817,7 @@ exports[`Issues Similar View renders with mocked data 1`] = `
+                                       vertical={true}
+                                     >
+                                       <div
+-                                        className="css-3fvo9r-Bar eecxaw41"
++                                        className="css-3fvo9r-Bar e1h9dyli1"
+                                         radius={3}
+                                         size={40}
+                                       />
+@@ -1879,7 +1831,7 @@ exports[`Issues Similar View renders with mocked data 1`] = `
+                                       vertical={true}
+                                     >
+                                       <div
+-                                        className="css-3fvo9r-Bar eecxaw41"
++                                        className="css-3fvo9r-Bar e1h9dyli1"
+                                         radius={3}
+                                         size={40}
+                                       />
+@@ -1893,7 +1845,7 @@ exports[`Issues Similar View renders with mocked data 1`] = `
+                                       vertical={true}
+                                     >
+                                       <div
+-                                        className="css-3fvo9r-Bar eecxaw41"
++                                        className="css-3fvo9r-Bar e1h9dyli1"
+                                         radius={3}
+                                         size={40}
+                                       />
+@@ -1907,7 +1859,7 @@ exports[`Issues Similar View renders with mocked data 1`] = `
+                                       vertical={true}
+                                     >
+                                       <div
+-                                        className="css-3fvo9r-Bar eecxaw41"
++                                        className="css-3fvo9r-Bar e1h9dyli1"
+                                         radius={3}
+                                         size={40}
+                                       />

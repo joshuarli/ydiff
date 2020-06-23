@@ -1,0 +1,165 @@
+commit a4deb0adb2b7699bd3ac228b3e58a782f9af2a9c
+Author: Dan Fuller <dfuller@sentry.io>
+Date:   Mon Jun 22 13:40:54 2020 -0700
+
+    feat(metric_alerts): Start writing activity to alerts to note when the alert actually started (#19358)
+    
+    * feat(metric_alerts): Start writing activity to alerts to note when the alert actually started
+    
+    We currently write an activit to alerts to mark when it was created. This isn't the same as when the
+    alert started, which will always be some amount of time before we created the alert. This adds an
+    extra activity to note the actual start time, which makes it clear to the user what happened, and
+    gives us a date that matches up with the start marker on the graph.
+    
+    * Adding incident activity support
+    
+    * Adding incident activity support
+    
+    Co-authored-by: Chris Fuller <cfuller@sentry.io>
+
+diff --git a/src/sentry/incidents/logic.py b/src/sentry/incidents/logic.py
+index f80c7b452a..ffab9f9023 100644
+--- a/src/sentry/incidents/logic.py
++++ b/src/sentry/incidents/logic.py
+@@ -97,6 +97,9 @@ def create_incident(
+                     sender=type(incident_project), instance=incident_project, created=True
+                 )
+ 
++        create_incident_activity(
++            incident, IncidentActivityType.STARTED, user=user, date_added=date_started
++        )
+         create_incident_activity(incident, IncidentActivityType.DETECTED, user=user)
+         analytics.record(
+             "incident.created",
+@@ -200,11 +203,15 @@ def create_incident_activity(
+     previous_value=None,
+     comment=None,
+     mentioned_user_ids=None,
++    date_added=None,
+ ):
+     if activity_type == IncidentActivityType.COMMENT and user:
+         subscribe_to_incident(incident, user)
+     value = six.text_type(value) if value is not None else value
+     previous_value = six.text_type(previous_value) if previous_value is not None else previous_value
++    kwargs = {}
++    if date_added:
++        kwargs["date_added"] = date_added
+     activity = IncidentActivity.objects.create(
+         incident=incident,
+         type=activity_type.value,
+@@ -212,6 +219,7 @@ def create_incident_activity(
+         value=value,
+         previous_value=previous_value,
+         comment=comment,
++        **kwargs
+     )
+ 
+     if mentioned_user_ids:
+diff --git a/src/sentry/incidents/models.py b/src/sentry/incidents/models.py
+index 0686df61eb..ff6f92728a 100644
+--- a/src/sentry/incidents/models.py
++++ b/src/sentry/incidents/models.py
+@@ -249,6 +249,7 @@ class IncidentActivityType(Enum):
+     DETECTED = 1
+     STATUS_CHANGE = 2
+     COMMENT = 3
++    STARTED = 4
+ 
+ 
+ class IncidentActivity(Model):
+diff --git a/src/sentry/incidents/subscription_processor.py b/src/sentry/incidents/subscription_processor.py
+index 487b8ed1b9..3e2d5f07f3 100644
+--- a/src/sentry/incidents/subscription_processor.py
++++ b/src/sentry/incidents/subscription_processor.py
+@@ -204,6 +204,9 @@ class SubscriptionProcessor(object):
+                     self.alert_rule.name,
+                     alert_rule=self.alert_rule,
+                     date_started=detected_at,
++                    # TODO: This should probably be either the current time or the
++                    # message time. Current time likely makes most sense, since this is
++                    # when we actually noticed the problem.
+                     date_detected=detected_at,
+                     projects=[self.subscription.project],
+                 )
+diff --git a/src/sentry/static/sentry/app/views/alerts/details/activity/statusItem.tsx b/src/sentry/static/sentry/app/views/alerts/details/activity/statusItem.tsx
+index 3e49261085..2e50d1dc88 100644
+--- a/src/sentry/static/sentry/app/views/alerts/details/activity/statusItem.tsx
++++ b/src/sentry/static/sentry/app/views/alerts/details/activity/statusItem.tsx
+@@ -37,6 +37,7 @@ class StatusItem extends React.Component<Props> {
+     const {activity, authorName, incident, showTime} = this.props;
+ 
+     const isDetected = activity.type === IncidentActivityType.DETECTED;
++    const isStarted = activity.type === IncidentActivityType.STARTED;
+     const isClosed =
+       activity.type === IncidentActivityType.STATUS_CHANGE &&
+       activity.value === `${IncidentStatus.CLOSED}`;
+@@ -44,7 +45,7 @@ class StatusItem extends React.Component<Props> {
+       activity.type === IncidentActivityType.STATUS_CHANGE && !isClosed;
+ 
+     // Unknown activity, don't render anything
+-    if (!isDetected && !isClosed && !isTriggerChange) {
++    if (!isStarted && !isDetected && !isClosed && !isTriggerChange) {
+       return null;
+     }
+ 
+@@ -83,12 +84,11 @@ class StatusItem extends React.Component<Props> {
+               })}
+             {isDetected &&
+               (incident?.alertRule
+-                ? tct('[user] was triggered', {
+-                    user: <StatusValue>{incident.alertRule.name}</StatusValue>,
+-                  })
++                ? t('Alert was created')
+                 : tct('[user] created an alert', {
+                     user: <StatusValue>{authorName}</StatusValue>,
+                   }))}
++            {isStarted && t('Trigger conditions were met')}
+           </div>
+         }
+         date={getDynamicText({value: activity.dateCreated, fixed: new Date(0)})}
+diff --git a/src/sentry/static/sentry/app/views/alerts/types.tsx b/src/sentry/static/sentry/app/views/alerts/types.tsx
+index 5f4288c19f..02a55a6128 100644
+--- a/src/sentry/static/sentry/app/views/alerts/types.tsx
++++ b/src/sentry/static/sentry/app/views/alerts/types.tsx
+@@ -66,10 +66,11 @@ export enum IncidentType {
+ }
+ 
+ export enum IncidentActivityType {
+-  CREATED,
+-  DETECTED,
+-  STATUS_CHANGE,
+-  COMMENT,
++  CREATED = 0,
++  DETECTED = 1,
++  STATUS_CHANGE = 2,
++  COMMENT = 3,
++  STARTED = 4,
+ }
+ 
+ export enum IncidentStatus {
+diff --git a/tests/sentry/incidents/test_logic.py b/tests/sentry/incidents/test_logic.py
+index 1346641edd..503a02b58c 100644
+--- a/tests/sentry/incidents/test_logic.py
++++ b/tests/sentry/incidents/test_logic.py
+@@ -83,7 +83,7 @@ class CreateIncidentTest(TestCase):
+     def test_simple(self):
+         incident_type = IncidentType.ALERT_TRIGGERED
+         title = "hello"
+-        date_started = timezone.now()
++        date_started = timezone.now() - timedelta(minutes=5)
+         alert_rule = create_alert_rule(
+             self.organization, [self.project], "hello", "level:error", "count()", 10, 1
+         )
+@@ -107,6 +107,12 @@ class CreateIncidentTest(TestCase):
+         assert IncidentProject.objects.filter(
+             incident=incident, project__in=[self.project]
+         ).exists()
++        assert (
++            IncidentActivity.objects.filter(
++                incident=incident, type=IncidentActivityType.STARTED.value, date_added=date_started
++            ).count()
++            == 1
++        )
+         assert (
+             IncidentActivity.objects.filter(
+                 incident=incident, type=IncidentActivityType.DETECTED.value

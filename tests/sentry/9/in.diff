@@ -1,0 +1,43 @@
+commit 24ff1aa9e589590243f886e1ff41c9b53b4a58e1
+Author: Dan Fuller <dfuller@sentry.io>
+Date:   Mon Jun 22 11:33:32 2020 -0700
+
+    chore(subscriptions): Add logging about partitions/offsets when assigning/revoking partitions, and (#19474)
+    
+    when committing offsets
+    
+    I want to be able to see what the offsets are set to on the consumer so that we can come up with a
+    more permanent solution for the issues where our consumer lag monitor misfires due to low
+    transaction alert usage.
+
+diff --git a/src/sentry/snuba/query_subscription_consumer.py b/src/sentry/snuba/query_subscription_consumer.py
+index 1b824f8765..a7f57ae359 100644
+--- a/src/sentry/snuba/query_subscription_consumer.py
++++ b/src/sentry/snuba/query_subscription_consumer.py
+@@ -87,12 +87,14 @@ class QuerySubscriptionConsumer(object):
+                 else:
+                     updated_offset = partition.offset
+                 self.offsets[partition.partition] = updated_offset
++            logger.info("query-subscription-consumer.on_assign", extra={"offsets": self.offsets})
+ 
+         def on_revoke(consumer, partitions):
+             partition_numbers = [partition.partition for partition in partitions]
+             self.commit_offsets(partition_numbers)
+             for partition_number in partition_numbers:
+                 self.offsets.pop(partition_number, None)
++            logger.info("query-subscription-consumer.on_revoke", extra={"offsets": self.offsets})
+ 
+         self.consumer = Consumer(conf)
+         self.consumer.subscribe([self.topic], on_assign=on_assign, on_revoke=on_revoke)
+@@ -131,6 +133,11 @@ class QuerySubscriptionConsumer(object):
+         self.shutdown()
+ 
+     def commit_offsets(self, partitions=None):
++        logger.info(
++            "query-subscription-consumer.commit_offsets",
++            extra={"offsets": self.offsets, "partitions": partitions},
++        )
++
+         if self.offsets and self.consumer:
+             if partitions is None:
+                 partitions = self.offsets.keys()
