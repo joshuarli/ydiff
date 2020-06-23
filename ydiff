@@ -2,6 +2,7 @@
 
 import sys
 import re
+import signal
 import difflib
 from os import get_terminal_size
 
@@ -447,6 +448,9 @@ class DiffMarker(object):
 
 
 def main():
+    signal.signal(signal.SIGPIPE, signal.SIG_DFL)
+    signal.signal(signal.SIGINT, signal.SIG_DFL)
+
     for diff in DiffParser(sys.stdin).get_diff_generator():
         marker = DiffMarker()
         color_diff = marker.markup_side_by_side(diff)
