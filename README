@@ -1,11 +1,16 @@
-This is [ydiff](https://github.com/ymattw/ydiff), heavily stripped down to only support:
+This is [ydiff](https://github.com/ymattw/ydiff), _heavily_ stripped down to only support:
 
 - reading unified diffs to stdin
 - py3.6+
 - utf-8
 - side-by-side rendering
 
-Essentially, it is a unified diff -> side-by-side renderer.
+And, modified to have:
+
+- less colorful colorization
+
+Essentially, it is now purely a unified diff -> side-by-side renderer.
+Why? Because I'm definitely not smart enough to port it to more performant languages.
 
 I use the following git aliases:
 
@@ -17,6 +22,8 @@ I use the following git aliases:
 	[color]
 		diff = never
 
-If you have Cython (`pip install Cython`), use `make` and you'll have a `ydiff-bin` you can use. Maybe it's faster, I'm not really sure.
+If you have Cython (`pip install Cython`), use `make` and you'll have a `ydiff-bin` you can use.
+According to my tests, it's faster. I'll have better numbers soon.
 
-Haven't figured out static compilation yet.
+I've only partially figured out static compilation on Linux x86_64.
+I say partially since staticx does all the heavy lifting.
