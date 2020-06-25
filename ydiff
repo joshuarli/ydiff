@@ -319,16 +319,6 @@ class DiffMarker(object):
         # [terminal size minus the line number columns and 3 separating spaces.
         width = (terminal_width - num_width * 2 - 3) // 2
 
-        left_num_fmt = colorize("%%(left_num)%ds" % num_width, "yellow")
-        right_num_fmt = colorize("%%(right_num)%ds" % num_width, "yellow")
-        line_fmt = (
-            left_num_fmt
-            + " %(left)s "
-            + COLORS["reset"]
-            + right_num_fmt
-            + " %(right)s\n"
-        )
-
         for line in diff._headers:
             yield colorize(line, "cyan")
 
@@ -389,14 +379,11 @@ class DiffMarker(object):
 
                     # Pad left line with spaces if needed
                     if llen < width:
-                        lcur = "%s%*s" % (lcur, width - llen, "")
+                        lcur += " " * (width - llen)
+                        # XXX: this doesn't work lol
+                        # lcur = f"{lcur: <{width}}"
 
-                    yield line_fmt % {
-                        "left_num": lncur,
-                        "left": lcur,
-                        "right_num": rncur,
-                        "right": rcur,
-                    }
+                    yield f"{COLORS['yellow']}{lncur:>{num_width}}{COLORS['reset']} {lcur} {COLORS['reset']}{COLORS['yellow']}{rncur:>{num_width}}{COLORS['reset']} {rcur}\n"
 
                     # Clean line numbers for further iterations
                     lncur = ""
