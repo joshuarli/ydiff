@@ -11,8 +11,7 @@ from os import get_terminal_size, environ
 # XXX: Since I'm using ydiff like `git diff | ydiff | less`,
 # both stdin and stdout are redirected, so we'll get inappropriate ioctl for those devices.
 # But we can use stderr (fd 2)!
-terminal_width = environ.get("YDIFF_WIDTH") or get_terminal_size(2)[0]
-terminal_width = int(terminal_width)
+terminal_width = int(environ.get("YDIFF_WIDTH") or get_terminal_size(2)[0])
 
 COLORS = {
     "reset": "\x1b[0m",
@@ -41,11 +40,10 @@ def strsplit(text, width):
     with all active colors.
     """
     first = ""
-    second = ""
     found_colors = []
     chars_cnt = 0
 
-    while text:
+    while len(text):
         # First of all, check if current string begins with any escape
         # sequence.
         append_len = 0
@@ -79,7 +77,7 @@ def strsplit(text, width):
         for color in found_colors:
             second = COLORS[color] + second
 
-    return (first, second, chars_cnt)
+    return first, second, chars_cnt
 
 
 class Hunk(object):
@@ -114,10 +112,10 @@ class Hunk(object):
         return difflib._mdiff(self._get_old_text(), self._get_new_text())
 
     def _get_old_text(self):
-        return [line for (attr, line) in self._hunk_list if attr != "+"]
+        return [line for attr, line in self._hunk_list if attr != "+"]
 
     def _get_new_text(self):
-        return [line for (attr, line) in self._hunk_list if attr != "-"]
+        return [line for attr, line in self._hunk_list if attr != "-"]
 
     def is_completed(self):
         old_completed = self._old_addr[1] == len(self._get_old_text())
@@ -165,7 +163,7 @@ class UnifiedDiff(object):
         return old_addr, new_addr
 
     def parse_hunk_line(self, line):
-        return (line[0], line[1:])
+        return line[0], line[1:]
 
     def is_old(self, line):
         return (
