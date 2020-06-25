@@ -16,94 +16,88 @@
 [0m[33m--- a/src/sentry/incidents/models.py
 [0m[33m+++ b/src/sentry/incidents/models.py
 [0m[1;34m@@ -219,7 +219,7 @@ class TimeSeriesSnapshot(Model):
-[0m[33m219[0m [0m[0m                                                             [0m[33m219[0m [0m[0m
-[33m220[0m [0m    start = models.DateTimeField()[0m                           [0m[33m220[0m [0m    start = models.DateTimeField()[0m
-[33m221[0m [0m    end = models.DateTimeField()[0m                             [0m[33m221[0m [0m    end = models.DateTimeField()[0m
-[33m222[0m [22m    values = ArrayField(of=ArrayField(models.[7m[33mIn[0m[22mt[7m[31meger[0m[22mField())[0m [0m[33m222[0m [22m    values = ArrayField(of=ArrayField(models.[7m[33mFloa[0m[22mtField()))[0m
-[33m   [0m [22m)[0m                                                            [0m[33m   [0m 
-[33m223[0m [0m    period = models.IntegerField()[0m                           [0m[33m223[0m [0m    period = models.IntegerField()[0m
-[33m224[0m [0m    date_added = models.DateTimeField(default=timezone.now)[0m  [0m[33m224[0m [0m    date_added = models.DateTimeField(default=timezone.now)[0m
-[33m225[0m [0m[0m                                                             [0m[33m225[0m [0m[0m
+[0m[33m220[0m     start = models.DateTimeField()                           [33m220[0m     start = models.DateTimeField()
+[33m221[0m     end = models.DateTimeField()                             [33m221[0m     end = models.DateTimeField()
+[33m222[0m [22m    values = ArrayField(of=ArrayField(models.[7m[33mIn[0m[22mt[7m[31meger[0m[22mField())[0m [33m222[0m [22m    values = ArrayField(of=ArrayField(models.[7m[33mFloa[0m[22mtField()))[0m
+[33m   [0m [22m)[0m                                                            [33m   [0m 
+[33m223[0m     period = models.IntegerField()                           [33m223[0m     period = models.IntegerField()
+[33m224[0m     date_added = models.DateTimeField(default=timezone.now)  [33m224[0m     date_added = models.DateTimeField(default=timezone.now)
 [1;34m@@ -234,7 +234,15 @@ class TimeSeriesSnapshot(Model):
-[0m[33m234[0m [0m        and 'count' keys.[0m                                    [0m[33m234[0m [0m        and 'count' keys.[0m
-[33m235[0m [0m        :return:[0m                                             [0m[33m235[0m [0m        :return:[0m
-[33m236[0m [0m        """[0m                                                  [0m[33m236[0m [0m        """[0m
-[33m237[0m [22m[7m[31m        return {"data": [{"time": time, "count": count} for [0m [0m[33m237[0m [22m[7m[32m        # We store the values here as floats so that we can [0m
-[33m   [0m [31m[7m[22mtime, count in self.values]}[0m                                 [0m[33m   [0m [32m[7m[22msupport percentage stats.[0m
-[33m   [0m                                                              [0m[33m238[0m [32m        # We don't want to return the time as a float, and t[0m
-[33m   [0m                                                              [0m[33m   [0m [32mo keep things consistent[0m
-[33m   [0m                                                              [0m[33m239[0m [32m        # with what Snuba returns we cast floats to ints whe[0m
-[33m   [0m                                                              [0m[33m   [0m [32mn they're whole numbers.[0m
-[33m   [0m                                                              [0m[33m240[0m [32m        return {[0m
-[33m   [0m                                                              [0m[33m241[0m [32m            "data": [[0m
-[33m   [0m                                                              [0m[33m242[0m [32m                {"time": int(time), "count": count if not co[0m
-[33m   [0m                                                              [0m[33m   [0m [32munt.is_integer() else int(count)}[0m
-[33m   [0m                                                              [0m[33m243[0m [32m                for time, count in self.values[0m
-[33m   [0m                                                              [0m[33m244[0m [32m            ][0m
-[33m   [0m                                                              [0m[33m245[0m [32m        }[0m
-[33m238[0m [0m[0m                                                             [0m[33m246[0m [0m[0m
-[33m239[0m [0m[0m                                                             [0m[33m247[0m [0m[0m
-[33m240[0m [0mclass IncidentActivityType(Enum):[0m                            [0m[33m248[0m [0mclass IncidentActivityType(Enum):[0m
+[0m[33m234[0m         and 'count' keys.                                    [33m234[0m         and 'count' keys.
+[33m235[0m         :return:                                             [33m235[0m         :return:
+[33m236[0m         """                                                  [33m236[0m         """
+[33m237[0m [22m[7m[31m        return {"data": [{"time": time, "count": count} for [0m [33m237[0m [22m[7m[32m        # We store the values here as floats so that we can [0m
+[33m   [0m [31m[7m[22mtime, count in self.values]}[0m                                 [33m   [0m [32m[7m[22msupport percentage stats.[0m
+[33m   [0m                                                              [33m238[0m [32m        # We don't want to return the time as a float, and t[0m
+[33m   [0m                                                              [33m   [0m [32mo keep things consistent[0m
+[33m   [0m                                                              [33m239[0m [32m        # with what Snuba returns we cast floats to ints whe[0m
+[33m   [0m                                                              [33m   [0m [32mn they're whole numbers.[0m
+[33m   [0m                                                              [33m240[0m [32m        return {[0m
+[33m   [0m                                                              [33m241[0m [32m            "data": [[0m
+[33m   [0m                                                              [33m242[0m [32m                {"time": int(time), "count": count if not co[0m
+[33m   [0m                                                              [33m   [0m [32munt.is_integer() else int(count)}[0m
+[33m   [0m                                                              [33m243[0m [32m                for time, count in self.values[0m
+[33m   [0m                                                              [33m244[0m [32m            ][0m
+[33m   [0m                                                              [33m245[0m [32m        }[0m
+[33m240[0m class IncidentActivityType(Enum):                            [33m248[0m class IncidentActivityType(Enum):
 [36mdiff --git a/tests/sentry/incidents/test_logic.py b/tests/sentry/incidents/test_logic.py
 [0m[36mindex 23c42bac84..1346641edd 100644
 [0m[33m--- a/tests/sentry/incidents/test_logic.py
 [0m[33m+++ b/tests/sentry/incidents/test_logic.py
 [0m[1;34m@@ -63,10 +63,12 @@ from sentry.incidents.models import (
-[0m[33m 63[0m [0m    IncidentActivityType,[0m                                    [0m[33m 63[0m [0m    IncidentActivityType,[0m
-[33m 64[0m [0m    IncidentProject,[0m                                         [0m[33m 64[0m [0m    IncidentProject,[0m
-[33m 65[0m [0m    PendingIncidentSnapshot,[0m                                 [0m[33m 65[0m [0m    PendingIncidentSnapshot,[0m
-[33m   [0m                                                              [0m[33m 66[0m [32m    IncidentSnapshot,[0m
-[33m 66[0m [0m    IncidentStatus,[0m                                          [0m[33m 67[0m [0m    IncidentStatus,[0m
-[33m 67[0m [0m    IncidentStatusMethod,[0m                                    [0m[33m 68[0m [0m    IncidentStatusMethod,[0m
-[33m 68[0m [0m    IncidentSubscription,[0m                                    [0m[33m 69[0m [0m    IncidentSubscription,[0m
-[33m 69[0m [0m    IncidentType,[0m                                            [0m[33m 70[0m [0m    IncidentType,[0m
-[33m   [0m                                                              [0m[33m 71[0m [32m    TimeSeriesSnapshot,[0m
-[33m 70[0m [0m)[0m                                                            [0m[33m 72[0m [0m)[0m
-[33m 71[0m [0mfrom sentry.snuba.models import QueryDatasets[0m                [0m[33m 73[0m [0mfrom sentry.snuba.models import QueryDatasets[0m
-[33m 72[0m [0mfrom sentry.models.integration import Integration[0m            [0m[33m 74[0m [0mfrom sentry.models.integration import Integration[0m
+[0m[33m 63[0m     IncidentActivityType,                                    [33m 63[0m     IncidentActivityType,
+[33m 64[0m     IncidentProject,                                         [33m 64[0m     IncidentProject,
+[33m 65[0m     PendingIncidentSnapshot,                                 [33m 65[0m     PendingIncidentSnapshot,
+[33m   [0m                                                              [33m 66[0m [32m    IncidentSnapshot,[0m
+[33m 66[0m     IncidentStatus,                                          [33m 67[0m     IncidentStatus,
+[33m 67[0m     IncidentStatusMethod,                                    [33m 68[0m     IncidentStatusMethod,
+[33m 68[0m     IncidentSubscription,                                    [33m 69[0m     IncidentSubscription,
+[33m 69[0m     IncidentType,                                            [33m 70[0m     IncidentType,
+[33m   [0m                                                              [33m 71[0m [32m    TimeSeriesSnapshot,[0m
+[33m 70[0m )                                                            [33m 72[0m )
+[33m 71[0m from sentry.snuba.models import QueryDatasets                [33m 73[0m from sentry.snuba.models import QueryDatasets
+[33m 72[0m from sentry.models.integration import Integration            [33m 74[0m from sentry.models.integration import Integration
 [1;34m@@ -618,6 +620,38 @@ class GetIncidentStatsTest(TestCase, BaseIncidentsTest):
-[0m[33m618[0m [0m        )[0m                                                    [0m[33m620[0m [0m        )[0m
-[33m619[0m [0m        self.run_test(open_incident)[0m                         [0m[33m621[0m [0m        self.run_test(open_incident)[0m
-[33m   [0m                                                              [0m[33m622[0m [32m[0m
-[33m   [0m                                                              [0m[33m623[0m [32m    def test_floats(self):[0m
-[33m   [0m                                                              [0m[33m624[0m [32m        alert_rule = self.create_alert_rule([0m
-[33m   [0m                                                              [0m[33m625[0m [32m            self.organization, dataset=QueryDatasets.TRANSAC[0m
-[33m   [0m                                                              [0m[33m   [0m [32mTIONS, aggregate="p75()"[0m
-[33m   [0m                                                              [0m[33m626[0m [32m        )[0m
-[33m   [0m                                                              [0m[33m627[0m [32m        incident = self.create_incident([0m
-[33m   [0m                                                              [0m[33m628[0m [32m            self.organization,[0m
-[33m   [0m                                                              [0m[33m629[0m [32m            title="Hi",[0m
-[33m   [0m                                                              [0m[33m630[0m [32m            date_started=timezone.now() - timedelta(days=30)[0m
-[33m   [0m                                                              [0m[33m   [0m [32m,[0m
-[33m   [0m                                                              [0m[33m631[0m [32m            alert_rule=alert_rule,[0m
-[33m   [0m                                                              [0m[33m632[0m [32m        )[0m
-[33m   [0m                                                              [0m[33m633[0m [32m        update_incident_status([0m
-[33m   [0m                                                              [0m[33m634[0m [32m            incident, IncidentStatus.CLOSED, status_method=I[0m
-[33m   [0m                                                              [0m[33m   [0m [32mncidentStatusMethod.RULE_TRIGGERED[0m
-[33m   [0m                                                              [0m[33m635[0m [32m        )[0m
-[33m   [0m                                                              [0m[33m636[0m [32m        time_series_values = [[0, 1], [1, 5], [2, 5.5]][0m
-[33m   [0m                                                              [0m[33m637[0m [32m        time_series_snapshot = TimeSeriesSnapshot.objects.cr[0m
-[33m   [0m                                                              [0m[33m   [0m [32meate([0m
-[33m   [0m                                                              [0m[33m638[0m [32m            start=timezone.now() - timedelta(hours=1),[0m
-[33m   [0m                                                              [0m[33m639[0m [32m            end=timezone.now(),[0m
-[33m   [0m                                                              [0m[33m640[0m [32m            values=time_series_values,[0m
-[33m   [0m                                                              [0m[33m641[0m [32m            period=3000,[0m
-[33m   [0m                                                              [0m[33m642[0m [32m        )[0m
-[33m   [0m                                                              [0m[33m643[0m [32m        IncidentSnapshot.objects.create([0m
-[33m   [0m                                                              [0m[33m644[0m [32m            incident=incident,[0m
-[33m   [0m                                                              [0m[33m645[0m [32m            event_stats_snapshot=time_series_snapshot,[0m
-[33m   [0m                                                              [0m[33m646[0m [32m            unique_users=1234,[0m
-[33m   [0m                                                              [0m[33m647[0m [32m            total_events=4567,[0m
-[33m   [0m                                                              [0m[33m648[0m [32m        )[0m
-[33m   [0m                                                              [0m[33m649[0m [32m[0m
-[33m   [0m                                                              [0m[33m650[0m [32m        incident_stats = get_incident_stats(incident, window[0m
-[33m   [0m                                                              [0m[33m   [0m [32med_stats=True)[0m
-[33m   [0m                                                              [0m[33m651[0m [32m        assert incident_stats["event_stats"].data["data"] ==[0m
-[33m   [0m                                                              [0m[33m   [0m [32m [[0m
-[33m   [0m                                                              [0m[33m652[0m [32m            {"time": time, "count": count} for time, count i[0m
-[33m   [0m                                                              [0m[33m   [0m [32mn time_series_values[0m
-[33m   [0m                                                              [0m[33m653[0m [32m        ][0m
-[33m620[0m [0m[0m                                                             [0m[33m654[0m [0m[0m
-[33m621[0m [0m[0m                                                             [0m[33m655[0m [0m[0m
-[33m622[0m [0mclass CreateAlertRuleTest(TestCase, BaseIncidentsTest):[0m      [0m[33m656[0m [0mclass CreateAlertRuleTest(TestCase, BaseIncidentsTest):[0m
-[33m623[0m [0m    def test(self):[0m                                          [0m[33m657[0m [0m    def test(self):[0m
+[0m[33m618[0m         )                                                    [33m620[0m         )
+[33m619[0m         self.run_test(open_incident)                         [33m621[0m         self.run_test(open_incident)
+[33m   [0m                                                              [33m622[0m [32m[0m
+[33m   [0m                                                              [33m623[0m [32m    def test_floats(self):[0m
+[33m   [0m                                                              [33m624[0m [32m        alert_rule = self.create_alert_rule([0m
+[33m   [0m                                                              [33m625[0m [32m            self.organization, dataset=QueryDatasets.TRANSAC[0m
+[33m   [0m                                                              [33m   [0m [32mTIONS, aggregate="p75()"[0m
+[33m   [0m                                                              [33m626[0m [32m        )[0m
+[33m   [0m                                                              [33m627[0m [32m        incident = self.create_incident([0m
+[33m   [0m                                                              [33m628[0m [32m            self.organization,[0m
+[33m   [0m                                                              [33m629[0m [32m            title="Hi",[0m
+[33m   [0m                                                              [33m630[0m [32m            date_started=timezone.now() - timedelta(days=30)[0m
+[33m   [0m                                                              [33m   [0m [32m,[0m
+[33m   [0m                                                              [33m631[0m [32m            alert_rule=alert_rule,[0m
+[33m   [0m                                                              [33m632[0m [32m        )[0m
+[33m   [0m                                                              [33m633[0m [32m        update_incident_status([0m
+[33m   [0m                                                              [33m634[0m [32m            incident, IncidentStatus.CLOSED, status_method=I[0m
+[33m   [0m                                                              [33m   [0m [32mncidentStatusMethod.RULE_TRIGGERED[0m
+[33m   [0m                                                              [33m635[0m [32m        )[0m
+[33m   [0m                                                              [33m636[0m [32m        time_series_values = [[0, 1], [1, 5], [2, 5.5]][0m
+[33m   [0m                                                              [33m637[0m [32m        time_series_snapshot = TimeSeriesSnapshot.objects.cr[0m
+[33m   [0m                                                              [33m   [0m [32meate([0m
+[33m   [0m                                                              [33m638[0m [32m            start=timezone.now() - timedelta(hours=1),[0m
+[33m   [0m                                                              [33m639[0m [32m            end=timezone.now(),[0m
+[33m   [0m                                                              [33m640[0m [32m            values=time_series_values,[0m
+[33m   [0m                                                              [33m641[0m [32m            period=3000,[0m
+[33m   [0m                                                              [33m642[0m [32m        )[0m
+[33m   [0m                                                              [33m643[0m [32m        IncidentSnapshot.objects.create([0m
+[33m   [0m                                                              [33m644[0m [32m            incident=incident,[0m
+[33m   [0m                                                              [33m645[0m [32m            event_stats_snapshot=time_series_snapshot,[0m
+[33m   [0m                                                              [33m646[0m [32m            unique_users=1234,[0m
+[33m   [0m                                                              [33m647[0m [32m            total_events=4567,[0m
+[33m   [0m                                                              [33m648[0m [32m        )[0m
+[33m   [0m                                                              [33m649[0m [32m[0m
+[33m   [0m                                                              [33m650[0m [32m        incident_stats = get_incident_stats(incident, window[0m
+[33m   [0m                                                              [33m   [0m [32med_stats=True)[0m
+[33m   [0m                                                              [33m651[0m [32m        assert incident_stats["event_stats"].data["data"] ==[0m
+[33m   [0m                                                              [33m   [0m [32m [[0m
+[33m   [0m                                                              [33m652[0m [32m            {"time": time, "count": count} for time, count i[0m
+[33m   [0m                                                              [33m   [0m [32mn time_series_values[0m
+[33m   [0m                                                              [33m653[0m [32m        ][0m
+[33m622[0m class CreateAlertRuleTest(TestCase, BaseIncidentsTest):      [33m656[0m class CreateAlertRuleTest(TestCase, BaseIncidentsTest):
+[33m623[0m     def test(self):                                          [33m657[0m     def test(self):

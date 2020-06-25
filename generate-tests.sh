@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+set -e
+
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")"; pwd -P)"
 
 mkdir -p "${HERE}/tests"
@@ -16,14 +18,14 @@ mkdir -p "$d"
 
 if [[ -z "$2" ]]; then
     read -n1 -p "You're about to generate a massive test from repo ${1}. Are you sure? (ENTER) "
-    mkdir "${d}/1"
+    mkdir -p "${d}/1"
     git log --patch > "${d}/1/in.diff"
     YDIFF_WIDTH=130 "${HERE}/ydiff" -s < "${d}/1/in.diff" > "${d}/1/out"
     exit
 fi
 
 for i in $(seq 1 "$2"); do
-    mkdir -v "${d}/${i}"
+    mkdir -pv "${d}/${i}"
     git show --no-ext-diff "HEAD~${i}" > "${d}/${i}/in.diff"
     YDIFF_WIDTH=130 "${HERE}/ydiff" -s < "${d}/${i}/in.diff" > "${d}/${i}/out"
 done
