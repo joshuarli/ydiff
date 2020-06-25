@@ -29,10 +29,6 @@ COLORS = {
 }
 
 
-def colorize(text, start_color, end_color="reset"):
-    return f"{COLORS[start_color]}{text}{COLORS[end_color]}"
-
-
 def strsplit(text, width):
     """strsplit() splits a given string into two substrings, respecting the
     escape sequences (in a global var COLORS).
@@ -306,9 +302,9 @@ class DiffMarker(object):
 
         # Set up number width, note last hunk might be empty
         try:
-            (start, offset) = diff._hunks[-1]._old_addr
+            start, offset = diff._hunks[-1]._old_addr
             max1 = start + offset - 1
-            (start, offset) = diff._hunks[-1]._new_addr
+            start, offset = diff._hunks[-1]._new_addr
             max2 = start + offset - 1
         except IndexError:
             max1 = max2 = 0
@@ -320,16 +316,16 @@ class DiffMarker(object):
         width = (terminal_width - num_width * 2 - 3) // 2
 
         for line in diff._headers:
-            yield colorize(line, "cyan")
+            yield f"{COLORS['cyan']}{line}{COLORS['reset']}"
 
-        yield colorize(diff._old_path, "yellow")
-        yield colorize(diff._new_path, "yellow")
+        yield f"{COLORS['yellow']}{diff._old_path}{COLORS['reset']}"
+        yield f"{COLORS['yellow']}{diff._new_path}{COLORS['reset']}"
 
         for hunk in diff._hunks:
             for hunk_header in hunk._hunk_headers:
-                yield colorize(hunk_header, "lightcyan")
+                yield f"{COLORS['lightcyan']}{hunk_header}{COLORS['reset']}"
 
-            yield colorize(hunk._hunk_meta, "lightblue")
+            yield f"{COLORS['lightblue']}{hunk._hunk_meta}{COLORS['reset']}"
 
             for old, new, changed in hunk.mdiff():
                 if old[0]:
@@ -351,19 +347,20 @@ class DiffMarker(object):
                         right = right.rstrip("\x01")
                         if right.startswith("\x00+"):
                             right = right[2:]
-                        right = colorize(right, "green")
+                        right = f"{COLORS['green']}{right}{COLORS['reset']}"
                     elif not new[0]:
                         left = left.rstrip("\x01")
                         if left.startswith("\x00-"):
                             left = left[2:]
-                        left = colorize(left, "lightred")
+                        left = f"{COLORS['lightred']}{left}{COLORS['reset']}"
                         right = ""
                     else:
                         left = _fit_with_marker_mix(left)
                         right = _fit_with_marker_mix(right)
                 else:
-                    left = colorize(left, "reset")
-                    right = colorize(right, "reset")
+                    # TODO: remove this and regenerate tests
+                    left = f"{COLORS['reset']}{left}{COLORS['reset']}"
+                    right = f"{COLORS['reset']}{right}{COLORS['reset']}"
 
                 # Need to wrap long lines, so here we'll iterate,
                 # shaving off `width` chars from both left and right
