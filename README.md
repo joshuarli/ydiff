@@ -1,3 +1,5 @@
+# joshuarli's ydiff fork
+
 This is [ydiff](https://github.com/ymattw/ydiff), distilled down to the very core.
 
 It's been heavily modified and stripped down to a very specific feature subset:
@@ -7,7 +9,17 @@ It's been heavily modified and stripped down to a very specific feature subset:
 - only read git unified diffs from stdin
 - only side-by-side rendering
 
-And, modified to be visually less noisy. Here's what it looks like:
+And, modified to be visually less noisy.
+
+* [Screenshots](#Screenshots)
+* [Performance](#Performance)
+* [Usage](#Usage)
+* [Build](#Build)
+
+
+## Screenshots
+
+Here's what it looks like:
 
 <img src="https://github.com/joshuarli/ydiff/blob/master/.github/joshuarli-ydiff.png?raw=true">
 
