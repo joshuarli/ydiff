@@ -7,9 +7,13 @@ It's been heavily modified and stripped down to a very specific feature subset:
 - only read git unified diffs from stdin
 - only side-by-side rendering
 
-And, modified to have less colorful colorization.
+And, modified to be visually less noisy. Here's what it looks like:
 
-Also, I'm definitely not smart enough to port it to more performant languages,
+TODO
+
+## Performance
+
+I'm definitely not smart enough to port it to more performant languages,
 but I've made it quite fast:
 
 ```

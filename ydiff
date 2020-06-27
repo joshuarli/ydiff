@@ -14,16 +14,17 @@ from os import get_terminal_size, environ
 terminal_width = int(environ.get("YDIFF_WIDTH") or get_terminal_size(2)[0])
 
 COLOR_RESET = "\x1b[0m"
-COLOR_UNDERLINE = "\x1b[4m"
 COLOR_REVERSE = "\x1b[7m"
 COLOR_PLAIN = "\x1b[22m"
 COLOR_RED = "\x1b[31m"
 COLOR_GREEN = "\x1b[32m"
 COLOR_YELLOW = "\x1b[33m"
 COLOR_CYAN = "\x1b[36m"
+COLOR_GRAY = "\x1b[37m"
 COLOR_LIGHTRED = "\x1b[1;31m"
-COLOR_LIGHTBLUE = "\x1b[1;34m"
 COLOR_LIGHTCYAN = "\x1b[1;36m"
+
+hunk_meta_display = f"{COLOR_GRAY}{'┈' * terminal_width}{COLOR_RESET}"
 
 
 def strsplit(text, width):
@@ -77,9 +78,8 @@ def strsplit(text, width):
 
 
 class Hunk(object):
-    def __init__(self, hunk_headers, hunk_meta, old_addr, new_addr):
+    def __init__(self, hunk_headers, old_addr, new_addr):
         self._hunk_headers = hunk_headers
-        self._hunk_meta = hunk_meta
         self._old_addr = old_addr  # tuple (start, offset)
         self._new_addr = new_addr  # tuple (start, offset)
         self._hunk_list = []  # list of tuple (attr, line)
@@ -217,7 +217,7 @@ class DiffParser(object):
             elif diff.is_hunk_meta(line):
                 hunk_meta = line
                 old_addr, new_addr = diff.parse_hunk_meta(hunk_meta)
-                hunk = Hunk(headers, hunk_meta, old_addr, new_addr)
+                hunk = Hunk(headers, old_addr, new_addr)
                 headers = []
                 diff._hunks.append(hunk)
 
@@ -252,7 +252,6 @@ class DiffParser(object):
         if diff._old_path:
             assert diff._new_path is not None
             if diff._hunks:
-                assert len(diff._hunks[-1]._hunk_meta) > 0
                 assert len(diff._hunks[-1]._hunk_list) > 0
             yield diff
 
@@ -318,7 +317,7 @@ class DiffMarker(object):
             for hunk_header in hunk._hunk_headers:
                 yield f"{COLOR_LIGHTCYAN}{hunk_header}{COLOR_RESET}"
 
-            yield f"{COLOR_LIGHTBLUE}{hunk._hunk_meta}{COLOR_RESET}"
+            yield hunk_meta_display
 
             for old, new, changed in hunk.mdiff():
                 if old[0]:
