@@ -13,6 +13,7 @@ And, modified to be visually less noisy.
 
 * [Screenshots](#Screenshots)
 * [Performance](#Performance)
+* [Download](#Download)
 * [Usage](#Usage)
 * [Build](#Build)
 
@@ -66,16 +67,17 @@ Benchmark #1: ./ydiff-bin < tests/sentry/1/in.diff >/dev/null
   Range (min … max):    32.8 ms …  40.2 ms    74 runs
 ```
 
+## Download
+
+TODO
+
 
 ## Usage
 
-I use the following git aliases:
-(TODO: figure out better arg passing, or honestly i should just turn these into shell funcs)
+Simply make sure you've set `GIT_PAGER='ydiff | less'`, and `git diff`, `git show`,
+etc. will all work nicely.
 
-	[alias]
-        d = "!gitdiff () { git diff $@ | ydiff | less; }; gitdiff $@"
-        dc = "!gitdiffcached () { git diff --cached $@ | ydiff | less; }; gitdiffcached $@"
-	    s = "!rev=${1:-HEAD}; git diff $rev~1 $rev | ydiff | less"
+I'd say the following supplementary git config is also helpful:
 
 	[color]
 		diff = never
