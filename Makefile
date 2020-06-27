@@ -14,9 +14,10 @@ fast: clean
 	make ydiff.c
 
 ydiff-bin: ydiff.c
-	# You might need to PKG_CONFIG_PATH="${PYENV_ROOT}/versions/3.6.7/lib/pkgconfig"
-	# Or similar if you only have a python3 installed via pyenv.
-	gcc -O3 -flto $$(pkg-config --cflags --libs python3) -o ydiff-bin ydiff.c
+	# Some other incantations that might work (or similar):
+	# gcc -O3 -flto $^ $$(python3-config --cflags --ldflags) -o $@
+	# gcc -O3 -flto $^ -I/usr/include/python3.8 -lpython3.8 -o $@
+	gcc -O3 -flto $^ $$(pkg-config --cflags --libs python3) -o $@
 
 .PHONY: static
 static: ydiff-bin-static
