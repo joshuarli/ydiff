@@ -21,8 +21,6 @@ COLOR_GREEN = "\x1b[32m"
 COLOR_YELLOW = "\x1b[33m"
 COLOR_CYAN = "\x1b[36m"
 COLOR_GRAY = "\x1b[37m"
-COLOR_LIGHTRED = "\x1b[1;31m"
-COLOR_LIGHTCYAN = "\x1b[1;36m"
 
 hunk_meta_display = f"{COLOR_GRAY}{'┈' * terminal_width}{COLOR_RESET}"
 
@@ -315,7 +313,7 @@ class DiffMarker(object):
 
         for hunk in diff._hunks:
             for hunk_header in hunk._hunk_headers:
-                yield f"{COLOR_LIGHTCYAN}{hunk_header}{COLOR_RESET}"
+                yield f"{COLOR_CYAN}{hunk_header}{COLOR_RESET}"
 
             yield hunk_meta_display
 
@@ -344,7 +342,7 @@ class DiffMarker(object):
                         left = left.rstrip("\x01")
                         if left.startswith("\x00-"):
                             left = left[2:]
-                        left = f"{COLOR_LIGHTRED}{left}{COLOR_RESET}"
+                        left = f"{COLOR_RED}{left}{COLOR_RESET}"
                         right = ""
                     else:
                         left = _fit_with_marker_mix(left)
