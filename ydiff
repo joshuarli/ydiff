@@ -366,7 +366,7 @@ class DiffMarker(object):
                         # XXX: this doesn't work lol
                         # lcur = f"{lcur: <{width}}"
 
-                    yield f"{COLOR_YELLOW}{lncur:>{num_width}}{COLOR_RESET} {lcur} {COLOR_YELLOW}{rncur:>{num_width}}{COLOR_RESET} {rcur}\n"
+                    yield f"{COLOR_GRAY}{lncur:>{num_width}}{COLOR_RESET} {lcur} {COLOR_GRAY}{rncur:>{num_width}}{COLOR_RESET} {rcur}\n"
 
                     # Clean line numbers for further iterations
                     lncur = ""

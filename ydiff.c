@@ -9670,7 +9670,7 @@ static PyObject *__pyx_gb_5ydiff_10DiffMarker_2generator1(__pyx_CoroutineObject 
         /* "ydiff":369
  *                         # lcur = f"{lcur: <{width}}"
  * 
- *                     yield f"{COLOR_YELLOW}{lncur:>{num_width}}{COLOR_RESET} {lcur} {COLOR_YELLOW}{rncur:>{num_width}}{COLOR_RESET} {rcur}\n"             # <<<<<<<<<<<<<<
+ *                     yield f"{COLOR_GRAY}{lncur:>{num_width}}{COLOR_RESET} {lcur} {COLOR_GRAY}{rncur:>{num_width}}{COLOR_RESET} {rcur}\n"             # <<<<<<<<<<<<<<
  * 
  *                     # Clean line numbers for further iterations
  */
@@ -9678,7 +9678,7 @@ static PyObject *__pyx_gb_5ydiff_10DiffMarker_2generator1(__pyx_CoroutineObject 
         __Pyx_GOTREF(__pyx_t_6);
         __pyx_t_11 = 0;
         __pyx_t_14 = 127;
-        __Pyx_GetModuleGlobalName(__pyx_t_1, __pyx_n_s_COLOR_YELLOW); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 369, __pyx_L1_error)
+        __Pyx_GetModuleGlobalName(__pyx_t_1, __pyx_n_s_COLOR_GRAY); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 369, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_1);
         __pyx_t_17 = __Pyx_PyObject_FormatSimple(__pyx_t_1, __pyx_empty_unicode); if (unlikely(!__pyx_t_17)) __PYX_ERR(0, 369, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_17);
@@ -9726,7 +9726,7 @@ static PyObject *__pyx_gb_5ydiff_10DiffMarker_2generator1(__pyx_CoroutineObject 
         __pyx_t_11 += 1;
         __Pyx_GIVEREF(__pyx_kp_u__11);
         PyTuple_SET_ITEM(__pyx_t_6, 5, __pyx_kp_u__11);
-        __Pyx_GetModuleGlobalName(__pyx_t_1, __pyx_n_s_COLOR_YELLOW); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 369, __pyx_L1_error)
+        __Pyx_GetModuleGlobalName(__pyx_t_1, __pyx_n_s_COLOR_GRAY); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 369, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_1);
         __pyx_t_17 = __Pyx_PyObject_FormatSimple(__pyx_t_1, __pyx_empty_unicode); if (unlikely(!__pyx_t_17)) __PYX_ERR(0, 369, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_17);
