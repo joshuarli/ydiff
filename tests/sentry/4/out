@@ -27,7 +27,7 @@
 [33m235[0m         :return:                                             [33m235[0m         :return:
 [33m236[0m         """                                                  [33m236[0m         """
 [33m237[0m [22m[7m[31m        return {"data": [{"time": time, "count": count} for [0m [33m237[0m [22m[7m[32m        # We store the values here as floats so that we can [0m
-[33m   [0m [31m[7m[22mtime, count in self.values]}[0m                                 [33m   [0m [32m[7m[22msupport percentage stats.[0m
+[33m   [0m [22m[7m[31mtime, count in self.values]}[0m                                 [33m   [0m [22m[7m[32msupport percentage stats.[0m
 [33m   [0m                                                              [33m238[0m [32m        # We don't want to return the time as a float, and t[0m
 [33m   [0m                                                              [33m   [0m [32mo keep things consistent[0m
 [33m   [0m                                                              [33m239[0m [32m        # with what Snuba returns we cast floats to ints whe[0m

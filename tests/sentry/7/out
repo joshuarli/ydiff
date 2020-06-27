@@ -85,7 +85,7 @@
 [33m265[0m  * Refer to src/sentry/snuba/events.py, search for Columns   [33m326[0m  * Refer to src/sentry/snuba/events.py, search for Columns
 [33m266[0m  */                                                          [33m327[0m  */
 [33m267[0m [22m[7m[31mexport const FIELDS = {[0m                                      [33m328[0m [22m[7m[32mexport const FIELDS: Readonly<Record<FieldKey, ColumnType>> [0m
-[33m   [0m                                                              [33m   [0m [32m[7m[22m= {[0m
+[33m   [0m                                                              [33m   [0m [22m[7m[32m= {[0m
 [33m268[0m [22m[7m[31m  id: 'string',[0m                                              [33m329[0m [22m[7m[32m  [FieldKey.ID]: 'string',[0m
 [33m269[0m   // issue.id and project.id are omitted on purpose.         [33m330[0m   // issue.id and project.id are omitted on purpose.
 [33m270[0m   // Customers should use `issue` and `project` instead.     [33m331[0m   // Customers should use `issue` and `project` instead.

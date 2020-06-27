@@ -62,12 +62,12 @@
 [33m  7[0m import ConfigStore from 'app/stores/configStore';            [33m  8[0m import ConfigStore from 'app/stores/configStore';
 [33m  8[0m import {ApiForm} from 'app/components/forms';                [33m  9[0m import {ApiForm} from 'app/components/forms';
 [33m  9[0m [22m[7m[31mimport {getOptionDefault, getOptionField, getForm} from 'app[0m [33m 10[0m [22m[7m[32mimport sentryPattern from 'app/../images/pattern/sentry-patt[0m
-[33m   [0m [31m[7m[22m/options';[0m                                                   [33m   [0m [32m[7m[22mern.png';[0m
+[33m   [0m [22m[7m[31m/options';[0m                                                   [33m   [0m [22m[7m[32mern.png';[0m
 [33m   [0m                                                              [33m 11[0m [32mimport space from 'app/styles/space';[0m
 [33m   [0m                                                              [33m 12[0m [32mimport Alert from 'app/components/alert';[0m
 [33m   [0m                                                              [33m 13[0m [32mimport {IconWarning} from 'app/icons';[0m
 [33m 11[0m [22m[7m[31mexport default class InstallWizard extends AsyncView {[0m       [33m 15[0m [22m[7m[32mimport {getOptionDefault, getOptionField, getForm} from '../[0m
-[33m   [0m                                                              [33m   [0m [32m[7m[22moptions';[0m
+[33m   [0m                                                              [33m   [0m [22m[7m[32moptions';[0m
 [33m 12[0m [1;31m  static propTypes = {[0m                                       [33m   [0m 
 [33m 13[0m [1;31m    onConfigured: PropTypes.func.isRequired,[0m                 [33m   [0m 
 [33m 14[0m [1;31m  };[0m                                                         [33m   [0m 
@@ -80,7 +80,7 @@
 [33m 23[0m [1;31m    document.body.classList.remove('install-wizard');[0m        [33m   [0m 
 [33m 24[0m [1;31m  }[0m                                                          [33m   [0m 
 [33m 26[0m [22m[7m[31m  getEndpoints() {[0m                                           [33m 23[0m [22m[7m[32mexport default class InstallWizard extends AsyncView<Props, [0m
-[33m   [0m                                                              [33m   [0m [32m[7m[22mState> {[0m
+[33m   [0m                                                              [33m   [0m [22m[7m[32mState> {[0m
 [33m   [0m                                                              [33m 24[0m [32m  getEndpoints(): ReturnType<AsyncView['getEndpoints']> {[0m
 [33m 27[0m     return [['data', '/internal/options/?query=is:required'] [33m 25[0m     return [['data', '/internal/options/?query=is:required']
 [33m   [0m ];                                                           [33m   [0m ];
@@ -100,7 +100,7 @@
 [33m103[0m               ? this.renderLoading()                         [33m101[0m               ? this.renderLoading()
 [33m104[0m               : this.state.error                             [33m102[0m               : this.state.error
 [33m105[0m [22m[7m[31m              ? this.renderError(new Error('Unable to load a[0m [33m103[0m [22m[7m[32m              ? this.renderError()[0m
-[33m   [0m [31m[7m[22mll required endpoints'))[0m                                     [33m   [0m 
+[33m   [0m [22m[7m[31mll required endpoints'))[0m                                     [33m   [0m 
 [33m106[0m               : this.renderBody()}                           [33m104[0m               : this.renderBody()}
 [33m107[0m [22m[7m[31m          </div>[0m                                             [33m105[0m [22m[7m[32m          </SetupWizard>[0m
 [33m108[0m [22m[7m[31m        </div>[0m                                               [33m106[0m [22m[7m[32m        </Wrapper>[0m

@@ -16,5 +16,3 @@ for t in tests/"$suite"/*; do
     YDIFF_WIDTH=130 time ./ydiff-bin < "${t}/in.diff" > /tmp/out
     cmp "${t}/out" /tmp/out || diff "${t}/out" /tmp/out
 done
-
-
