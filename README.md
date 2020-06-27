@@ -13,9 +13,7 @@ And, modified to be visually less noisy.
 
 * [Screenshots](#Screenshots)
 * [Performance](#Performance)
-* [Download](#Download)
-* [Usage](#Usage)
-* [Build](#Build)
+* [Installation](#Installation)
 
 
 ## Screenshots
@@ -67,24 +65,21 @@ Benchmark #1: ./ydiff-bin < tests/sentry/1/in.diff >/dev/null
   Range (min … max):    32.8 ms …  40.2 ms    74 runs
 ```
 
-## Download
+## Installation
 
-TODO
+Just download [this](https://raw.githubusercontent.com/joshuarli/ydiff/master/ydiff) to anywhere on your PATH.
 
+Then, set `GIT_PAGER='ydiff | less'`.
 
-## Usage
-
-Simply make sure you've set `GIT_PAGER='ydiff | less'`, and `git diff`, `git show`,
-etc. will all work nicely. Though, you'll want to alias `git log` and anything else
+`git diff`, `git show`, etc. will then all work nicely.
+Though, you'll want to alias `git log` and anything else
 that doesn't output unified diffs to have `GIT_PAGER=less`.
 
-I'd say the following supplementary git config is also helpful:
+You might also need this git config (`git config --global color.diff never`):
 
 	[color]
 		diff = never
 
+Because ydiff expects plain, uncolored text.
 
-## Build
-
-I've only partially figured out static compilation on Linux x86_64.
-I say partially since staticx does all the heavy lifting.
+Optionally, if you have a C compiler, you can compile the Cython binary with `make ydiff-bin`.
