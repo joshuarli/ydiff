@@ -9,7 +9,12 @@ It's been heavily modified and stripped down to a very specific feature subset:
 
 And, modified to be visually less noisy. Here's what it looks like:
 
-TODO
+<img src="https://github.com/joshuarli/ydiff/blob/master/.github/joshuarli-ydiff.png?raw=true">
+
+Compared to before (the automatic width detection failed lol):
+
+<img src="https://github.com/joshuarli/ydiff/blob/master/.github/ymattw-ydiff.png?raw=true">
+
 
 ## Performance
 
