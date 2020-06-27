@@ -38,10 +38,9 @@ def strsplit(text, width):
     first = ""
     found_colors = ""
     chars_cnt = 0
+    append_len = 0
 
     while len(text):
-        append_len = 0
-
         # First of all, check if current string begins with any escape sequence.
         if text[0] == "\x1b":
             color_end = text.find("m")
@@ -53,17 +52,21 @@ def strsplit(text, width):
                     found_colors += color
                 append_len = len(color)
 
-        if append_len == 0:
+        if not append_len:
             # Current string does not start with any escape sequence, so,
             # either add one more visible char to the "first" string, or
             # break if that string is already large enough.
             if chars_cnt >= width:
                 break
             chars_cnt += 1
-            append_len = 1
+            # would popfront be more efficient here?
+            first += text[0]
+            text = text[1:]
+            continue
 
         first += text[:append_len]
         text = text[append_len:]
+        append_len = 0
 
     second = text
 
