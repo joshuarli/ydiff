@@ -10,75 +10,73 @@
 [0m[36mindex 8438573331..a6e360aded 100644
 [0m[33m--- a/src/sentry/snuba/discover.py
 [0m[33m+++ b/src/sentry/snuba/discover.py
-[0m[1;34m@@ -626,6 +626,7 @@ def key_transaction_query(selected_columns, user_query, params, orderby, referre
-[0m[33m626[0m         orderby=orderby,                                     [33m626[0m         orderby=orderby,
-[33m627[0m         referrer=referrer,                                   [33m627[0m         referrer=referrer,
-[33m628[0m         conditions=key_transaction_conditions(queryset),     [33m628[0m         conditions=key_transaction_conditions(queryset),
-[33m   [0m                                                              [33m629[0m [32m        use_aggregate_conditions=True,[0m
-[33m629[0m     )                                                        [33m630[0m     )
+[0m[37m┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈[0m[37m626[0m         orderby=orderby,                                     [37m626[0m         orderby=orderby,
+[37m627[0m         referrer=referrer,                                   [37m627[0m         referrer=referrer,
+[37m628[0m         conditions=key_transaction_conditions(queryset),     [37m628[0m         conditions=key_transaction_conditions(queryset),
+[37m   [0m                                                              [37m629[0m [32m        use_aggregate_conditions=True,[0m
+[37m629[0m     )                                                        [37m630[0m     )
 [36mdiff --git a/tests/snuba/api/endpoints/test_discover_key_transactions.py b/tests/snuba/api/endpoints/test_discover_key_transactions.py
 [0m[36mindex bd30c252a1..46b6676cb8 100644
 [0m[33m--- a/tests/snuba/api/endpoints/test_discover_key_transactions.py
 [0m[33m+++ b/tests/snuba/api/endpoints/test_discover_key_transactions.py
-[0m[1;34m@@ -376,6 +376,52 @@ class KeyTransactionTest(APITestCase, SnubaTestCase):
-[0m[33m   [0m                                                              [33m376[0m [32m        assert len(data) == 1[0m
-[33m   [0m                                                              [33m377[0m [32m        assert data[0]["transaction"] == event_data["transac[0m
-[33m   [0m                                                              [33m   [0m [32mtion"][0m
-[33m   [0m                                                              [33m378[0m [32m[0m
-[33m   [0m                                                              [33m379[0m [32m    @patch("django.utils.timezone.now")[0m
-[33m   [0m                                                              [33m380[0m [32m    def test_get_transaction_with_aggregate_query(self, mock[0m
-[33m   [0m                                                              [33m   [0m [32m_now):[0m
-[33m   [0m                                                              [33m381[0m [32m        mock_now.return_value = before_now().replace(tzinfo=[0m
-[33m   [0m                                                              [33m   [0m [32mpytz.utc)[0m
-[33m   [0m                                                              [33m382[0m [32m        event_data = load_data("transaction", timestamp=befo[0m
-[33m   [0m                                                              [33m   [0m [32mre_now(minutes=1))[0m
-[33m   [0m                                                              [33m383[0m [32m[0m
-[33m   [0m                                                              [33m384[0m [32m        transactions = [[0m
-[33m   [0m                                                              [33m385[0m [32m            ("127.0.0.1", "/foo_transaction/", 2),[0m
-[33m   [0m                                                              [33m386[0m [32m            ("192.168.0.1", "/blah_transaction/", 3),[0m
-[33m   [0m                                                              [33m387[0m [32m        ][0m
-[33m   [0m                                                              [33m388[0m [32m[0m
-[33m   [0m                                                              [33m389[0m [32m        for ip_address, transaction, count in transactions:[0m
-[33m   [0m                                                              [33m390[0m [32m            event_data["transaction"] = transaction[0m
-[33m   [0m                                                              [33m391[0m [32m            event_data["user"]["ip_address"] = ip_address[0m
-[33m   [0m                                                              [33m392[0m [32m            for _ in range(count):[0m
-[33m   [0m                                                              [33m393[0m [32m                self.store_event(data=event_data, project_id[0m
-[33m   [0m                                                              [33m   [0m [32m=self.project.id)[0m
-[33m   [0m                                                              [33m394[0m [32m            KeyTransaction.objects.create([0m
-[33m   [0m                                                              [33m395[0m [32m                owner=self.user,[0m
-[33m   [0m                                                              [33m396[0m [32m                organization=self.org,[0m
-[33m   [0m                                                              [33m397[0m [32m                transaction=event_data["transaction"],[0m
-[33m   [0m                                                              [33m398[0m [32m                project=self.project,[0m
-[33m   [0m                                                              [33m399[0m [32m            )[0m
-[33m   [0m                                                              [33m400[0m [32m[0m
-[33m   [0m                                                              [33m401[0m [32m        with self.feature("organizations:performance-view"):[0m
-[33m   [0m                                                              [33m402[0m [32m            url = reverse("sentry-api-0-organization-key-tra[0m
-[33m   [0m                                                              [33m   [0m [32mnsactions", args=[self.org.slug])[0m
-[33m   [0m                                                              [33m403[0m [32m            response = self.client.get([0m
-[33m   [0m                                                              [33m404[0m [32m                url,[0m
-[33m   [0m                                                              [33m405[0m [32m                {[0m
-[33m   [0m                                                              [33m406[0m [32m                    "project": [self.project.id],[0m
-[33m   [0m                                                              [33m407[0m [32m                    "orderby": "transaction",[0m
-[33m   [0m                                                              [33m408[0m [32m                    "query": "count():>2",[0m
-[33m   [0m                                                              [33m409[0m [32m                    "field": [[0m
-[33m   [0m                                                              [33m410[0m [32m                        "transaction",[0m
-[33m   [0m                                                              [33m411[0m [32m                        "transaction_status",[0m
-[33m   [0m                                                              [33m412[0m [32m                        "project",[0m
-[33m   [0m                                                              [33m413[0m [32m                        "count()",[0m
-[33m   [0m                                                              [33m414[0m [32m                        "failure_rate()",[0m
-[33m   [0m                                                              [33m415[0m [32m                        "percentile(transaction.duration, 0.[0m
-[33m   [0m                                                              [33m   [0m [32m95)",[0m
-[33m   [0m                                                              [33m416[0m [32m                    ],[0m
-[33m   [0m                                                              [33m417[0m [32m                },[0m
-[33m   [0m                                                              [33m418[0m [32m            )[0m
-[33m   [0m                                                              [33m419[0m [32m[0m
-[33m   [0m                                                              [33m420[0m [32m        assert response.status_code == 200[0m
-[33m   [0m                                                              [33m421[0m [32m        data = response.data["data"][0m
-[33m376[0m         assert len(data) == 1                                [33m422[0m         assert len(data) == 1
-[33m377[0m         assert data[0]["transaction"] == event_data["transac [33m423[0m         assert data[0]["transaction"] == event_data["transac
-[33m   [0m tion"]                                                       [33m   [0m tion"]
-[33m379[0m     @patch("django.utils.timezone.now")                      [33m425[0m     @patch("django.utils.timezone.now")
-[33m380[0m     def test_get_transaction_with_backslash_and_quotes(self, [33m426[0m     def test_get_transaction_with_backslash_and_quotes(self,
-[33m   [0m  mock_now):                                                  [33m   [0m  mock_now):
-[33m381[0m         mock_now.return_value = before_now().replace(tzinfo= [33m427[0m         mock_now.return_value = before_now().replace(tzinfo=
-[33m   [0m pytz.utc)                                                    [33m   [0m pytz.utc)
+[0m[37m┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈[0m[37m   [0m                                                              [37m376[0m [32m        assert len(data) == 1[0m
+[37m   [0m                                                              [37m377[0m [32m        assert data[0]["transaction"] == event_data["transac[0m
+[37m   [0m                                                              [37m   [0m [32mtion"][0m
+[37m   [0m                                                              [37m378[0m [32m[0m
+[37m   [0m                                                              [37m379[0m [32m    @patch("django.utils.timezone.now")[0m
+[37m   [0m                                                              [37m380[0m [32m    def test_get_transaction_with_aggregate_query(self, mock[0m
+[37m   [0m                                                              [37m   [0m [32m_now):[0m
+[37m   [0m                                                              [37m381[0m [32m        mock_now.return_value = before_now().replace(tzinfo=[0m
+[37m   [0m                                                              [37m   [0m [32mpytz.utc)[0m
+[37m   [0m                                                              [37m382[0m [32m        event_data = load_data("transaction", timestamp=befo[0m
+[37m   [0m                                                              [37m   [0m [32mre_now(minutes=1))[0m
+[37m   [0m                                                              [37m383[0m [32m[0m
+[37m   [0m                                                              [37m384[0m [32m        transactions = [[0m
+[37m   [0m                                                              [37m385[0m [32m            ("127.0.0.1", "/foo_transaction/", 2),[0m
+[37m   [0m                                                              [37m386[0m [32m            ("192.168.0.1", "/blah_transaction/", 3),[0m
+[37m   [0m                                                              [37m387[0m [32m        ][0m
+[37m   [0m                                                              [37m388[0m [32m[0m
+[37m   [0m                                                              [37m389[0m [32m        for ip_address, transaction, count in transactions:[0m
+[37m   [0m                                                              [37m390[0m [32m            event_data["transaction"] = transaction[0m
+[37m   [0m                                                              [37m391[0m [32m            event_data["user"]["ip_address"] = ip_address[0m
+[37m   [0m                                                              [37m392[0m [32m            for _ in range(count):[0m
+[37m   [0m                                                              [37m393[0m [32m                self.store_event(data=event_data, project_id[0m
+[37m   [0m                                                              [37m   [0m [32m=self.project.id)[0m
+[37m   [0m                                                              [37m394[0m [32m            KeyTransaction.objects.create([0m
+[37m   [0m                                                              [37m395[0m [32m                owner=self.user,[0m
+[37m   [0m                                                              [37m396[0m [32m                organization=self.org,[0m
+[37m   [0m                                                              [37m397[0m [32m                transaction=event_data["transaction"],[0m
+[37m   [0m                                                              [37m398[0m [32m                project=self.project,[0m
+[37m   [0m                                                              [37m399[0m [32m            )[0m
+[37m   [0m                                                              [37m400[0m [32m[0m
+[37m   [0m                                                              [37m401[0m [32m        with self.feature("organizations:performance-view"):[0m
+[37m   [0m                                                              [37m402[0m [32m            url = reverse("sentry-api-0-organization-key-tra[0m
+[37m   [0m                                                              [37m   [0m [32mnsactions", args=[self.org.slug])[0m
+[37m   [0m                                                              [37m403[0m [32m            response = self.client.get([0m
+[37m   [0m                                                              [37m404[0m [32m                url,[0m
+[37m   [0m                                                              [37m405[0m [32m                {[0m
+[37m   [0m                                                              [37m406[0m [32m                    "project": [self.project.id],[0m
+[37m   [0m                                                              [37m407[0m [32m                    "orderby": "transaction",[0m
+[37m   [0m                                                              [37m408[0m [32m                    "query": "count():>2",[0m
+[37m   [0m                                                              [37m409[0m [32m                    "field": [[0m
+[37m   [0m                                                              [37m410[0m [32m                        "transaction",[0m
+[37m   [0m                                                              [37m411[0m [32m                        "transaction_status",[0m
+[37m   [0m                                                              [37m412[0m [32m                        "project",[0m
+[37m   [0m                                                              [37m413[0m [32m                        "count()",[0m
+[37m   [0m                                                              [37m414[0m [32m                        "failure_rate()",[0m
+[37m   [0m                                                              [37m415[0m [32m                        "percentile(transaction.duration, 0.[0m
+[37m   [0m                                                              [37m   [0m [32m95)",[0m
+[37m   [0m                                                              [37m416[0m [32m                    ],[0m
+[37m   [0m                                                              [37m417[0m [32m                },[0m
+[37m   [0m                                                              [37m418[0m [32m            )[0m
+[37m   [0m                                                              [37m419[0m [32m[0m
+[37m   [0m                                                              [37m420[0m [32m        assert response.status_code == 200[0m
+[37m   [0m                                                              [37m421[0m [32m        data = response.data["data"][0m
+[37m376[0m         assert len(data) == 1                                [37m422[0m         assert len(data) == 1
+[37m377[0m         assert data[0]["transaction"] == event_data["transac [37m423[0m         assert data[0]["transaction"] == event_data["transac
+[37m   [0m tion"]                                                       [37m   [0m tion"]
+[37m379[0m     @patch("django.utils.timezone.now")                      [37m425[0m     @patch("django.utils.timezone.now")
+[37m380[0m     def test_get_transaction_with_backslash_and_quotes(self, [37m426[0m     def test_get_transaction_with_backslash_and_quotes(self,
+[37m   [0m  mock_now):                                                  [37m   [0m  mock_now):
+[37m381[0m         mock_now.return_value = before_now().replace(tzinfo= [37m427[0m         mock_now.return_value = before_now().replace(tzinfo=
+[37m   [0m pytz.utc)                                                    [37m   [0m pytz.utc)

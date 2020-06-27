@@ -14,372 +14,358 @@
 [0m[36mindex 049556bf76..0000000000
 [0m[33m--- a/src/sentry/static/sentry/app/components/scoreBar.jsx
 [0m[33m+++ /dev/null
-[0m[1;34m@@ -1,77 +0,0 @@
-[0m[33m 1[0m [1;31mimport PropTypes from 'prop-types';[0m                           [33m  [0m 
-[33m 2[0m [1;31mimport React from 'react';[0m                                    [33m  [0m 
-[33m 3[0m [1;31mimport styled from '@emotion/styled';[0m                         [33m  [0m 
-[33m 4[0m [1;31m[0m                                                              [33m  [0m 
-[33m 5[0m [1;31mimport theme from 'app/utils/theme';[0m                          [33m  [0m 
-[33m 6[0m [1;31m[0m                                                              [33m  [0m 
-[33m 7[0m [1;31mclass ScoreBar extends React.Component {[0m                      [33m  [0m 
-[33m 8[0m [1;31m  static propTypes = {[0m                                        [33m  [0m 
-[33m 9[0m [1;31m    vertical: PropTypes.bool,[0m                                 [33m  [0m 
-[33m10[0m [1;31m    score: PropTypes.number.isRequired,[0m                       [33m  [0m 
-[33m11[0m [1;31m    /** Array of strings */[0m                                   [33m  [0m 
-[33m12[0m [1;31m    palette: PropTypes.arrayOf(PropTypes.string),[0m             [33m  [0m 
-[33m13[0m [1;31m    /** Array of classNames whose index maps to score */[0m      [33m  [0m 
-[33m14[0m [1;31m    paletteClassNames: PropTypes.arrayOf(PropTypes.string),[0m   [33m  [0m 
-[33m15[0m [1;31m    size: PropTypes.number,[0m                                   [33m  [0m 
-[33m16[0m [1;31m    thickness: PropTypes.number,[0m                              [33m  [0m 
-[33m17[0m [1;31m    radius: PropTypes.number,[0m                                 [33m  [0m 
-[33m18[0m [1;31m  };[0m                                                          [33m  [0m 
-[33m19[0m [1;31m[0m                                                              [33m  [0m 
-[33m20[0m [1;31m  static defaultProps = {[0m                                     [33m  [0m 
-[33m21[0m [1;31m    size: 40,[0m                                                 [33m  [0m 
-[33m22[0m [1;31m    thickness: 4,[0m                                             [33m  [0m 
-[33m23[0m [1;31m    radius: 3,[0m                                                [33m  [0m 
-[33m24[0m [1;31m    palette: theme.similarity.colors,[0m                         [33m  [0m 
-[33m25[0m [1;31m  };[0m                                                          [33m  [0m 
-[33m26[0m [1;31m[0m                                                              [33m  [0m 
-[33m27[0m [1;31m  render() {[0m                                                  [33m  [0m 
-[33m28[0m [1;31m    const {className, vertical, palette, score, size, thickne[0m [33m  [0m 
-[33m  [0m [1;31mss, radius} = this.props;[0m                                     [33m  [0m 
-[33m29[0m [1;31m    const maxScore = palette.length;[0m                          [33m  [0m 
-[33m30[0m [1;31m[0m                                                              [33m  [0m 
-[33m31[0m [1;31m    // Make sure score is between 0 and maxScore[0m              [33m  [0m 
-[33m32[0m [1;31m    const scoreInBounds = score >= maxScore ? maxScore : scor[0m [33m  [0m 
-[33m  [0m [1;31me <= 0 ? 0 : score;[0m                                           [33m  [0m 
-[33m33[0m [1;31m    // Make sure paletteIndex is 0 based[0m                      [33m  [0m 
-[33m34[0m [1;31m    const paletteIndex = scoreInBounds - 1;[0m                   [33m  [0m 
-[33m35[0m [1;31m[0m                                                              [33m  [0m 
-[33m36[0m [1;31m    // Size of bar, depends on orientation, although we could[0m [33m  [0m 
-[33m  [0m [1;31m just apply a transformation via css[0m                          [33m  [0m 
-[33m37[0m [1;31m    const barProps = {[0m                                        [33m  [0m 
-[33m38[0m [1;31m      vertical,[0m                                               [33m  [0m 
-[33m39[0m [1;31m      thickness,[0m                                              [33m  [0m 
-[33m40[0m [1;31m      size,[0m                                                   [33m  [0m 
-[33m41[0m [1;31m      radius,[0m                                                 [33m  [0m 
-[33m42[0m [1;31m    };[0m                                                        [33m  [0m 
-[33m43[0m [1;31m[0m                                                              [33m  [0m 
-[33m44[0m [1;31m    return ([0m                                                  [33m  [0m 
-[33m45[0m [1;31m      <div className={className}>[0m                             [33m  [0m 
-[33m46[0m [1;31m        {[...Array(scoreInBounds)].map((_j, i) => ([0m           [33m  [0m 
-[33m47[0m [1;31m          <Bar {...barProps} key={i} color={palette[paletteIn[0m [33m  [0m 
-[33m  [0m [1;31mdex]} />[0m                                                      [33m  [0m 
-[33m48[0m [1;31m        ))}[0m                                                   [33m  [0m 
-[33m49[0m [1;31m        {[...Array(maxScore - scoreInBounds)].map((_j, i) => [0m [33m  [0m 
-[33m  [0m [1;31m([0m                                                             [33m  [0m 
-[33m50[0m [1;31m          <Bar key={`empty-${i}`} {...barProps} empty />[0m      [33m  [0m 
-[33m51[0m [1;31m        ))}[0m                                                   [33m  [0m 
-[33m52[0m [1;31m      </div>[0m                                                  [33m  [0m 
-[33m53[0m [1;31m    );[0m                                                        [33m  [0m 
-[33m54[0m [1;31m  }[0m                                                           [33m  [0m 
-[33m55[0m [1;31m}[0m                                                             [33m  [0m 
-[33m56[0m [1;31m[0m                                                              [33m  [0m 
-[33m57[0m [1;31mconst StyledScoreBar = styled(ScoreBar)`[0m                      [33m  [0m 
-[33m58[0m [1;31m  display: flex;[0m                                              [33m  [0m 
-[33m59[0m [1;31m[0m                                                              [33m  [0m 
-[33m60[0m [1;31m  ${p =>[0m                                                      [33m  [0m 
-[33m61[0m [1;31m    p.vertical[0m                                                [33m  [0m 
-[33m62[0m [1;31m      ? `flex-direction: column-reverse;[0m                      [33m  [0m 
-[33m63[0m [1;31m    justify-content: flex-end;`[0m                               [33m  [0m 
-[33m64[0m [1;31m      : 'min-width: 80px;'};[0m                                  [33m  [0m 
-[33m65[0m [1;31m`;[0m                                                            [33m  [0m 
-[33m66[0m [1;31m[0m                                                              [33m  [0m 
-[33m67[0m [1;31mconst Bar = styled('div')`[0m                                    [33m  [0m 
-[33m68[0m [1;31m  border-radius: ${p => p.radius}px;[0m                          [33m  [0m 
-[33m69[0m [1;31m  margin: 2px;[0m                                                [33m  [0m 
-[33m70[0m [1;31m  ${p => p.empty && `background-color: ${p.theme.similarity.e[0m [33m  [0m 
-[33m  [0m [1;31mmpty};`};[0m                                                     [33m  [0m 
-[33m71[0m [1;31m  ${p => p.color && `background-color: ${p.color};`};[0m         [33m  [0m 
-[33m72[0m [1;31m[0m                                                              [33m  [0m 
-[33m73[0m [1;31m  width: ${p => (!p.vertical ? p.thickness : p.size)}px;[0m      [33m  [0m 
-[33m74[0m [1;31m  height: ${p => (!p.vertical ? p.size : p.thickness)}px;[0m     [33m  [0m 
-[33m75[0m [1;31m`;[0m                                                            [33m  [0m 
-[33m76[0m [1;31m[0m                                                              [33m  [0m 
-[33m77[0m [1;31mexport default StyledScoreBar;[0m                                [33m  [0m 
+[0m[37m┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈[0m[37m 1[0m [31mimport PropTypes from 'prop-types';[0m                           [37m  [0m 
+[37m 2[0m [31mimport React from 'react';[0m                                    [37m  [0m 
+[37m 3[0m [31mimport styled from '@emotion/styled';[0m                         [37m  [0m 
+[37m 4[0m [31m[0m                                                              [37m  [0m 
+[37m 5[0m [31mimport theme from 'app/utils/theme';[0m                          [37m  [0m 
+[37m 6[0m [31m[0m                                                              [37m  [0m 
+[37m 7[0m [31mclass ScoreBar extends React.Component {[0m                      [37m  [0m 
+[37m 8[0m [31m  static propTypes = {[0m                                        [37m  [0m 
+[37m 9[0m [31m    vertical: PropTypes.bool,[0m                                 [37m  [0m 
+[37m10[0m [31m    score: PropTypes.number.isRequired,[0m                       [37m  [0m 
+[37m11[0m [31m    /** Array of strings */[0m                                   [37m  [0m 
+[37m12[0m [31m    palette: PropTypes.arrayOf(PropTypes.string),[0m             [37m  [0m 
+[37m13[0m [31m    /** Array of classNames whose index maps to score */[0m      [37m  [0m 
+[37m14[0m [31m    paletteClassNames: PropTypes.arrayOf(PropTypes.string),[0m   [37m  [0m 
+[37m15[0m [31m    size: PropTypes.number,[0m                                   [37m  [0m 
+[37m16[0m [31m    thickness: PropTypes.number,[0m                              [37m  [0m 
+[37m17[0m [31m    radius: PropTypes.number,[0m                                 [37m  [0m 
+[37m18[0m [31m  };[0m                                                          [37m  [0m 
+[37m19[0m [31m[0m                                                              [37m  [0m 
+[37m20[0m [31m  static defaultProps = {[0m                                     [37m  [0m 
+[37m21[0m [31m    size: 40,[0m                                                 [37m  [0m 
+[37m22[0m [31m    thickness: 4,[0m                                             [37m  [0m 
+[37m23[0m [31m    radius: 3,[0m                                                [37m  [0m 
+[37m24[0m [31m    palette: theme.similarity.colors,[0m                         [37m  [0m 
+[37m25[0m [31m  };[0m                                                          [37m  [0m 
+[37m26[0m [31m[0m                                                              [37m  [0m 
+[37m27[0m [31m  render() {[0m                                                  [37m  [0m 
+[37m28[0m [31m    const {className, vertical, palette, score, size, thickne[0m [37m  [0m 
+[37m  [0m [31mss, radius} = this.props;[0m                                     [37m  [0m 
+[37m29[0m [31m    const maxScore = palette.length;[0m                          [37m  [0m 
+[37m30[0m [31m[0m                                                              [37m  [0m 
+[37m31[0m [31m    // Make sure score is between 0 and maxScore[0m              [37m  [0m 
+[37m32[0m [31m    const scoreInBounds = score >= maxScore ? maxScore : scor[0m [37m  [0m 
+[37m  [0m [31me <= 0 ? 0 : score;[0m                                           [37m  [0m 
+[37m33[0m [31m    // Make sure paletteIndex is 0 based[0m                      [37m  [0m 
+[37m34[0m [31m    const paletteIndex = scoreInBounds - 1;[0m                   [37m  [0m 
+[37m35[0m [31m[0m                                                              [37m  [0m 
+[37m36[0m [31m    // Size of bar, depends on orientation, although we could[0m [37m  [0m 
+[37m  [0m [31m just apply a transformation via css[0m                          [37m  [0m 
+[37m37[0m [31m    const barProps = {[0m                                        [37m  [0m 
+[37m38[0m [31m      vertical,[0m                                               [37m  [0m 
+[37m39[0m [31m      thickness,[0m                                              [37m  [0m 
+[37m40[0m [31m      size,[0m                                                   [37m  [0m 
+[37m41[0m [31m      radius,[0m                                                 [37m  [0m 
+[37m42[0m [31m    };[0m                                                        [37m  [0m 
+[37m43[0m [31m[0m                                                              [37m  [0m 
+[37m44[0m [31m    return ([0m                                                  [37m  [0m 
+[37m45[0m [31m      <div className={className}>[0m                             [37m  [0m 
+[37m46[0m [31m        {[...Array(scoreInBounds)].map((_j, i) => ([0m           [37m  [0m 
+[37m47[0m [31m          <Bar {...barProps} key={i} color={palette[paletteIn[0m [37m  [0m 
+[37m  [0m [31mdex]} />[0m                                                      [37m  [0m 
+[37m48[0m [31m        ))}[0m                                                   [37m  [0m 
+[37m49[0m [31m        {[...Array(maxScore - scoreInBounds)].map((_j, i) => [0m [37m  [0m 
+[37m  [0m [31m([0m                                                             [37m  [0m 
+[37m50[0m [31m          <Bar key={`empty-${i}`} {...barProps} empty />[0m      [37m  [0m 
+[37m51[0m [31m        ))}[0m                                                   [37m  [0m 
+[37m52[0m [31m      </div>[0m                                                  [37m  [0m 
+[37m53[0m [31m    );[0m                                                        [37m  [0m 
+[37m54[0m [31m  }[0m                                                           [37m  [0m 
+[37m55[0m [31m}[0m                                                             [37m  [0m 
+[37m56[0m [31m[0m                                                              [37m  [0m 
+[37m57[0m [31mconst StyledScoreBar = styled(ScoreBar)`[0m                      [37m  [0m 
+[37m58[0m [31m  display: flex;[0m                                              [37m  [0m 
+[37m59[0m [31m[0m                                                              [37m  [0m 
+[37m60[0m [31m  ${p =>[0m                                                      [37m  [0m 
+[37m61[0m [31m    p.vertical[0m                                                [37m  [0m 
+[37m62[0m [31m      ? `flex-direction: column-reverse;[0m                      [37m  [0m 
+[37m63[0m [31m    justify-content: flex-end;`[0m                               [37m  [0m 
+[37m64[0m [31m      : 'min-width: 80px;'};[0m                                  [37m  [0m 
+[37m65[0m [31m`;[0m                                                            [37m  [0m 
+[37m66[0m [31m[0m                                                              [37m  [0m 
+[37m67[0m [31mconst Bar = styled('div')`[0m                                    [37m  [0m 
+[37m68[0m [31m  border-radius: ${p => p.radius}px;[0m                          [37m  [0m 
+[37m69[0m [31m  margin: 2px;[0m                                                [37m  [0m 
+[37m70[0m [31m  ${p => p.empty && `background-color: ${p.theme.similarity.e[0m [37m  [0m 
+[37m  [0m [31mmpty};`};[0m                                                     [37m  [0m 
+[37m71[0m [31m  ${p => p.color && `background-color: ${p.color};`};[0m         [37m  [0m 
+[37m72[0m [31m[0m                                                              [37m  [0m 
+[37m73[0m [31m  width: ${p => (!p.vertical ? p.thickness : p.size)}px;[0m      [37m  [0m 
+[37m74[0m [31m  height: ${p => (!p.vertical ? p.size : p.thickness)}px;[0m     [37m  [0m 
+[37m75[0m [31m`;[0m                                                            [37m  [0m 
+[37m76[0m [31m[0m                                                              [37m  [0m 
+[37m77[0m [31mexport default StyledScoreBar;[0m                                [37m  [0m 
 [36mdiff --git a/src/sentry/static/sentry/app/components/scoreBar.tsx b/src/sentry/static/sentry/app/components/scoreBar.tsx
 [0m[36mnew file mode 100644
 [0m[36mindex 0000000000..968ac64120
 [0m[33m--- /dev/null
 [0m[33m+++ b/src/sentry/static/sentry/app/components/scoreBar.tsx
-[0m[1;34m@@ -0,0 +1,95 @@
-[0m[33m  [0m                                                               [33m 1[0m [32mimport PropTypes from 'prop-types';[0m
-[33m  [0m                                                               [33m 2[0m [32mimport React from 'react';[0m
-[33m  [0m                                                               [33m 3[0m [32mimport styled from '@emotion/styled';[0m
-[33m  [0m                                                               [33m 4[0m [32m[0m
-[33m  [0m                                                               [33m 5[0m [32mimport theme from 'app/utils/theme';[0m
-[33m  [0m                                                               [33m 6[0m [32m[0m
-[33m  [0m                                                               [33m 7[0m [32mtype Props = {[0m
-[33m  [0m                                                               [33m 8[0m [32m  score: number;[0m
-[33m  [0m                                                               [33m 9[0m [32m  size?: number;[0m
-[33m  [0m                                                               [33m10[0m [32m  thickness?: number;[0m
-[33m  [0m                                                               [33m11[0m [32m  radius?: number;[0m
-[33m  [0m                                                               [33m12[0m [32m  palette?: Readonly<string[]>;[0m
-[33m  [0m                                                               [33m13[0m [32m  className?: string;[0m
-[33m  [0m                                                               [33m14[0m [32m  paletteClassNames?: string[];[0m
-[33m  [0m                                                               [33m15[0m [32m  vertical?: boolean;[0m
-[33m  [0m                                                               [33m16[0m [32m};[0m
-[33m  [0m                                                               [33m17[0m [32m[0m
-[33m  [0m                                                               [33m18[0m [32mconst ScoreBar = ({[0m
-[33m  [0m                                                               [33m19[0m [32m  score,[0m
-[33m  [0m                                                               [33m20[0m [32m  className,[0m
-[33m  [0m                                                               [33m21[0m [32m  vertical,[0m
-[33m  [0m                                                               [33m22[0m [32m  size = 40,[0m
-[33m  [0m                                                               [33m23[0m [32m  thickness = 4,[0m
-[33m  [0m                                                               [33m24[0m [32m  radius = 3,[0m
-[33m  [0m                                                               [33m25[0m [32m  palette = theme.similarity.colors,[0m
-[33m  [0m                                                               [33m26[0m [32m}: Props) => {[0m
-[33m  [0m                                                               [33m27[0m [32m  const maxScore = palette.length;[0m
-[33m  [0m                                                               [33m28[0m [32m[0m
-[33m  [0m                                                               [33m29[0m [32m  // Make sure score is between 0 and maxScore[0m
-[33m  [0m                                                               [33m30[0m [32m  const scoreInBounds = score >= maxScore ? maxScore : score [0m
-[33m  [0m                                                               [33m  [0m [32m<= 0 ? 0 : score;[0m
-[33m  [0m                                                               [33m31[0m [32m  // Make sure paletteIndex is 0 based[0m
-[33m  [0m                                                               [33m32[0m [32m  const paletteIndex = scoreInBounds - 1;[0m
-[33m  [0m                                                               [33m33[0m [32m[0m
-[33m  [0m                                                               [33m34[0m [32m  // Size of bar, depends on orientation, although we could j[0m
-[33m  [0m                                                               [33m  [0m [32must apply a transformation via css[0m
-[33m  [0m                                                               [33m35[0m [32m  const barProps = {[0m
-[33m  [0m                                                               [33m36[0m [32m    vertical,[0m
-[33m  [0m                                                               [33m37[0m [32m    thickness,[0m
-[33m  [0m                                                               [33m38[0m [32m    size,[0m
-[33m  [0m                                                               [33m39[0m [32m    radius,[0m
-[33m  [0m                                                               [33m40[0m [32m  };[0m
-[33m  [0m                                                               [33m41[0m [32m[0m
-[33m  [0m                                                               [33m42[0m [32m  return ([0m
-[33m  [0m                                                               [33m43[0m [32m    <div className={className}>[0m
-[33m  [0m                                                               [33m44[0m [32m      {[...Array(scoreInBounds)].map((_j, i) => ([0m
-[33m  [0m                                                               [33m45[0m [32m        <Bar {...barProps} key={i} color={palette[paletteInde[0m
-[33m  [0m                                                               [33m  [0m [32mx]} />[0m
-[33m  [0m                                                               [33m46[0m [32m      ))}[0m
-[33m  [0m                                                               [33m47[0m [32m      {[...Array(maxScore - scoreInBounds)].map((_j, i) => ([0m
-[33m  [0m                                                               [33m48[0m [32m        <Bar key={`empty-${i}`} {...barProps} empty />[0m
-[33m  [0m                                                               [33m49[0m [32m      ))}[0m
-[33m  [0m                                                               [33m50[0m [32m    </div>[0m
-[33m  [0m                                                               [33m51[0m [32m  );[0m
-[33m  [0m                                                               [33m52[0m [32m};[0m
-[33m  [0m                                                               [33m53[0m [32m[0m
-[33m  [0m                                                               [33m54[0m [32mScoreBar.propTypes = {[0m
-[33m  [0m                                                               [33m55[0m [32m  vertical: PropTypes.bool,[0m
-[33m  [0m                                                               [33m56[0m [32m  score: PropTypes.number.isRequired,[0m
-[33m  [0m                                                               [33m57[0m [32m  /** Array of strings */[0m
-[33m  [0m                                                               [33m58[0m [32m  palette: PropTypes.arrayOf(PropTypes.string),[0m
-[33m  [0m                                                               [33m59[0m [32m  /** Array of classNames whose index maps to score */[0m
-[33m  [0m                                                               [33m60[0m [32m  paletteClassNames: PropTypes.arrayOf(PropTypes.string),[0m
-[33m  [0m                                                               [33m61[0m [32m  size: PropTypes.number,[0m
-[33m  [0m                                                               [33m62[0m [32m  thickness: PropTypes.number,[0m
-[33m  [0m                                                               [33m63[0m [32m  radius: PropTypes.number,[0m
-[33m  [0m                                                               [33m64[0m [32m};[0m
-[33m  [0m                                                               [33m65[0m [32m[0m
-[33m  [0m                                                               [33m66[0m [32mconst StyledScoreBar = styled(ScoreBar)`[0m
-[33m  [0m                                                               [33m67[0m [32m  display: flex;[0m
-[33m  [0m                                                               [33m68[0m [32m[0m
-[33m  [0m                                                               [33m69[0m [32m  ${p =>[0m
-[33m  [0m                                                               [33m70[0m [32m    p.vertical[0m
-[33m  [0m                                                               [33m71[0m [32m      ? `flex-direction: column-reverse;[0m
-[33m  [0m                                                               [33m72[0m [32m    justify-content: flex-end;`[0m
-[33m  [0m                                                               [33m73[0m [32m      : 'min-width: 80px;'};[0m
-[33m  [0m                                                               [33m74[0m [32m`;[0m
-[33m  [0m                                                               [33m75[0m [32m[0m
-[33m  [0m                                                               [33m76[0m [32mtype BarProps = {[0m
-[33m  [0m                                                               [33m77[0m [32m  radius: number;[0m
-[33m  [0m                                                               [33m78[0m [32m  size: number;[0m
-[33m  [0m                                                               [33m79[0m [32m  thickness: number;[0m
-[33m  [0m                                                               [33m80[0m [32m  color?: string;[0m
-[33m  [0m                                                               [33m81[0m [32m  empty?: boolean;[0m
-[33m  [0m                                                               [33m82[0m [32m  vertical?: boolean;[0m
-[33m  [0m                                                               [33m83[0m [32m};[0m
-[33m  [0m                                                               [33m84[0m [32m[0m
-[33m  [0m                                                               [33m85[0m [32mconst Bar = styled('div')<BarProps>`[0m
-[33m  [0m                                                               [33m86[0m [32m  border-radius: ${p => p.radius}px;[0m
-[33m  [0m                                                               [33m87[0m [32m  margin: 2px;[0m
-[33m  [0m                                                               [33m88[0m [32m  ${p => p.empty && `background-color: ${p.theme.similarity.e[0m
-[33m  [0m                                                               [33m  [0m [32mmpty};`};[0m
-[33m  [0m                                                               [33m89[0m [32m  ${p => p.color && `background-color: ${p.color};`};[0m
-[33m  [0m                                                               [33m90[0m [32m[0m
-[33m  [0m                                                               [33m91[0m [32m  width: ${p => (!p.vertical ? p.thickness : p.size)}px;[0m
-[33m  [0m                                                               [33m92[0m [32m  height: ${p => (!p.vertical ? p.size : p.thickness)}px;[0m
-[33m  [0m                                                               [33m93[0m [32m`;[0m
-[33m  [0m                                                               [33m94[0m [32m[0m
-[33m  [0m                                                               [33m95[0m [32mexport default StyledScoreBar;[0m
+[0m[37m┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈[0m[37m  [0m                                                               [37m 1[0m [32mimport PropTypes from 'prop-types';[0m
+[37m  [0m                                                               [37m 2[0m [32mimport React from 'react';[0m
+[37m  [0m                                                               [37m 3[0m [32mimport styled from '@emotion/styled';[0m
+[37m  [0m                                                               [37m 4[0m [32m[0m
+[37m  [0m                                                               [37m 5[0m [32mimport theme from 'app/utils/theme';[0m
+[37m  [0m                                                               [37m 6[0m [32m[0m
+[37m  [0m                                                               [37m 7[0m [32mtype Props = {[0m
+[37m  [0m                                                               [37m 8[0m [32m  score: number;[0m
+[37m  [0m                                                               [37m 9[0m [32m  size?: number;[0m
+[37m  [0m                                                               [37m10[0m [32m  thickness?: number;[0m
+[37m  [0m                                                               [37m11[0m [32m  radius?: number;[0m
+[37m  [0m                                                               [37m12[0m [32m  palette?: Readonly<string[]>;[0m
+[37m  [0m                                                               [37m13[0m [32m  className?: string;[0m
+[37m  [0m                                                               [37m14[0m [32m  paletteClassNames?: string[];[0m
+[37m  [0m                                                               [37m15[0m [32m  vertical?: boolean;[0m
+[37m  [0m                                                               [37m16[0m [32m};[0m
+[37m  [0m                                                               [37m17[0m [32m[0m
+[37m  [0m                                                               [37m18[0m [32mconst ScoreBar = ({[0m
+[37m  [0m                                                               [37m19[0m [32m  score,[0m
+[37m  [0m                                                               [37m20[0m [32m  className,[0m
+[37m  [0m                                                               [37m21[0m [32m  vertical,[0m
+[37m  [0m                                                               [37m22[0m [32m  size = 40,[0m
+[37m  [0m                                                               [37m23[0m [32m  thickness = 4,[0m
+[37m  [0m                                                               [37m24[0m [32m  radius = 3,[0m
+[37m  [0m                                                               [37m25[0m [32m  palette = theme.similarity.colors,[0m
+[37m  [0m                                                               [37m26[0m [32m}: Props) => {[0m
+[37m  [0m                                                               [37m27[0m [32m  const maxScore = palette.length;[0m
+[37m  [0m                                                               [37m28[0m [32m[0m
+[37m  [0m                                                               [37m29[0m [32m  // Make sure score is between 0 and maxScore[0m
+[37m  [0m                                                               [37m30[0m [32m  const scoreInBounds = score >= maxScore ? maxScore : score [0m
+[37m  [0m                                                               [37m  [0m [32m<= 0 ? 0 : score;[0m
+[37m  [0m                                                               [37m31[0m [32m  // Make sure paletteIndex is 0 based[0m
+[37m  [0m                                                               [37m32[0m [32m  const paletteIndex = scoreInBounds - 1;[0m
+[37m  [0m                                                               [37m33[0m [32m[0m
+[37m  [0m                                                               [37m34[0m [32m  // Size of bar, depends on orientation, although we could j[0m
+[37m  [0m                                                               [37m  [0m [32must apply a transformation via css[0m
+[37m  [0m                                                               [37m35[0m [32m  const barProps = {[0m
+[37m  [0m                                                               [37m36[0m [32m    vertical,[0m
+[37m  [0m                                                               [37m37[0m [32m    thickness,[0m
+[37m  [0m                                                               [37m38[0m [32m    size,[0m
+[37m  [0m                                                               [37m39[0m [32m    radius,[0m
+[37m  [0m                                                               [37m40[0m [32m  };[0m
+[37m  [0m                                                               [37m41[0m [32m[0m
+[37m  [0m                                                               [37m42[0m [32m  return ([0m
+[37m  [0m                                                               [37m43[0m [32m    <div className={className}>[0m
+[37m  [0m                                                               [37m44[0m [32m      {[...Array(scoreInBounds)].map((_j, i) => ([0m
+[37m  [0m                                                               [37m45[0m [32m        <Bar {...barProps} key={i} color={palette[paletteInde[0m
+[37m  [0m                                                               [37m  [0m [32mx]} />[0m
+[37m  [0m                                                               [37m46[0m [32m      ))}[0m
+[37m  [0m                                                               [37m47[0m [32m      {[...Array(maxScore - scoreInBounds)].map((_j, i) => ([0m
+[37m  [0m                                                               [37m48[0m [32m        <Bar key={`empty-${i}`} {...barProps} empty />[0m
+[37m  [0m                                                               [37m49[0m [32m      ))}[0m
+[37m  [0m                                                               [37m50[0m [32m    </div>[0m
+[37m  [0m                                                               [37m51[0m [32m  );[0m
+[37m  [0m                                                               [37m52[0m [32m};[0m
+[37m  [0m                                                               [37m53[0m [32m[0m
+[37m  [0m                                                               [37m54[0m [32mScoreBar.propTypes = {[0m
+[37m  [0m                                                               [37m55[0m [32m  vertical: PropTypes.bool,[0m
+[37m  [0m                                                               [37m56[0m [32m  score: PropTypes.number.isRequired,[0m
+[37m  [0m                                                               [37m57[0m [32m  /** Array of strings */[0m
+[37m  [0m                                                               [37m58[0m [32m  palette: PropTypes.arrayOf(PropTypes.string),[0m
+[37m  [0m                                                               [37m59[0m [32m  /** Array of classNames whose index maps to score */[0m
+[37m  [0m                                                               [37m60[0m [32m  paletteClassNames: PropTypes.arrayOf(PropTypes.string),[0m
+[37m  [0m                                                               [37m61[0m [32m  size: PropTypes.number,[0m
+[37m  [0m                                                               [37m62[0m [32m  thickness: PropTypes.number,[0m
+[37m  [0m                                                               [37m63[0m [32m  radius: PropTypes.number,[0m
+[37m  [0m                                                               [37m64[0m [32m};[0m
+[37m  [0m                                                               [37m65[0m [32m[0m
+[37m  [0m                                                               [37m66[0m [32mconst StyledScoreBar = styled(ScoreBar)`[0m
+[37m  [0m                                                               [37m67[0m [32m  display: flex;[0m
+[37m  [0m                                                               [37m68[0m [32m[0m
+[37m  [0m                                                               [37m69[0m [32m  ${p =>[0m
+[37m  [0m                                                               [37m70[0m [32m    p.vertical[0m
+[37m  [0m                                                               [37m71[0m [32m      ? `flex-direction: column-reverse;[0m
+[37m  [0m                                                               [37m72[0m [32m    justify-content: flex-end;`[0m
+[37m  [0m                                                               [37m73[0m [32m      : 'min-width: 80px;'};[0m
+[37m  [0m                                                               [37m74[0m [32m`;[0m
+[37m  [0m                                                               [37m75[0m [32m[0m
+[37m  [0m                                                               [37m76[0m [32mtype BarProps = {[0m
+[37m  [0m                                                               [37m77[0m [32m  radius: number;[0m
+[37m  [0m                                                               [37m78[0m [32m  size: number;[0m
+[37m  [0m                                                               [37m79[0m [32m  thickness: number;[0m
+[37m  [0m                                                               [37m80[0m [32m  color?: string;[0m
+[37m  [0m                                                               [37m81[0m [32m  empty?: boolean;[0m
+[37m  [0m                                                               [37m82[0m [32m  vertical?: boolean;[0m
+[37m  [0m                                                               [37m83[0m [32m};[0m
+[37m  [0m                                                               [37m84[0m [32m[0m
+[37m  [0m                                                               [37m85[0m [32mconst Bar = styled('div')<BarProps>`[0m
+[37m  [0m                                                               [37m86[0m [32m  border-radius: ${p => p.radius}px;[0m
+[37m  [0m                                                               [37m87[0m [32m  margin: 2px;[0m
+[37m  [0m                                                               [37m88[0m [32m  ${p => p.empty && `background-color: ${p.theme.similarity.e[0m
+[37m  [0m                                                               [37m  [0m [32mmpty};`};[0m
+[37m  [0m                                                               [37m89[0m [32m  ${p => p.color && `background-color: ${p.color};`};[0m
+[37m  [0m                                                               [37m90[0m [32m[0m
+[37m  [0m                                                               [37m91[0m [32m  width: ${p => (!p.vertical ? p.thickness : p.size)}px;[0m
+[37m  [0m                                                               [37m92[0m [32m  height: ${p => (!p.vertical ? p.size : p.thickness)}px;[0m
+[37m  [0m                                                               [37m93[0m [32m`;[0m
+[37m  [0m                                                               [37m94[0m [32m[0m
+[37m  [0m                                                               [37m95[0m [32mexport default StyledScoreBar;[0m
 [36mdiff --git a/tests/js/spec/views/organizationGroupDetails/__snapshots__/groupSimilar.spec.jsx.snap b/tests/js/spec/views/organizationGroupDetails/__snapshots__/groupSimilar.spec.jsx.snap
 [0m[36mindex be35bc42ae..7b7e51ca00 100644
 [0m[33m--- a/tests/js/spec/views/organizationGroupDetails/__snapshots__/groupSimilar.spec.jsx.snap
 [0m[33m+++ b/tests/js/spec/views/organizationGroupDetails/__snapshots__/groupSimilar.spec.jsx.snap
-[0m[1;34m@@ -1669,40 +1669,16 @@ exports[`Issues Similar View renders with mocked data 1`] = `
-[0m[33m1669[0m                               onMouseLeave={[Function]}     [33m1669[0m                               onMouseLeave={[Function]}
-[33m1670[0m                             >                               [33m1670[0m                             >
-[33m1671[0m                               <StyledScoreBar               [33m1671[0m                               <StyledScoreBar
-[33m1672[0m [1;31m                                palette={[0m                   [33m    [0m 
-[33m1673[0m [1;31m                                  Array [[0m                   [33m    [0m 
-[33m1674[0m [1;31m                                    "#ec5e44",[0m              [33m    [0m 
-[33m1675[0m [1;31m                                    "#f38259",[0m              [33m    [0m 
-[33m1676[0m [1;31m                                    "#f9a66d",[0m              [33m    [0m 
-[33m1677[0m [1;31m                                    "#98b480",[0m              [33m    [0m 
-[33m1678[0m [1;31m                                    "#57be8c",[0m              [33m    [0m 
-[33m1679[0m [1;31m                                  ][0m                         [33m    [0m 
-[33m1680[0m [1;31m                                }[0m                           [33m    [0m 
-[33m1681[0m [1;31m                                radius={3}[0m                  [33m    [0m 
-[33m1682[0m                                 score={4}                   [33m1672[0m                                 score={4}
-[33m1683[0m [1;31m                                size={40}[0m                   [33m    [0m 
-[33m1684[0m [1;31m                                thickness={4}[0m               [33m    [0m 
-[33m1685[0m                                 vertical={true}             [33m1673[0m                                 vertical={true}
-[33m1686[0m                               >                             [33m1674[0m                               >
-[33m1687[0m                                 <ScoreBar                   [33m1675[0m                                 <ScoreBar
-[33m1688[0m [22m                                  className="css-tics7q-Sty[0m [33m1676[0m [22m                                  className="css-tics7q-Sty[0m
-[33m    [0m [22mledScoreBar e[7m[33mecxaw4[0m[22m0"[0m                                       [33m    [0m [22mledScoreBar e[7m[33m1h9dyli[0m[22m0"[0m
-[33m1689[0m [1;31m                                  palette={[0m                 [33m    [0m 
-[33m1690[0m [1;31m                                    Array [[0m                 [33m    [0m 
-[33m1691[0m [1;31m                                      "#ec5e44",[0m            [33m    [0m 
-[33m1692[0m [1;31m                                      "#f38259",[0m            [33m    [0m 
-[33m1693[0m [1;31m                                      "#f9a66d",[0m            [33m    [0m 
-[33m1694[0m [1;31m                                      "#98b480",[0m            [33m    [0m 
-[33m1695[0m [1;31m                                      "#57be8c",[0m            [33m    [0m 
-[33m1696[0m [1;31m                                    ][0m                       [33m    [0m 
-[33m1697[0m [1;31m                                  }[0m                         [33m    [0m 
-[33m1698[0m [1;31m                                  radius={3}[0m                [33m    [0m 
-[33m1699[0m                                   score={4}                 [33m1677[0m                                   score={4}
-[33m1700[0m [1;31m                                  size={40}[0m                 [33m    [0m 
-[33m1701[0m [1;31m                                  thickness={4}[0m             [33m    [0m 
-[33m1702[0m                                   vertical={true}           [33m1678[0m                                   vertical={true}
-[33m1703[0m                                 >                           [33m1679[0m                                 >
-[33m1704[0m                                   <div                      [33m1680[0m                                   <div
-[33m1705[0m [22m                                    className="css-tics7q-S[0m [33m1681[0m [22m                                    className="css-tics7q-S[0m
-[33m    [0m [22mtyledScoreBar e[7m[33mecxaw4[0m[22m0"[0m                                     [33m    [0m [22mtyledScoreBar e[7m[33m1h9dyli[0m[22m0"[0m
-[33m1706[0m                                   >                         [33m1682[0m                                   >
-[33m1707[0m                                     <Bar                    [33m1683[0m                                     <Bar
-[33m1708[0m                                       color="#98b480"       [33m1684[0m                                       color="#98b480"
-[1;34m@@ -1713,7 +1689,7 @@ exports[`Issues Similar View renders with mocked data 1`] = `
-[0m[33m1713[0m                                       vertical={true}       [33m1689[0m                                       vertical={true}
-[33m1714[0m                                     >                       [33m1690[0m                                     >
-[33m1715[0m                                       <div                  [33m1691[0m                                       <div
-[33m1716[0m [22m                                        className="css-1gui[0m [33m1692[0m [22m                                        className="css-1gui[0m
-[33m    [0m [22m0xz-Bar e[7m[33mecxaw4[0m[22m1"[0m                                           [33m    [0m [22m0xz-Bar e[7m[33m1h9dyli[0m[22m1"[0m
-[33m1717[0m                                         color="#98b480"     [33m1693[0m                                         color="#98b480"
-[33m1718[0m                                         radius={3}          [33m1694[0m                                         radius={3}
-[33m1719[0m                                         size={40}           [33m1695[0m                                         size={40}
-[1;34m@@ -1728,7 +1704,7 @@ exports[`Issues Similar View renders with mocked data 1`] = `
-[0m[33m1728[0m                                       vertical={true}       [33m1704[0m                                       vertical={true}
-[33m1729[0m                                     >                       [33m1705[0m                                     >
-[33m1730[0m                                       <div                  [33m1706[0m                                       <div
-[33m1731[0m [22m                                        className="css-1gui[0m [33m1707[0m [22m                                        className="css-1gui[0m
-[33m    [0m [22m0xz-Bar e[7m[33mecxaw4[0m[22m1"[0m                                           [33m    [0m [22m0xz-Bar e[7m[33m1h9dyli[0m[22m1"[0m
-[33m1732[0m                                         color="#98b480"     [33m1708[0m                                         color="#98b480"
-[33m1733[0m                                         radius={3}          [33m1709[0m                                         radius={3}
-[33m1734[0m                                         size={40}           [33m1710[0m                                         size={40}
-[1;34m@@ -1743,7 +1719,7 @@ exports[`Issues Similar View renders with mocked data 1`] = `
-[0m[33m1743[0m                                       vertical={true}       [33m1719[0m                                       vertical={true}
-[33m1744[0m                                     >                       [33m1720[0m                                     >
-[33m1745[0m                                       <div                  [33m1721[0m                                       <div
-[33m1746[0m [22m                                        className="css-1gui[0m [33m1722[0m [22m                                        className="css-1gui[0m
-[33m    [0m [22m0xz-Bar e[7m[33mecxaw4[0m[22m1"[0m                                           [33m    [0m [22m0xz-Bar e[7m[33m1h9dyli[0m[22m1"[0m
-[33m1747[0m                                         color="#98b480"     [33m1723[0m                                         color="#98b480"
-[33m1748[0m                                         radius={3}          [33m1724[0m                                         radius={3}
-[33m1749[0m                                         size={40}           [33m1725[0m                                         size={40}
-[1;34m@@ -1758,7 +1734,7 @@ exports[`Issues Similar View renders with mocked data 1`] = `
-[0m[33m1758[0m                                       vertical={true}       [33m1734[0m                                       vertical={true}
-[33m1759[0m                                     >                       [33m1735[0m                                     >
-[33m1760[0m                                       <div                  [33m1736[0m                                       <div
-[33m1761[0m [22m                                        className="css-1gui[0m [33m1737[0m [22m                                        className="css-1gui[0m
-[33m    [0m [22m0xz-Bar e[7m[33mecxaw4[0m[22m1"[0m                                           [33m    [0m [22m0xz-Bar e[7m[33m1h9dyli[0m[22m1"[0m
-[33m1762[0m                                         color="#98b480"     [33m1738[0m                                         color="#98b480"
-[33m1763[0m                                         radius={3}          [33m1739[0m                                         radius={3}
-[33m1764[0m                                         size={40}           [33m1740[0m                                         size={40}
-[1;34m@@ -1773,7 +1749,7 @@ exports[`Issues Similar View renders with mocked data 1`] = `
-[0m[33m1773[0m                                       vertical={true}       [33m1749[0m                                       vertical={true}
-[33m1774[0m                                     >                       [33m1750[0m                                     >
-[33m1775[0m                                       <div                  [33m1751[0m                                       <div
-[33m1776[0m [22m                                        className="css-3fvo[0m [33m1752[0m [22m                                        className="css-3fvo[0m
-[33m    [0m [22m9r-Bar e[7m[33mecxaw4[0m[22m1"[0m                                            [33m    [0m [22m9r-Bar e[7m[33m1h9dyli[0m[22m1"[0m
-[33m1777[0m                                         radius={3}          [33m1753[0m                                         radius={3}
-[33m1778[0m                                         size={40}           [33m1754[0m                                         size={40}
-[33m1779[0m                                       />                    [33m1755[0m                                       />
-[1;34m@@ -1807,40 +1783,16 @@ exports[`Issues Similar View renders with mocked data 1`] = `
-[0m[33m1807[0m                               onMouseLeave={[Function]}     [33m1783[0m                               onMouseLeave={[Function]}
-[33m1808[0m                             >                               [33m1784[0m                             >
-[33m1809[0m                               <StyledScoreBar               [33m1785[0m                               <StyledScoreBar
-[33m1810[0m [1;31m                                palette={[0m                   [33m    [0m 
-[33m1811[0m [1;31m                                  Array [[0m                   [33m    [0m 
-[33m1812[0m [1;31m                                    "#ec5e44",[0m              [33m    [0m 
-[33m1813[0m [1;31m                                    "#f38259",[0m              [33m    [0m 
-[33m1814[0m [1;31m                                    "#f9a66d",[0m              [33m    [0m 
-[33m1815[0m [1;31m                                    "#98b480",[0m              [33m    [0m 
-[33m1816[0m [1;31m                                    "#57be8c",[0m              [33m    [0m 
-[33m1817[0m [1;31m                                  ][0m                         [33m    [0m 
-[33m1818[0m [1;31m                                }[0m                           [33m    [0m 
-[33m1819[0m [1;31m                                radius={3}[0m                  [33m    [0m 
-[33m1820[0m                                 score={0}                   [33m1786[0m                                 score={0}
-[33m1821[0m [1;31m                                size={40}[0m                   [33m    [0m 
-[33m1822[0m [1;31m                                thickness={4}[0m               [33m    [0m 
-[33m1823[0m                                 vertical={true}             [33m1787[0m                                 vertical={true}
-[33m1824[0m                               >                             [33m1788[0m                               >
-[33m1825[0m                                 <ScoreBar                   [33m1789[0m                                 <ScoreBar
-[33m1826[0m [22m                                  className="css-tics7q-Sty[0m [33m1790[0m [22m                                  className="css-tics7q-Sty[0m
-[33m    [0m [22mledScoreBar e[7m[33mecxaw4[0m[22m0"[0m                                       [33m    [0m [22mledScoreBar e[7m[33m1h9dyli[0m[22m0"[0m
-[33m1827[0m [1;31m                                  palette={[0m                 [33m    [0m 
-[33m1828[0m [1;31m                                    Array [[0m                 [33m    [0m 
-[33m1829[0m [1;31m                                      "#ec5e44",[0m            [33m    [0m 
-[33m1830[0m [1;31m                                      "#f38259",[0m            [33m    [0m 
-[33m1831[0m [1;31m                                      "#f9a66d",[0m            [33m    [0m 
-[33m1832[0m [1;31m                                      "#98b480",[0m            [33m    [0m 
-[33m1833[0m [1;31m                                      "#57be8c",[0m            [33m    [0m 
-[33m1834[0m [1;31m                                    ][0m                       [33m    [0m 
-[33m1835[0m [1;31m                                  }[0m                         [33m    [0m 
-[33m1836[0m [1;31m                                  radius={3}[0m                [33m    [0m 
-[33m1837[0m                                   score={0}                 [33m1791[0m                                   score={0}
-[33m1838[0m [1;31m                                  size={40}[0m                 [33m    [0m 
-[33m1839[0m [1;31m                                  thickness={4}[0m             [33m    [0m 
-[33m1840[0m                                   vertical={true}           [33m1792[0m                                   vertical={true}
-[33m1841[0m                                 >                           [33m1793[0m                                 >
-[33m1842[0m                                   <div                      [33m1794[0m                                   <div
-[33m1843[0m [22m                                    className="css-tics7q-S[0m [33m1795[0m [22m                                    className="css-tics7q-S[0m
-[33m    [0m [22mtyledScoreBar e[7m[33mecxaw4[0m[22m0"[0m                                     [33m    [0m [22mtyledScoreBar e[7m[33m1h9dyli[0m[22m0"[0m
-[33m1844[0m                                   >                         [33m1796[0m                                   >
-[33m1845[0m                                     <Bar                    [33m1797[0m                                     <Bar
-[33m1846[0m                                       empty={true}          [33m1798[0m                                       empty={true}
-[1;34m@@ -1851,7 +1803,7 @@ exports[`Issues Similar View renders with mocked data 1`] = `
-[0m[33m1851[0m                                       vertical={true}       [33m1803[0m                                       vertical={true}
-[33m1852[0m                                     >                       [33m1804[0m                                     >
-[33m1853[0m                                       <div                  [33m1805[0m                                       <div
-[33m1854[0m [22m                                        className="css-3fvo[0m [33m1806[0m [22m                                        className="css-3fvo[0m
-[33m    [0m [22m9r-Bar e[7m[33mecxaw4[0m[22m1"[0m                                            [33m    [0m [22m9r-Bar e[7m[33m1h9dyli[0m[22m1"[0m
-[33m1855[0m                                         radius={3}          [33m1807[0m                                         radius={3}
-[33m1856[0m                                         size={40}           [33m1808[0m                                         size={40}
-[33m1857[0m                                       />                    [33m1809[0m                                       />
-[1;34m@@ -1865,7 +1817,7 @@ exports[`Issues Similar View renders with mocked data 1`] = `
-[0m[33m1865[0m                                       vertical={true}       [33m1817[0m                                       vertical={true}
-[33m1866[0m                                     >                       [33m1818[0m                                     >
-[33m1867[0m                                       <div                  [33m1819[0m                                       <div
-[33m1868[0m [22m                                        className="css-3fvo[0m [33m1820[0m [22m                                        className="css-3fvo[0m
-[33m    [0m [22m9r-Bar e[7m[33mecxaw4[0m[22m1"[0m                                            [33m    [0m [22m9r-Bar e[7m[33m1h9dyli[0m[22m1"[0m
-[33m1869[0m                                         radius={3}          [33m1821[0m                                         radius={3}
-[33m1870[0m                                         size={40}           [33m1822[0m                                         size={40}
-[33m1871[0m                                       />                    [33m1823[0m                                       />
-[1;34m@@ -1879,7 +1831,7 @@ exports[`Issues Similar View renders with mocked data 1`] = `
-[0m[33m1879[0m                                       vertical={true}       [33m1831[0m                                       vertical={true}
-[33m1880[0m                                     >                       [33m1832[0m                                     >
-[33m1881[0m                                       <div                  [33m1833[0m                                       <div
-[33m1882[0m [22m                                        className="css-3fvo[0m [33m1834[0m [22m                                        className="css-3fvo[0m
-[33m    [0m [22m9r-Bar e[7m[33mecxaw4[0m[22m1"[0m                                            [33m    [0m [22m9r-Bar e[7m[33m1h9dyli[0m[22m1"[0m
-[33m1883[0m                                         radius={3}          [33m1835[0m                                         radius={3}
-[33m1884[0m                                         size={40}           [33m1836[0m                                         size={40}
-[33m1885[0m                                       />                    [33m1837[0m                                       />
-[1;34m@@ -1893,7 +1845,7 @@ exports[`Issues Similar View renders with mocked data 1`] = `
-[0m[33m1893[0m                                       vertical={true}       [33m1845[0m                                       vertical={true}
-[33m1894[0m                                     >                       [33m1846[0m                                     >
-[33m1895[0m                                       <div                  [33m1847[0m                                       <div
-[33m1896[0m [22m                                        className="css-3fvo[0m [33m1848[0m [22m                                        className="css-3fvo[0m
-[33m    [0m [22m9r-Bar e[7m[33mecxaw4[0m[22m1"[0m                                            [33m    [0m [22m9r-Bar e[7m[33m1h9dyli[0m[22m1"[0m
-[33m1897[0m                                         radius={3}          [33m1849[0m                                         radius={3}
-[33m1898[0m                                         size={40}           [33m1850[0m                                         size={40}
-[33m1899[0m                                       />                    [33m1851[0m                                       />
-[1;34m@@ -1907,7 +1859,7 @@ exports[`Issues Similar View renders with mocked data 1`] = `
-[0m[33m1907[0m                                       vertical={true}       [33m1859[0m                                       vertical={true}
-[33m1908[0m                                     >                       [33m1860[0m                                     >
-[33m1909[0m                                       <div                  [33m1861[0m                                       <div
-[33m1910[0m [22m                                        className="css-3fvo[0m [33m1862[0m [22m                                        className="css-3fvo[0m
-[33m    [0m [22m9r-Bar e[7m[33mecxaw4[0m[22m1"[0m                                            [33m    [0m [22m9r-Bar e[7m[33m1h9dyli[0m[22m1"[0m
-[33m1911[0m                                         radius={3}          [33m1863[0m                                         radius={3}
-[33m1912[0m                                         size={40}           [33m1864[0m                                         size={40}
-[33m1913[0m                                       />                    [33m1865[0m                                       />
+[0m[37m┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈[0m[37m1669[0m                               onMouseLeave={[Function]}     [37m1669[0m                               onMouseLeave={[Function]}
+[37m1670[0m                             >                               [37m1670[0m                             >
+[37m1671[0m                               <StyledScoreBar               [37m1671[0m                               <StyledScoreBar
+[37m1672[0m [31m                                palette={[0m                   [37m    [0m 
+[37m1673[0m [31m                                  Array [[0m                   [37m    [0m 
+[37m1674[0m [31m                                    "#ec5e44",[0m              [37m    [0m 
+[37m1675[0m [31m                                    "#f38259",[0m              [37m    [0m 
+[37m1676[0m [31m                                    "#f9a66d",[0m              [37m    [0m 
+[37m1677[0m [31m                                    "#98b480",[0m              [37m    [0m 
+[37m1678[0m [31m                                    "#57be8c",[0m              [37m    [0m 
+[37m1679[0m [31m                                  ][0m                         [37m    [0m 
+[37m1680[0m [31m                                }[0m                           [37m    [0m 
+[37m1681[0m [31m                                radius={3}[0m                  [37m    [0m 
+[37m1682[0m                                 score={4}                   [37m1672[0m                                 score={4}
+[37m1683[0m [31m                                size={40}[0m                   [37m    [0m 
+[37m1684[0m [31m                                thickness={4}[0m               [37m    [0m 
+[37m1685[0m                                 vertical={true}             [37m1673[0m                                 vertical={true}
+[37m1686[0m                               >                             [37m1674[0m                               >
+[37m1687[0m                                 <ScoreBar                   [37m1675[0m                                 <ScoreBar
+[37m1688[0m [22m                                  className="css-tics7q-Sty[0m [37m1676[0m [22m                                  className="css-tics7q-Sty[0m
+[37m    [0m [22mledScoreBar e[7m[33mecxaw4[0m[22m0"[0m                                       [37m    [0m [22mledScoreBar e[7m[33m1h9dyli[0m[22m0"[0m
+[37m1689[0m [31m                                  palette={[0m                 [37m    [0m 
+[37m1690[0m [31m                                    Array [[0m                 [37m    [0m 
+[37m1691[0m [31m                                      "#ec5e44",[0m            [37m    [0m 
+[37m1692[0m [31m                                      "#f38259",[0m            [37m    [0m 
+[37m1693[0m [31m                                      "#f9a66d",[0m            [37m    [0m 
+[37m1694[0m [31m                                      "#98b480",[0m            [37m    [0m 
+[37m1695[0m [31m                                      "#57be8c",[0m            [37m    [0m 
+[37m1696[0m [31m                                    ][0m                       [37m    [0m 
+[37m1697[0m [31m                                  }[0m                         [37m    [0m 
+[37m1698[0m [31m                                  radius={3}[0m                [37m    [0m 
+[37m1699[0m                                   score={4}                 [37m1677[0m                                   score={4}
+[37m1700[0m [31m                                  size={40}[0m                 [37m    [0m 
+[37m1701[0m [31m                                  thickness={4}[0m             [37m    [0m 
+[37m1702[0m                                   vertical={true}           [37m1678[0m                                   vertical={true}
+[37m1703[0m                                 >                           [37m1679[0m                                 >
+[37m1704[0m                                   <div                      [37m1680[0m                                   <div
+[37m1705[0m [22m                                    className="css-tics7q-S[0m [37m1681[0m [22m                                    className="css-tics7q-S[0m
+[37m    [0m [22mtyledScoreBar e[7m[33mecxaw4[0m[22m0"[0m                                     [37m    [0m [22mtyledScoreBar e[7m[33m1h9dyli[0m[22m0"[0m
+[37m1706[0m                                   >                         [37m1682[0m                                   >
+[37m1707[0m                                     <Bar                    [37m1683[0m                                     <Bar
+[37m1708[0m                                       color="#98b480"       [37m1684[0m                                       color="#98b480"
+[37m┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈[0m[37m1713[0m                                       vertical={true}       [37m1689[0m                                       vertical={true}
+[37m1714[0m                                     >                       [37m1690[0m                                     >
+[37m1715[0m                                       <div                  [37m1691[0m                                       <div
+[37m1716[0m [22m                                        className="css-1gui[0m [37m1692[0m [22m                                        className="css-1gui[0m
+[37m    [0m [22m0xz-Bar e[7m[33mecxaw4[0m[22m1"[0m                                           [37m    [0m [22m0xz-Bar e[7m[33m1h9dyli[0m[22m1"[0m
+[37m1717[0m                                         color="#98b480"     [37m1693[0m                                         color="#98b480"
+[37m1718[0m                                         radius={3}          [37m1694[0m                                         radius={3}
+[37m1719[0m                                         size={40}           [37m1695[0m                                         size={40}
+[37m┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈[0m[37m1728[0m                                       vertical={true}       [37m1704[0m                                       vertical={true}
+[37m1729[0m                                     >                       [37m1705[0m                                     >
+[37m1730[0m                                       <div                  [37m1706[0m                                       <div
+[37m1731[0m [22m                                        className="css-1gui[0m [37m1707[0m [22m                                        className="css-1gui[0m
+[37m    [0m [22m0xz-Bar e[7m[33mecxaw4[0m[22m1"[0m                                           [37m    [0m [22m0xz-Bar e[7m[33m1h9dyli[0m[22m1"[0m
+[37m1732[0m                                         color="#98b480"     [37m1708[0m                                         color="#98b480"
+[37m1733[0m                                         radius={3}          [37m1709[0m                                         radius={3}
+[37m1734[0m                                         size={40}           [37m1710[0m                                         size={40}
+[37m┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈[0m[37m1743[0m                                       vertical={true}       [37m1719[0m                                       vertical={true}
+[37m1744[0m                                     >                       [37m1720[0m                                     >
+[37m1745[0m                                       <div                  [37m1721[0m                                       <div
+[37m1746[0m [22m                                        className="css-1gui[0m [37m1722[0m [22m                                        className="css-1gui[0m
+[37m    [0m [22m0xz-Bar e[7m[33mecxaw4[0m[22m1"[0m                                           [37m    [0m [22m0xz-Bar e[7m[33m1h9dyli[0m[22m1"[0m
+[37m1747[0m                                         color="#98b480"     [37m1723[0m                                         color="#98b480"
+[37m1748[0m                                         radius={3}          [37m1724[0m                                         radius={3}
+[37m1749[0m                                         size={40}           [37m1725[0m                                         size={40}
+[37m┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈[0m[37m1758[0m                                       vertical={true}       [37m1734[0m                                       vertical={true}
+[37m1759[0m                                     >                       [37m1735[0m                                     >
+[37m1760[0m                                       <div                  [37m1736[0m                                       <div
+[37m1761[0m [22m                                        className="css-1gui[0m [37m1737[0m [22m                                        className="css-1gui[0m
+[37m    [0m [22m0xz-Bar e[7m[33mecxaw4[0m[22m1"[0m                                           [37m    [0m [22m0xz-Bar e[7m[33m1h9dyli[0m[22m1"[0m
+[37m1762[0m                                         color="#98b480"     [37m1738[0m                                         color="#98b480"
+[37m1763[0m                                         radius={3}          [37m1739[0m                                         radius={3}
+[37m1764[0m                                         size={40}           [37m1740[0m                                         size={40}
+[37m┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈[0m[37m1773[0m                                       vertical={true}       [37m1749[0m                                       vertical={true}
+[37m1774[0m                                     >                       [37m1750[0m                                     >
+[37m1775[0m                                       <div                  [37m1751[0m                                       <div
+[37m1776[0m [22m                                        className="css-3fvo[0m [37m1752[0m [22m                                        className="css-3fvo[0m
+[37m    [0m [22m9r-Bar e[7m[33mecxaw4[0m[22m1"[0m                                            [37m    [0m [22m9r-Bar e[7m[33m1h9dyli[0m[22m1"[0m
+[37m1777[0m                                         radius={3}          [37m1753[0m                                         radius={3}
+[37m1778[0m                                         size={40}           [37m1754[0m                                         size={40}
+[37m1779[0m                                       />                    [37m1755[0m                                       />
+[37m┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈[0m[37m1807[0m                               onMouseLeave={[Function]}     [37m1783[0m                               onMouseLeave={[Function]}
+[37m1808[0m                             >                               [37m1784[0m                             >
+[37m1809[0m                               <StyledScoreBar               [37m1785[0m                               <StyledScoreBar
+[37m1810[0m [31m                                palette={[0m                   [37m    [0m 
+[37m1811[0m [31m                                  Array [[0m                   [37m    [0m 
+[37m1812[0m [31m                                    "#ec5e44",[0m              [37m    [0m 
+[37m1813[0m [31m                                    "#f38259",[0m              [37m    [0m 
+[37m1814[0m [31m                                    "#f9a66d",[0m              [37m    [0m 
+[37m1815[0m [31m                                    "#98b480",[0m              [37m    [0m 
+[37m1816[0m [31m                                    "#57be8c",[0m              [37m    [0m 
+[37m1817[0m [31m                                  ][0m                         [37m    [0m 
+[37m1818[0m [31m                                }[0m                           [37m    [0m 
+[37m1819[0m [31m                                radius={3}[0m                  [37m    [0m 
+[37m1820[0m                                 score={0}                   [37m1786[0m                                 score={0}
+[37m1821[0m [31m                                size={40}[0m                   [37m    [0m 
+[37m1822[0m [31m                                thickness={4}[0m               [37m    [0m 
+[37m1823[0m                                 vertical={true}             [37m1787[0m                                 vertical={true}
+[37m1824[0m                               >                             [37m1788[0m                               >
+[37m1825[0m                                 <ScoreBar                   [37m1789[0m                                 <ScoreBar
+[37m1826[0m [22m                                  className="css-tics7q-Sty[0m [37m1790[0m [22m                                  className="css-tics7q-Sty[0m
+[37m    [0m [22mledScoreBar e[7m[33mecxaw4[0m[22m0"[0m                                       [37m    [0m [22mledScoreBar e[7m[33m1h9dyli[0m[22m0"[0m
+[37m1827[0m [31m                                  palette={[0m                 [37m    [0m 
+[37m1828[0m [31m                                    Array [[0m                 [37m    [0m 
+[37m1829[0m [31m                                      "#ec5e44",[0m            [37m    [0m 
+[37m1830[0m [31m                                      "#f38259",[0m            [37m    [0m 
+[37m1831[0m [31m                                      "#f9a66d",[0m            [37m    [0m 
+[37m1832[0m [31m                                      "#98b480",[0m            [37m    [0m 
+[37m1833[0m [31m                                      "#57be8c",[0m            [37m    [0m 
+[37m1834[0m [31m                                    ][0m                       [37m    [0m 
+[37m1835[0m [31m                                  }[0m                         [37m    [0m 
+[37m1836[0m [31m                                  radius={3}[0m                [37m    [0m 
+[37m1837[0m                                   score={0}                 [37m1791[0m                                   score={0}
+[37m1838[0m [31m                                  size={40}[0m                 [37m    [0m 
+[37m1839[0m [31m                                  thickness={4}[0m             [37m    [0m 
+[37m1840[0m                                   vertical={true}           [37m1792[0m                                   vertical={true}
+[37m1841[0m                                 >                           [37m1793[0m                                 >
+[37m1842[0m                                   <div                      [37m1794[0m                                   <div
+[37m1843[0m [22m                                    className="css-tics7q-S[0m [37m1795[0m [22m                                    className="css-tics7q-S[0m
+[37m    [0m [22mtyledScoreBar e[7m[33mecxaw4[0m[22m0"[0m                                     [37m    [0m [22mtyledScoreBar e[7m[33m1h9dyli[0m[22m0"[0m
+[37m1844[0m                                   >                         [37m1796[0m                                   >
+[37m1845[0m                                     <Bar                    [37m1797[0m                                     <Bar
+[37m1846[0m                                       empty={true}          [37m1798[0m                                       empty={true}
+[37m┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈[0m[37m1851[0m                                       vertical={true}       [37m1803[0m                                       vertical={true}
+[37m1852[0m                                     >                       [37m1804[0m                                     >
+[37m1853[0m                                       <div                  [37m1805[0m                                       <div
+[37m1854[0m [22m                                        className="css-3fvo[0m [37m1806[0m [22m                                        className="css-3fvo[0m
+[37m    [0m [22m9r-Bar e[7m[33mecxaw4[0m[22m1"[0m                                            [37m    [0m [22m9r-Bar e[7m[33m1h9dyli[0m[22m1"[0m
+[37m1855[0m                                         radius={3}          [37m1807[0m                                         radius={3}
+[37m1856[0m                                         size={40}           [37m1808[0m                                         size={40}
+[37m1857[0m                                       />                    [37m1809[0m                                       />
+[37m┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈[0m[37m1865[0m                                       vertical={true}       [37m1817[0m                                       vertical={true}
+[37m1866[0m                                     >                       [37m1818[0m                                     >
+[37m1867[0m                                       <div                  [37m1819[0m                                       <div
+[37m1868[0m [22m                                        className="css-3fvo[0m [37m1820[0m [22m                                        className="css-3fvo[0m
+[37m    [0m [22m9r-Bar e[7m[33mecxaw4[0m[22m1"[0m                                            [37m    [0m [22m9r-Bar e[7m[33m1h9dyli[0m[22m1"[0m
+[37m1869[0m                                         radius={3}          [37m1821[0m                                         radius={3}
+[37m1870[0m                                         size={40}           [37m1822[0m                                         size={40}
+[37m1871[0m                                       />                    [37m1823[0m                                       />
+[37m┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈[0m[37m1879[0m                                       vertical={true}       [37m1831[0m                                       vertical={true}
+[37m1880[0m                                     >                       [37m1832[0m                                     >
+[37m1881[0m                                       <div                  [37m1833[0m                                       <div
+[37m1882[0m [22m                                        className="css-3fvo[0m [37m1834[0m [22m                                        className="css-3fvo[0m
+[37m    [0m [22m9r-Bar e[7m[33mecxaw4[0m[22m1"[0m                                            [37m    [0m [22m9r-Bar e[7m[33m1h9dyli[0m[22m1"[0m
+[37m1883[0m                                         radius={3}          [37m1835[0m                                         radius={3}
+[37m1884[0m                                         size={40}           [37m1836[0m                                         size={40}
+[37m1885[0m                                       />                    [37m1837[0m                                       />
+[37m┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈[0m[37m1893[0m                                       vertical={true}       [37m1845[0m                                       vertical={true}
+[37m1894[0m                                     >                       [37m1846[0m                                     >
+[37m1895[0m                                       <div                  [37m1847[0m                                       <div
+[37m1896[0m [22m                                        className="css-3fvo[0m [37m1848[0m [22m                                        className="css-3fvo[0m
+[37m    [0m [22m9r-Bar e[7m[33mecxaw4[0m[22m1"[0m                                            [37m    [0m [22m9r-Bar e[7m[33m1h9dyli[0m[22m1"[0m
+[37m1897[0m                                         radius={3}          [37m1849[0m                                         radius={3}
+[37m1898[0m                                         size={40}           [37m1850[0m                                         size={40}
+[37m1899[0m                                       />                    [37m1851[0m                                       />
+[37m┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈[0m[37m1907[0m                                       vertical={true}       [37m1859[0m                                       vertical={true}
+[37m1908[0m                                     >                       [37m1860[0m                                     >
+[37m1909[0m                                       <div                  [37m1861[0m                                       <div
+[37m1910[0m [22m                                        className="css-3fvo[0m [37m1862[0m [22m                                        className="css-3fvo[0m
+[37m    [0m [22m9r-Bar e[7m[33mecxaw4[0m[22m1"[0m                                            [37m    [0m [22m9r-Bar e[7m[33m1h9dyli[0m[22m1"[0m
+[37m1911[0m                                         radius={3}          [37m1863[0m                                         radius={3}
+[37m1912[0m                                         size={40}           [37m1864[0m                                         size={40}
+[37m1913[0m                                       />                    [37m1865[0m                                       />

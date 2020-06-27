@@ -8,13 +8,12 @@
 [0m[36mindex ce7761ed79..ffda3848d9 100644
 [0m[33m--- a/src/sentry/static/sentry/app/views/releases/detail/releaseArtifacts.jsx
 [0m[33m+++ b/src/sentry/static/sentry/app/views/releases/detail/releaseArtifacts.jsx
-[0m[1;34m@@ -65,7 +65,7 @@ class ReleaseArtifacts extends React.Component {
-[0m[33m65[0m     this.props.api.request(this.getFilesEndpoint(), {         [33m65[0m     this.props.api.request(this.getFilesEndpoint(), {
-[33m66[0m       method: 'GET',                                          [33m66[0m       method: 'GET',
-[33m67[0m       // We need to omit global selection header url params b [33m67[0m       // We need to omit global selection header url params b
-[33m  [0m ecause they are not supported                                 [33m  [0m ecause they are not supported
-[33m68[0m [22m      data: omit(this.props.location.query, Object.values(URL[0m [33m68[0m [22m      data: omit(this.props.location.query, [7m[32m[...[0m[22mObject.values[0m
-[33m  [0m [22m_PARAM)),[0m                                                     [33m  [0m [22m(URL_PARAM)[7m[32m, 'query'][0m[22m),[0m
-[33m69[0m       success: (data, _, jqXHR) => {                          [33m69[0m       success: (data, _, jqXHR) => {
-[33m70[0m         this.setState({                                       [33m70[0m         this.setState({
-[33m71[0m           error: false,                                       [33m71[0m           error: false,
+[0m[37m┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈[0m[37m65[0m     this.props.api.request(this.getFilesEndpoint(), {         [37m65[0m     this.props.api.request(this.getFilesEndpoint(), {
+[37m66[0m       method: 'GET',                                          [37m66[0m       method: 'GET',
+[37m67[0m       // We need to omit global selection header url params b [37m67[0m       // We need to omit global selection header url params b
+[37m  [0m ecause they are not supported                                 [37m  [0m ecause they are not supported
+[37m68[0m [22m      data: omit(this.props.location.query, Object.values(URL[0m [37m68[0m [22m      data: omit(this.props.location.query, [7m[32m[...[0m[22mObject.values[0m
+[37m  [0m [22m_PARAM)),[0m                                                     [37m  [0m [22m(URL_PARAM)[7m[32m, 'query'][0m[22m),[0m
+[37m69[0m       success: (data, _, jqXHR) => {                          [37m69[0m       success: (data, _, jqXHR) => {
+[37m70[0m         this.setState({                                       [37m70[0m         this.setState({
+[37m71[0m           error: false,                                       [37m71[0m           error: false,

@@ -21,148 +21,137 @@
 [0m[36mindex f80c7b452a..ffab9f9023 100644
 [0m[33m--- a/src/sentry/incidents/logic.py
 [0m[33m+++ b/src/sentry/incidents/logic.py
-[0m[1;34m@@ -97,6 +97,9 @@ def create_incident(
-[0m[33m 97[0m                     sender=type(incident_project), instance= [33m 97[0m                     sender=type(incident_project), instance=
-[33m   [0m incident_project, created=True                               [33m   [0m incident_project, created=True
-[33m 98[0m                 )                                            [33m 98[0m                 )
-[33m   [0m                                                              [33m100[0m [32m        create_incident_activity([0m
-[33m   [0m                                                              [33m101[0m [32m            incident, IncidentActivityType.STARTED, user=use[0m
-[33m   [0m                                                              [33m   [0m [32mr, date_added=date_started[0m
-[33m   [0m                                                              [33m102[0m [32m        )[0m
-[33m100[0m         create_incident_activity(incident, IncidentActivityT [33m103[0m         create_incident_activity(incident, IncidentActivityT
-[33m   [0m ype.DETECTED, user=user)                                     [33m   [0m ype.DETECTED, user=user)
-[33m101[0m         analytics.record(                                    [33m104[0m         analytics.record(
-[33m102[0m             "incident.created",                              [33m105[0m             "incident.created",
-[1;34m@@ -200,11 +203,15 @@ def create_incident_activity(
-[0m[33m200[0m     previous_value=None,                                     [33m203[0m     previous_value=None,
-[33m201[0m     comment=None,                                            [33m204[0m     comment=None,
-[33m202[0m     mentioned_user_ids=None,                                 [33m205[0m     mentioned_user_ids=None,
-[33m   [0m                                                              [33m206[0m [32m    date_added=None,[0m
-[33m203[0m ):                                                           [33m207[0m ):
-[33m204[0m     if activity_type == IncidentActivityType.COMMENT and use [33m208[0m     if activity_type == IncidentActivityType.COMMENT and use
-[33m   [0m r:                                                           [33m   [0m r:
-[33m205[0m         subscribe_to_incident(incident, user)                [33m209[0m         subscribe_to_incident(incident, user)
-[33m206[0m     value = six.text_type(value) if value is not None else v [33m210[0m     value = six.text_type(value) if value is not None else v
-[33m   [0m alue                                                         [33m   [0m alue
-[33m207[0m     previous_value = six.text_type(previous_value) if previo [33m211[0m     previous_value = six.text_type(previous_value) if previo
-[33m   [0m us_value is not None else previous_value                     [33m   [0m us_value is not None else previous_value
-[33m   [0m                                                              [33m212[0m [32m    kwargs = {}[0m
-[33m   [0m                                                              [33m213[0m [32m    if date_added:[0m
-[33m   [0m                                                              [33m214[0m [32m        kwargs["date_added"] = date_added[0m
-[33m208[0m     activity = IncidentActivity.objects.create(              [33m215[0m     activity = IncidentActivity.objects.create(
-[33m209[0m         incident=incident,                                   [33m216[0m         incident=incident,
-[33m210[0m         type=activity_type.value,                            [33m217[0m         type=activity_type.value,
-[1;34m@@ -212,6 +219,7 @@ def create_incident_activity(
-[0m[33m212[0m         value=value,                                         [33m219[0m         value=value,
-[33m213[0m         previous_value=previous_value,                       [33m220[0m         previous_value=previous_value,
-[33m214[0m         comment=comment,                                     [33m221[0m         comment=comment,
-[33m   [0m                                                              [33m222[0m [32m        **kwargs[0m
-[33m215[0m     )                                                        [33m223[0m     )
-[33m217[0m     if mentioned_user_ids:                                   [33m225[0m     if mentioned_user_ids:
+[0m[37m┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈[0m[37m 97[0m                     sender=type(incident_project), instance= [37m 97[0m                     sender=type(incident_project), instance=
+[37m   [0m incident_project, created=True                               [37m   [0m incident_project, created=True
+[37m 98[0m                 )                                            [37m 98[0m                 )
+[37m   [0m                                                              [37m100[0m [32m        create_incident_activity([0m
+[37m   [0m                                                              [37m101[0m [32m            incident, IncidentActivityType.STARTED, user=use[0m
+[37m   [0m                                                              [37m   [0m [32mr, date_added=date_started[0m
+[37m   [0m                                                              [37m102[0m [32m        )[0m
+[37m100[0m         create_incident_activity(incident, IncidentActivityT [37m103[0m         create_incident_activity(incident, IncidentActivityT
+[37m   [0m ype.DETECTED, user=user)                                     [37m   [0m ype.DETECTED, user=user)
+[37m101[0m         analytics.record(                                    [37m104[0m         analytics.record(
+[37m102[0m             "incident.created",                              [37m105[0m             "incident.created",
+[37m┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈[0m[37m200[0m     previous_value=None,                                     [37m203[0m     previous_value=None,
+[37m201[0m     comment=None,                                            [37m204[0m     comment=None,
+[37m202[0m     mentioned_user_ids=None,                                 [37m205[0m     mentioned_user_ids=None,
+[37m   [0m                                                              [37m206[0m [32m    date_added=None,[0m
+[37m203[0m ):                                                           [37m207[0m ):
+[37m204[0m     if activity_type == IncidentActivityType.COMMENT and use [37m208[0m     if activity_type == IncidentActivityType.COMMENT and use
+[37m   [0m r:                                                           [37m   [0m r:
+[37m205[0m         subscribe_to_incident(incident, user)                [37m209[0m         subscribe_to_incident(incident, user)
+[37m206[0m     value = six.text_type(value) if value is not None else v [37m210[0m     value = six.text_type(value) if value is not None else v
+[37m   [0m alue                                                         [37m   [0m alue
+[37m207[0m     previous_value = six.text_type(previous_value) if previo [37m211[0m     previous_value = six.text_type(previous_value) if previo
+[37m   [0m us_value is not None else previous_value                     [37m   [0m us_value is not None else previous_value
+[37m   [0m                                                              [37m212[0m [32m    kwargs = {}[0m
+[37m   [0m                                                              [37m213[0m [32m    if date_added:[0m
+[37m   [0m                                                              [37m214[0m [32m        kwargs["date_added"] = date_added[0m
+[37m208[0m     activity = IncidentActivity.objects.create(              [37m215[0m     activity = IncidentActivity.objects.create(
+[37m209[0m         incident=incident,                                   [37m216[0m         incident=incident,
+[37m210[0m         type=activity_type.value,                            [37m217[0m         type=activity_type.value,
+[37m┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈[0m[37m212[0m         value=value,                                         [37m219[0m         value=value,
+[37m213[0m         previous_value=previous_value,                       [37m220[0m         previous_value=previous_value,
+[37m214[0m         comment=comment,                                     [37m221[0m         comment=comment,
+[37m   [0m                                                              [37m222[0m [32m        **kwargs[0m
+[37m215[0m     )                                                        [37m223[0m     )
+[37m217[0m     if mentioned_user_ids:                                   [37m225[0m     if mentioned_user_ids:
 [36mdiff --git a/src/sentry/incidents/models.py b/src/sentry/incidents/models.py
 [0m[36mindex 0686df61eb..ff6f92728a 100644
 [0m[33m--- a/src/sentry/incidents/models.py
 [0m[33m+++ b/src/sentry/incidents/models.py
-[0m[1;34m@@ -249,6 +249,7 @@ class IncidentActivityType(Enum):
-[0m[33m249[0m     DETECTED = 1                                             [33m249[0m     DETECTED = 1
-[33m250[0m     STATUS_CHANGE = 2                                        [33m250[0m     STATUS_CHANGE = 2
-[33m251[0m     COMMENT = 3                                              [33m251[0m     COMMENT = 3
-[33m   [0m                                                              [33m252[0m [32m    STARTED = 4[0m
-[33m254[0m class IncidentActivity(Model):                               [33m255[0m class IncidentActivity(Model):
+[0m[37m┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈[0m[37m249[0m     DETECTED = 1                                             [37m249[0m     DETECTED = 1
+[37m250[0m     STATUS_CHANGE = 2                                        [37m250[0m     STATUS_CHANGE = 2
+[37m251[0m     COMMENT = 3                                              [37m251[0m     COMMENT = 3
+[37m   [0m                                                              [37m252[0m [32m    STARTED = 4[0m
+[37m254[0m class IncidentActivity(Model):                               [37m255[0m class IncidentActivity(Model):
 [36mdiff --git a/src/sentry/incidents/subscription_processor.py b/src/sentry/incidents/subscription_processor.py
 [0m[36mindex 487b8ed1b9..3e2d5f07f3 100644
 [0m[33m--- a/src/sentry/incidents/subscription_processor.py
 [0m[33m+++ b/src/sentry/incidents/subscription_processor.py
-[0m[1;34m@@ -204,6 +204,9 @@ class SubscriptionProcessor(object):
-[0m[33m204[0m                     self.alert_rule.name,                    [33m204[0m                     self.alert_rule.name,
-[33m205[0m                     alert_rule=self.alert_rule,              [33m205[0m                     alert_rule=self.alert_rule,
-[33m206[0m                     date_started=detected_at,                [33m206[0m                     date_started=detected_at,
-[33m   [0m                                                              [33m207[0m [32m                    # TODO: This should probably be either t[0m
-[33m   [0m                                                              [33m   [0m [32mhe current time or the[0m
-[33m   [0m                                                              [33m208[0m [32m                    # message time. Current time likely make[0m
-[33m   [0m                                                              [33m   [0m [32ms most sense, since this is[0m
-[33m   [0m                                                              [33m209[0m [32m                    # when we actually noticed the problem.[0m
-[33m207[0m                     date_detected=detected_at,               [33m210[0m                     date_detected=detected_at,
-[33m208[0m                     projects=[self.subscription.project],    [33m211[0m                     projects=[self.subscription.project],
-[33m209[0m                 )                                            [33m212[0m                 )
+[0m[37m┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈[0m[37m204[0m                     self.alert_rule.name,                    [37m204[0m                     self.alert_rule.name,
+[37m205[0m                     alert_rule=self.alert_rule,              [37m205[0m                     alert_rule=self.alert_rule,
+[37m206[0m                     date_started=detected_at,                [37m206[0m                     date_started=detected_at,
+[37m   [0m                                                              [37m207[0m [32m                    # TODO: This should probably be either t[0m
+[37m   [0m                                                              [37m   [0m [32mhe current time or the[0m
+[37m   [0m                                                              [37m208[0m [32m                    # message time. Current time likely make[0m
+[37m   [0m                                                              [37m   [0m [32ms most sense, since this is[0m
+[37m   [0m                                                              [37m209[0m [32m                    # when we actually noticed the problem.[0m
+[37m207[0m                     date_detected=detected_at,               [37m210[0m                     date_detected=detected_at,
+[37m208[0m                     projects=[self.subscription.project],    [37m211[0m                     projects=[self.subscription.project],
+[37m209[0m                 )                                            [37m212[0m                 )
 [36mdiff --git a/src/sentry/static/sentry/app/views/alerts/details/activity/statusItem.tsx b/src/sentry/static/sentry/app/views/alerts/details/activity/statusItem.tsx
 [0m[36mindex 3e49261085..2e50d1dc88 100644
 [0m[33m--- a/src/sentry/static/sentry/app/views/alerts/details/activity/statusItem.tsx
 [0m[33m+++ b/src/sentry/static/sentry/app/views/alerts/details/activity/statusItem.tsx
-[0m[1;34m@@ -37,6 +37,7 @@ class StatusItem extends React.Component<Props> {
-[0m[33m37[0m     const {activity, authorName, incident, showTime} = this.p [33m37[0m     const {activity, authorName, incident, showTime} = this.p
-[33m  [0m rops;                                                         [33m  [0m rops;
-[33m39[0m     const isDetected = activity.type === IncidentActivityType [33m39[0m     const isDetected = activity.type === IncidentActivityType
-[33m  [0m .DETECTED;                                                    [33m  [0m .DETECTED;
-[33m  [0m                                                               [33m40[0m [32m    const isStarted = activity.type === IncidentActivityType.[0m
-[33m  [0m                                                               [33m  [0m [32mSTARTED;[0m
-[33m40[0m     const isClosed =                                          [33m41[0m     const isClosed =
-[33m41[0m       activity.type === IncidentActivityType.STATUS_CHANGE && [33m42[0m       activity.type === IncidentActivityType.STATUS_CHANGE &&
-[33m42[0m       activity.value === `${IncidentStatus.CLOSED}`;          [33m43[0m       activity.value === `${IncidentStatus.CLOSED}`;
-[1;34m@@ -44,7 +45,7 @@ class StatusItem extends React.Component<Props> {
-[0m[33m44[0m       activity.type === IncidentActivityType.STATUS_CHANGE && [33m45[0m       activity.type === IncidentActivityType.STATUS_CHANGE &&
-[33m  [0m  !isClosed;                                                   [33m  [0m  !isClosed;
-[33m46[0m     // Unknown activity, don't render anything                [33m47[0m     // Unknown activity, don't render anything
-[33m47[0m [22m    if (!isDetected && !isClosed && !isTriggerChange) {[0m       [33m48[0m [22m    if ([7m[32m!isStarted && [0m[22m!isDetected && !isClosed && !isTriggerC[0m
-[33m  [0m                                                               [33m  [0m [22mhange) {[0m
-[33m48[0m       return null;                                            [33m49[0m       return null;
-[33m49[0m     }                                                         [33m50[0m     }
-[1;34m@@ -83,12 +84,11 @@ class StatusItem extends React.Component<Props> {
-[0m[33m83[0m               })}                                             [33m84[0m               })}
-[33m84[0m             {isDetected &&                                    [33m85[0m             {isDetected &&
-[33m85[0m               (incident?.alertRule                            [33m86[0m               (incident?.alertRule
-[33m86[0m [22m[7m[31m                ? tct('[user] was triggered', {[0m               [33m87[0m [22m[7m[32m                ? t('Alert was created')[0m
-[33m87[0m [1;31m                    user: <StatusValue>{incident.alertRule.na[0m [33m  [0m 
-[33m  [0m [1;31mme}</StatusValue>,[0m                                            [33m  [0m 
-[33m88[0m [1;31m                  })[0m                                          [33m  [0m 
-[33m89[0m                 : tct('[user] created an alert', {            [33m88[0m                 : tct('[user] created an alert', {
-[33m90[0m                     user: <StatusValue>{authorName}</StatusVa [33m89[0m                     user: <StatusValue>{authorName}</StatusVa
-[33m  [0m lue>,                                                         [33m  [0m lue>,
-[33m91[0m                   }))}                                        [33m90[0m                   }))}
-[33m  [0m                                                               [33m91[0m [32m            {isStarted && t('Trigger conditions were met')}[0m
-[33m92[0m           </div>                                              [33m92[0m           </div>
-[33m93[0m         }                                                     [33m93[0m         }
-[33m94[0m         date={getDynamicText({value: activity.dateCreated, fi [33m94[0m         date={getDynamicText({value: activity.dateCreated, fi
-[33m  [0m xed: new Date(0)})}                                           [33m  [0m xed: new Date(0)})}
+[0m[37m┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈[0m[37m37[0m     const {activity, authorName, incident, showTime} = this.p [37m37[0m     const {activity, authorName, incident, showTime} = this.p
+[37m  [0m rops;                                                         [37m  [0m rops;
+[37m39[0m     const isDetected = activity.type === IncidentActivityType [37m39[0m     const isDetected = activity.type === IncidentActivityType
+[37m  [0m .DETECTED;                                                    [37m  [0m .DETECTED;
+[37m  [0m                                                               [37m40[0m [32m    const isStarted = activity.type === IncidentActivityType.[0m
+[37m  [0m                                                               [37m  [0m [32mSTARTED;[0m
+[37m40[0m     const isClosed =                                          [37m41[0m     const isClosed =
+[37m41[0m       activity.type === IncidentActivityType.STATUS_CHANGE && [37m42[0m       activity.type === IncidentActivityType.STATUS_CHANGE &&
+[37m42[0m       activity.value === `${IncidentStatus.CLOSED}`;          [37m43[0m       activity.value === `${IncidentStatus.CLOSED}`;
+[37m┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈[0m[37m44[0m       activity.type === IncidentActivityType.STATUS_CHANGE && [37m45[0m       activity.type === IncidentActivityType.STATUS_CHANGE &&
+[37m  [0m  !isClosed;                                                   [37m  [0m  !isClosed;
+[37m46[0m     // Unknown activity, don't render anything                [37m47[0m     // Unknown activity, don't render anything
+[37m47[0m [22m    if (!isDetected && !isClosed && !isTriggerChange) {[0m       [37m48[0m [22m    if ([7m[32m!isStarted && [0m[22m!isDetected && !isClosed && !isTriggerC[0m
+[37m  [0m                                                               [37m  [0m [22mhange) {[0m
+[37m48[0m       return null;                                            [37m49[0m       return null;
+[37m49[0m     }                                                         [37m50[0m     }
+[37m┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈[0m[37m83[0m               })}                                             [37m84[0m               })}
+[37m84[0m             {isDetected &&                                    [37m85[0m             {isDetected &&
+[37m85[0m               (incident?.alertRule                            [37m86[0m               (incident?.alertRule
+[37m86[0m [22m[7m[31m                ? tct('[user] was triggered', {[0m               [37m87[0m [22m[7m[32m                ? t('Alert was created')[0m
+[37m87[0m [31m                    user: <StatusValue>{incident.alertRule.na[0m [37m  [0m 
+[37m  [0m [31mme}</StatusValue>,[0m                                            [37m  [0m 
+[37m88[0m [31m                  })[0m                                          [37m  [0m 
+[37m89[0m                 : tct('[user] created an alert', {            [37m88[0m                 : tct('[user] created an alert', {
+[37m90[0m                     user: <StatusValue>{authorName}</StatusVa [37m89[0m                     user: <StatusValue>{authorName}</StatusVa
+[37m  [0m lue>,                                                         [37m  [0m lue>,
+[37m91[0m                   }))}                                        [37m90[0m                   }))}
+[37m  [0m                                                               [37m91[0m [32m            {isStarted && t('Trigger conditions were met')}[0m
+[37m92[0m           </div>                                              [37m92[0m           </div>
+[37m93[0m         }                                                     [37m93[0m         }
+[37m94[0m         date={getDynamicText({value: activity.dateCreated, fi [37m94[0m         date={getDynamicText({value: activity.dateCreated, fi
+[37m  [0m xed: new Date(0)})}                                           [37m  [0m xed: new Date(0)})}
 [36mdiff --git a/src/sentry/static/sentry/app/views/alerts/types.tsx b/src/sentry/static/sentry/app/views/alerts/types.tsx
 [0m[36mindex 5f4288c19f..02a55a6128 100644
 [0m[33m--- a/src/sentry/static/sentry/app/views/alerts/types.tsx
 [0m[33m+++ b/src/sentry/static/sentry/app/views/alerts/types.tsx
-[0m[1;34m@@ -66,10 +66,11 @@ export enum IncidentType {
-[0m[33m66[0m }                                                             [33m66[0m }
-[33m68[0m export enum IncidentActivityType {                            [33m68[0m export enum IncidentActivityType {
-[33m69[0m [22m  CREATED,[0m                                                    [33m69[0m [22m  CREATED[7m[32m = 0[0m[22m,[0m
-[33m70[0m [22m  DETECTED,[0m                                                   [33m70[0m [22m  DETECTED[7m[32m = 1[0m[22m,[0m
-[33m71[0m [22m  STATUS_CHANGE,[0m                                              [33m71[0m [22m  STATUS_CHANGE[7m[32m = 2[0m[22m,[0m
-[33m72[0m [22m  COMMENT,[0m                                                    [33m72[0m [22m  COMMENT[7m[32m = 3[0m[22m,[0m
-[33m  [0m                                                               [33m73[0m [32m  STARTED = 4,[0m
-[33m73[0m }                                                             [33m74[0m }
-[33m75[0m export enum IncidentStatus {                                  [33m76[0m export enum IncidentStatus {
+[0m[37m┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈[0m[37m66[0m }                                                             [37m66[0m }
+[37m68[0m export enum IncidentActivityType {                            [37m68[0m export enum IncidentActivityType {
+[37m69[0m [22m  CREATED,[0m                                                    [37m69[0m [22m  CREATED[7m[32m = 0[0m[22m,[0m
+[37m70[0m [22m  DETECTED,[0m                                                   [37m70[0m [22m  DETECTED[7m[32m = 1[0m[22m,[0m
+[37m71[0m [22m  STATUS_CHANGE,[0m                                              [37m71[0m [22m  STATUS_CHANGE[7m[32m = 2[0m[22m,[0m
+[37m72[0m [22m  COMMENT,[0m                                                    [37m72[0m [22m  COMMENT[7m[32m = 3[0m[22m,[0m
+[37m  [0m                                                               [37m73[0m [32m  STARTED = 4,[0m
+[37m73[0m }                                                             [37m74[0m }
+[37m75[0m export enum IncidentStatus {                                  [37m76[0m export enum IncidentStatus {
 [36mdiff --git a/tests/sentry/incidents/test_logic.py b/tests/sentry/incidents/test_logic.py
 [0m[36mindex 1346641edd..503a02b58c 100644
 [0m[33m--- a/tests/sentry/incidents/test_logic.py
 [0m[33m+++ b/tests/sentry/incidents/test_logic.py
-[0m[1;34m@@ -83,7 +83,7 @@ class CreateIncidentTest(TestCase):
-[0m[33m 83[0m     def test_simple(self):                                   [33m 83[0m     def test_simple(self):
-[33m 84[0m         incident_type = IncidentType.ALERT_TRIGGERED         [33m 84[0m         incident_type = IncidentType.ALERT_TRIGGERED
-[33m 85[0m         title = "hello"                                      [33m 85[0m         title = "hello"
-[33m 86[0m [22m        date_started = timezone.now()[0m                        [33m 86[0m [22m        date_started = timezone.now()[7m[32m - timedelta(minutes=5)[0m
-[33m 87[0m         alert_rule = create_alert_rule(                      [33m 87[0m         alert_rule = create_alert_rule(
-[33m 88[0m             self.organization, [self.project], "hello", "lev [33m 88[0m             self.organization, [self.project], "hello", "lev
-[33m   [0m el:error", "count()", 10, 1                                  [33m   [0m el:error", "count()", 10, 1
-[33m 89[0m         )                                                    [33m 89[0m         )
-[1;34m@@ -107,6 +107,12 @@ class CreateIncidentTest(TestCase):
-[0m[33m107[0m         assert IncidentProject.objects.filter(               [33m107[0m         assert IncidentProject.objects.filter(
-[33m108[0m             incident=incident, project__in=[self.project]    [33m108[0m             incident=incident, project__in=[self.project]
-[33m109[0m         ).exists()                                           [33m109[0m         ).exists()
-[33m110[0m         assert (                                             [33m110[0m         assert (
-[33m111[0m             IncidentActivity.objects.filter(                 [33m111[0m             IncidentActivity.objects.filter(
-[33m   [0m                                                              [33m112[0m [32m                incident=incident, type=IncidentActivityType[0m
-[33m   [0m                                                              [33m   [0m [32m.STARTED.value, date_added=date_started[0m
-[33m   [0m                                                              [33m113[0m [32m            ).count()[0m
-[33m   [0m                                                              [33m114[0m [32m            == 1[0m
-[33m   [0m                                                              [33m115[0m [32m        )[0m
-[33m   [0m                                                              [33m116[0m [32m        assert ([0m
-[33m   [0m                                                              [33m117[0m [32m            IncidentActivity.objects.filter([0m
-[33m112[0m                 incident=incident, type=IncidentActivityType [33m118[0m                 incident=incident, type=IncidentActivityType
-[33m   [0m .DETECTED.value                                              [33m   [0m .DETECTED.value
+[0m[37m┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈[0m[37m 83[0m     def test_simple(self):                                   [37m 83[0m     def test_simple(self):
+[37m 84[0m         incident_type = IncidentType.ALERT_TRIGGERED         [37m 84[0m         incident_type = IncidentType.ALERT_TRIGGERED
+[37m 85[0m         title = "hello"                                      [37m 85[0m         title = "hello"
+[37m 86[0m [22m        date_started = timezone.now()[0m                        [37m 86[0m [22m        date_started = timezone.now()[7m[32m - timedelta(minutes=5)[0m
+[37m 87[0m         alert_rule = create_alert_rule(                      [37m 87[0m         alert_rule = create_alert_rule(
+[37m 88[0m             self.organization, [self.project], "hello", "lev [37m 88[0m             self.organization, [self.project], "hello", "lev
+[37m   [0m el:error", "count()", 10, 1                                  [37m   [0m el:error", "count()", 10, 1
+[37m 89[0m         )                                                    [37m 89[0m         )
+[37m┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈[0m[37m107[0m         assert IncidentProject.objects.filter(               [37m107[0m         assert IncidentProject.objects.filter(
+[37m108[0m             incident=incident, project__in=[self.project]    [37m108[0m             incident=incident, project__in=[self.project]
+[37m109[0m         ).exists()                                           [37m109[0m         ).exists()
+[37m110[0m         assert (                                             [37m110[0m         assert (
+[37m111[0m             IncidentActivity.objects.filter(                 [37m111[0m             IncidentActivity.objects.filter(
+[37m   [0m                                                              [37m112[0m [32m                incident=incident, type=IncidentActivityType[0m
+[37m   [0m                                                              [37m   [0m [32m.STARTED.value, date_added=date_started[0m
+[37m   [0m                                                              [37m113[0m [32m            ).count()[0m
+[37m   [0m                                                              [37m114[0m [32m            == 1[0m
+[37m   [0m                                                              [37m115[0m [32m        )[0m
+[37m   [0m                                                              [37m116[0m [32m        assert ([0m
+[37m   [0m                                                              [37m117[0m [32m            IncidentActivity.objects.filter([0m
+[37m112[0m                 incident=incident, type=IncidentActivityType [37m118[0m                 incident=incident, type=IncidentActivityType
+[37m   [0m .DETECTED.value                                              [37m   [0m .DETECTED.value

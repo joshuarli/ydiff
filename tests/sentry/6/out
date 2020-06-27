@@ -12,96 +12,89 @@
 [0m[36mindex 7ed0d85c19..311685e0b0 100644
 [0m[33m--- a/src/sentry/static/sentry/app/views/settings/components/tag.tsx
 [0m[33m+++ b/src/sentry/static/sentry/app/views/settings/components/tag.tsx
-[0m[1;34m@@ -3,11 +3,12 @@ import styled from '@emotion/styled';
-[0m[33m 4[0m import InlineSvg from 'app/components/inlineSvg';             [33m 4[0m import InlineSvg from 'app/components/inlineSvg';
-[33m 5[0m import {Theme} from 'app/utils/theme';                        [33m 5[0m import {Theme} from 'app/utils/theme';
-[33m  [0m                                                               [33m 6[0m [32mimport space from 'app/styles/space';[0m
-[33m 7[0m type Props = React.HTMLAttributes<HTMLDivElement> & {         [33m 8[0m type Props = React.HTMLAttributes<HTMLDivElement> & {
-[33m 8[0m   priority?: keyof Theme['badge'] | keyof Theme['alert'];     [33m 9[0m   priority?: keyof Theme['badge'] | keyof Theme['alert'];
-[33m 9[0m   size?: string;                                              [33m10[0m   size?: string;
-[33m10[0m [22m[7m[31m  icon?: string;[0m                                              [33m11[0m [22m[7m[32m  icon?: string | React.ReactNode;[0m
-[33m11[0m   border?: boolean;                                           [33m12[0m   border?: boolean;
-[33m12[0m   inline?: boolean;                                           [33m13[0m   inline?: boolean;
-[33m13[0m };                                                            [33m14[0m };
-[1;34m@@ -42,7 +43,15 @@ const Tag = styled(
-[0m[33m42[0m     ...props                                                  [33m43[0m     ...props
-[33m43[0m   }: Props) => (                                              [33m44[0m   }: Props) => (
-[33m44[0m     <div {...props}>                                          [33m45[0m     <div {...props}>
-[33m  [0m                                                               [33m46[0m [32m      {icon && ([0m
-[33m  [0m                                                               [33m47[0m [32m        <IconWrapper>[0m
-[33m  [0m                                                               [33m48[0m [32m          {React.isValidElement(icon) ? ([0m
-[33m  [0m                                                               [33m49[0m [32m            React.cloneElement(icon, {size: 'xs'})[0m
-[33m  [0m                                                               [33m50[0m [32m          ) : typeof icon === 'string' ? ([0m
-[33m45[0m [22m      [7m[33m{icon &&[0m[22m <[7m[31mStyled[0m[22mInlineSvg src={icon} size="12px" />[7m[31m}[0m    [33m51[0m [22m      [7m[33m     [0m[22m <InlineSvg src={icon} size="12px" />[0m
-[33m  [0m                                                               [33m52[0m [32m          ) : null}[0m
-[33m  [0m                                                               [33m53[0m [32m        </IconWrapper>[0m
-[33m  [0m                                                               [33m54[0m [32m      )}[0m
-[33m46[0m       {children}                                              [33m55[0m       {children}
-[33m47[0m     </div>                                                    [33m56[0m     </div>
-[33m48[0m   )                                                           [33m57[0m   )
-[1;34m@@ -56,6 +65,7 @@ const Tag = styled(
-[0m[33m56[0m   text-align: center;                                         [33m65[0m   text-align: center;
-[33m57[0m   white-space: nowrap;                                        [33m66[0m   white-space: nowrap;
-[33m58[0m   vertical-align: middle;                                     [33m67[0m   vertical-align: middle;
-[33m  [0m                                                               [33m68[0m [32m  align-items: center;[0m
-[33m59[0m   border-radius: ${p => (p.size === 'small' ? '0.25em' : '2em [33m69[0m   border-radius: ${p => (p.size === 'small' ? '0.25em' : '2em
-[33m  [0m ')};                                                          [33m  [0m ')};
-[33m60[0m   text-transform: lowercase;                                  [33m70[0m   text-transform: lowercase;
-[33m61[0m   font-weight: ${p => (p.size === 'small' ? 'bold' : 'normal' [33m71[0m   font-weight: ${p => (p.size === 'small' ? 'bold' : 'normal'
-[33m  [0m )};                                                           [33m  [0m )};
-[1;34m@@ -64,8 +74,8 @@ const Tag = styled(
-[0m[33m64[0m   ${p => getMarginLeft(p)};                                   [33m74[0m   ${p => getMarginLeft(p)};
-[33m65[0m `;                                                            [33m75[0m `;
-[33m67[0m [22m[7m[31mconst StyledInlineSvg = styled(InlineSvg)`[0m                    [33m77[0m [22m[7m[32mconst IconWrapper = styled('span')`[0m
-[33m68[0m [22m[7m[31m  margin-right: 4px;[0m                                          [33m78[0m [22m[7m[32m  margin-right: ${space(0.5)};[0m
-[33m69[0m `;                                                            [33m79[0m `;
-[33m71[0m export default Tag;                                           [33m81[0m export default Tag;
+[0m[37m┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈[0m[37m 4[0m import InlineSvg from 'app/components/inlineSvg';             [37m 4[0m import InlineSvg from 'app/components/inlineSvg';
+[37m 5[0m import {Theme} from 'app/utils/theme';                        [37m 5[0m import {Theme} from 'app/utils/theme';
+[37m  [0m                                                               [37m 6[0m [32mimport space from 'app/styles/space';[0m
+[37m 7[0m type Props = React.HTMLAttributes<HTMLDivElement> & {         [37m 8[0m type Props = React.HTMLAttributes<HTMLDivElement> & {
+[37m 8[0m   priority?: keyof Theme['badge'] | keyof Theme['alert'];     [37m 9[0m   priority?: keyof Theme['badge'] | keyof Theme['alert'];
+[37m 9[0m   size?: string;                                              [37m10[0m   size?: string;
+[37m10[0m [22m[7m[31m  icon?: string;[0m                                              [37m11[0m [22m[7m[32m  icon?: string | React.ReactNode;[0m
+[37m11[0m   border?: boolean;                                           [37m12[0m   border?: boolean;
+[37m12[0m   inline?: boolean;                                           [37m13[0m   inline?: boolean;
+[37m13[0m };                                                            [37m14[0m };
+[37m┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈[0m[37m42[0m     ...props                                                  [37m43[0m     ...props
+[37m43[0m   }: Props) => (                                              [37m44[0m   }: Props) => (
+[37m44[0m     <div {...props}>                                          [37m45[0m     <div {...props}>
+[37m  [0m                                                               [37m46[0m [32m      {icon && ([0m
+[37m  [0m                                                               [37m47[0m [32m        <IconWrapper>[0m
+[37m  [0m                                                               [37m48[0m [32m          {React.isValidElement(icon) ? ([0m
+[37m  [0m                                                               [37m49[0m [32m            React.cloneElement(icon, {size: 'xs'})[0m
+[37m  [0m                                                               [37m50[0m [32m          ) : typeof icon === 'string' ? ([0m
+[37m45[0m [22m      [7m[33m{icon &&[0m[22m <[7m[31mStyled[0m[22mInlineSvg src={icon} size="12px" />[7m[31m}[0m    [37m51[0m [22m      [7m[33m     [0m[22m <InlineSvg src={icon} size="12px" />[0m
+[37m  [0m                                                               [37m52[0m [32m          ) : null}[0m
+[37m  [0m                                                               [37m53[0m [32m        </IconWrapper>[0m
+[37m  [0m                                                               [37m54[0m [32m      )}[0m
+[37m46[0m       {children}                                              [37m55[0m       {children}
+[37m47[0m     </div>                                                    [37m56[0m     </div>
+[37m48[0m   )                                                           [37m57[0m   )
+[37m┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈[0m[37m56[0m   text-align: center;                                         [37m65[0m   text-align: center;
+[37m57[0m   white-space: nowrap;                                        [37m66[0m   white-space: nowrap;
+[37m58[0m   vertical-align: middle;                                     [37m67[0m   vertical-align: middle;
+[37m  [0m                                                               [37m68[0m [32m  align-items: center;[0m
+[37m59[0m   border-radius: ${p => (p.size === 'small' ? '0.25em' : '2em [37m69[0m   border-radius: ${p => (p.size === 'small' ? '0.25em' : '2em
+[37m  [0m ')};                                                          [37m  [0m ')};
+[37m60[0m   text-transform: lowercase;                                  [37m70[0m   text-transform: lowercase;
+[37m61[0m   font-weight: ${p => (p.size === 'small' ? 'bold' : 'normal' [37m71[0m   font-weight: ${p => (p.size === 'small' ? 'bold' : 'normal'
+[37m  [0m )};                                                           [37m  [0m )};
+[37m┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈[0m[37m64[0m   ${p => getMarginLeft(p)};                                   [37m74[0m   ${p => getMarginLeft(p)};
+[37m65[0m `;                                                            [37m75[0m `;
+[37m67[0m [22m[7m[31mconst StyledInlineSvg = styled(InlineSvg)`[0m                    [37m77[0m [22m[7m[32mconst IconWrapper = styled('span')`[0m
+[37m68[0m [22m[7m[31m  margin-right: 4px;[0m                                          [37m78[0m [22m[7m[32m  margin-right: ${space(0.5)};[0m
+[37m69[0m `;                                                            [37m79[0m `;
+[37m71[0m export default Tag;                                           [37m81[0m export default Tag;
 [36mdiff --git a/tests/js/spec/components/__snapshots__/tag.spec.jsx.snap b/tests/js/spec/components/__snapshots__/tag.spec.jsx.snap
 [0m[36mindex db6b51c74c..7106150464 100644
 [0m[33m--- a/tests/js/spec/components/__snapshots__/tag.spec.jsx.snap
 [0m[33m+++ b/tests/js/spec/components/__snapshots__/tag.spec.jsx.snap
-[0m[1;34m@@ -8,12 +8,12 @@ exports[`Tag renders 1`] = `
-[0m[33m 8[0m >                                                             [33m 8[0m >
-[33m 9[0m   <Component                                                  [33m 9[0m   <Component
-[33m10[0m     border={true}                                             [33m10[0m     border={true}
-[33m11[0m [22m    className="css-[7m[33mw9a2kc[0m[22m-Tag e1glkkip0"[0m                      [33m11[0m [22m    className="css-[7m[33mmpoebz[0m[22m-Tag e1glkkip0"[0m
-[33m12[0m     priority="info"                                           [33m12[0m     priority="info"
-[33m13[0m     size="small"                                              [33m13[0m     size="small"
-[33m14[0m   >                                                           [33m14[0m   >
-[33m15[0m     <div                                                      [33m15[0m     <div
-[33m16[0m [22m      className="css-[7m[33mw9a2kc[0m[22m-Tag e1glkkip0"[0m                    [33m16[0m [22m      className="css-[7m[33mmpoebz[0m[22m-Tag e1glkkip0"[0m
-[33m17[0m     >                                                         [33m17[0m     >
-[33m18[0m       Text to Copy                                            [33m18[0m       Text to Copy
-[33m19[0m     </div>                                                    [33m19[0m     </div>
+[0m[37m┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈[0m[37m 8[0m >                                                             [37m 8[0m >
+[37m 9[0m   <Component                                                  [37m 9[0m   <Component
+[37m10[0m     border={true}                                             [37m10[0m     border={true}
+[37m11[0m [22m    className="css-[7m[33mw9a2kc[0m[22m-Tag e1glkkip0"[0m                      [37m11[0m [22m    className="css-[7m[33mmpoebz[0m[22m-Tag e1glkkip0"[0m
+[37m12[0m     priority="info"                                           [37m12[0m     priority="info"
+[37m13[0m     size="small"                                              [37m13[0m     size="small"
+[37m14[0m   >                                                           [37m14[0m   >
+[37m15[0m     <div                                                      [37m15[0m     <div
+[37m16[0m [22m      className="css-[7m[33mw9a2kc[0m[22m-Tag e1glkkip0"[0m                    [37m16[0m [22m      className="css-[7m[33mmpoebz[0m[22m-Tag e1glkkip0"[0m
+[37m17[0m     >                                                         [37m17[0m     >
+[37m18[0m       Text to Copy                                            [37m18[0m       Text to Copy
+[37m19[0m     </div>                                                    [37m19[0m     </div>
 [36mdiff --git a/tests/js/spec/components/events/interfaces/breadcrumbs/__snapshots__/filter.spec.tsx.snap b/tests/js/spec/components/events/interfaces/breadcrumbs/__snapshots__/filter.spec.tsx.snap
 [0m[36mindex 861f83e405..3f09c05a49 100644
 [0m[33m--- a/tests/js/spec/components/events/interfaces/breadcrumbs/__snapshots__/filter.spec.tsx.snap
 [0m[33m+++ b/tests/js/spec/components/events/interfaces/breadcrumbs/__snapshots__/filter.spec.tsx.snap
-[0m[1;34m@@ -1679,11 +1679,11 @@ exports[`Filter default render 1`] = `
-[0m[33m1679[0m                                   color="blue400"           [33m1679[0m                                   color="blue400"
-[33m1680[0m                                 >                           [33m1680[0m                                 >
-[33m1681[0m                                   <Component                [33m1681[0m                                   <Component
-[33m1682[0m [22m                                    className="css-1[7m[33mf6[0m[22mox[7m[31mrn[0m[22m-[0m [33m1682[0m [22m                                    className="css-1[7m[33mdx7[0m[22mo[7m[32mw[0m[22mx-[0m
-[33m    [0m [22mTag-StyledTag eio8trv0"[0m                                     [33m    [0m [22mTag-StyledTag eio8trv0"[0m
-[33m1683[0m                                     color="blue400"         [33m1683[0m                                     color="blue400"
-[33m1684[0m                                   >                         [33m1684[0m                                   >
-[33m1685[0m                                     <div                    [33m1685[0m                                     <div
-[33m1686[0m [22m                                      className="css-1[7m[33mf6[0m[22mox[7m[31mr[0m [33m1686[0m [22m                                      className="css-1[7m[33mdx7[0m[22mo[7m[32mw[0m[22m[0m
-[33m    [0m [22m[7m[31mn[0m[22m-Tag-StyledTag eio8trv0"[0m                                   [33m    [0m [22mx-Tag-StyledTag eio8trv0"[0m
-[33m1687[0m                                       color="blue400"       [33m1687[0m                                       color="blue400"
-[33m1688[0m                                     >                       [33m1688[0m                                     >
-[33m1689[0m                                       info                  [33m1689[0m                                       info
-[1;34m@@ -1765,11 +1765,11 @@ exports[`Filter default render 1`] = `
-[0m[33m1765[0m                                   color="red400"            [33m1765[0m                                   color="red400"
-[33m1766[0m                                 >                           [33m1766[0m                                 >
-[33m1767[0m                                   <Component                [33m1767[0m                                   <Component
-[33m1768[0m [22m                                    className="css-[7m[33m1m[0m[22mu[7m[33mivxw[0m[22m-[0m [33m1768[0m [22m                                    className="css-[7m[33mei[0m[22mu[7m[33ms55[0m[22m-T[0m
-[33m    [0m [22mTag-StyledTag eio8trv0"[0m                                     [33m    [0m [22mag-StyledTag eio8trv0"[0m
-[33m1769[0m                                     color="red400"          [33m1769[0m                                     color="red400"
-[33m1770[0m                                   >                         [33m1770[0m                                   >
-[33m1771[0m                                     <div                    [33m1771[0m                                     <div
-[33m1772[0m [22m                                      className="css-[7m[33m1m[0m[22mu[7m[33mivx[0m [33m1772[0m [22m                                      className="css-[7m[33mei[0m[22mu[7m[33ms55[0m[22m[0m
-[33m    [0m [22m[7m[33mw[0m[22m-Tag-StyledTag eio8trv0"[0m                                   [33m    [0m [22m-Tag-StyledTag eio8trv0"[0m
-[33m1773[0m                                       color="red400"        [33m1773[0m                                       color="red400"
-[33m1774[0m                                     >                       [33m1774[0m                                     >
-[33m1775[0m                                       error                 [33m1775[0m                                       error
+[0m[37m┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈[0m[37m1679[0m                                   color="blue400"           [37m1679[0m                                   color="blue400"
+[37m1680[0m                                 >                           [37m1680[0m                                 >
+[37m1681[0m                                   <Component                [37m1681[0m                                   <Component
+[37m1682[0m [22m                                    className="css-1[7m[33mf6[0m[22mox[7m[31mrn[0m[22m-[0m [37m1682[0m [22m                                    className="css-1[7m[33mdx7[0m[22mo[7m[32mw[0m[22mx-[0m
+[37m    [0m [22mTag-StyledTag eio8trv0"[0m                                     [37m    [0m [22mTag-StyledTag eio8trv0"[0m
+[37m1683[0m                                     color="blue400"         [37m1683[0m                                     color="blue400"
+[37m1684[0m                                   >                         [37m1684[0m                                   >
+[37m1685[0m                                     <div                    [37m1685[0m                                     <div
+[37m1686[0m [22m                                      className="css-1[7m[33mf6[0m[22mox[7m[31mr[0m [37m1686[0m [22m                                      className="css-1[7m[33mdx7[0m[22mo[7m[32mw[0m[22m[0m
+[37m    [0m [22m[7m[31mn[0m[22m-Tag-StyledTag eio8trv0"[0m                                   [37m    [0m [22mx-Tag-StyledTag eio8trv0"[0m
+[37m1687[0m                                       color="blue400"       [37m1687[0m                                       color="blue400"
+[37m1688[0m                                     >                       [37m1688[0m                                     >
+[37m1689[0m                                       info                  [37m1689[0m                                       info
+[37m┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈[0m[37m1765[0m                                   color="red400"            [37m1765[0m                                   color="red400"
+[37m1766[0m                                 >                           [37m1766[0m                                 >
+[37m1767[0m                                   <Component                [37m1767[0m                                   <Component
+[37m1768[0m [22m                                    className="css-[7m[33m1m[0m[22mu[7m[33mivxw[0m[22m-[0m [37m1768[0m [22m                                    className="css-[7m[33mei[0m[22mu[7m[33ms55[0m[22m-T[0m
+[37m    [0m [22mTag-StyledTag eio8trv0"[0m                                     [37m    [0m [22mag-StyledTag eio8trv0"[0m
+[37m1769[0m                                     color="red400"          [37m1769[0m                                     color="red400"
+[37m1770[0m                                   >                         [37m1770[0m                                   >
+[37m1771[0m                                     <div                    [37m1771[0m                                     <div
+[37m1772[0m [22m                                      className="css-[7m[33m1m[0m[22mu[7m[33mivx[0m [37m1772[0m [22m                                      className="css-[7m[33mei[0m[22mu[7m[33ms55[0m[22m[0m
+[37m    [0m [22m[7m[33mw[0m[22m-Tag-StyledTag eio8trv0"[0m                                   [37m    [0m [22m-Tag-StyledTag eio8trv0"[0m
+[37m1773[0m                                       color="red400"        [37m1773[0m                                       color="red400"
+[37m1774[0m                                     >                       [37m1774[0m                                     >
+[37m1775[0m                                       error                 [37m1775[0m                                       error
