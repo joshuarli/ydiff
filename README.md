@@ -75,7 +75,8 @@ TODO
 ## Usage
 
 Simply make sure you've set `GIT_PAGER='ydiff | less'`, and `git diff`, `git show`,
-etc. will all work nicely.
+etc. will all work nicely. Though, you'll want to alias `git log` and anything else
+that doesn't output unified diffs to have `GIT_PAGER=less`.
 
 I'd say the following supplementary git config is also helpful:
 
