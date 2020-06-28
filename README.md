@@ -67,19 +67,13 @@ Benchmark #1: ./ydiff-bin < tests/sentry/1/in.diff >/dev/null
 
 ## Installation
 
-Just download [this](https://raw.githubusercontent.com/joshuarli/ydiff/master/ydiff) to anywhere on your PATH.
+Just download [this](https://raw.githubusercontent.com/joshuarli/ydiff/master/ydiff) to anywhere on your PATH, then set the following git config:
 
-Then, set `GIT_PAGER='ydiff | less'`.
+    git config --global pager.diff "ydiff | less"
+    git config --global pager.show "ydiff | less"
+    git config --global pager.log less
+    git config --global color.diff never
 
-`git diff`, `git show`, etc. will then all work nicely.
-Though, you'll want to alias `git log` and anything else
-that doesn't output unified diffs to have `GIT_PAGER=less`.
-
-You might also need this git config (`git config --global color.diff never`):
-
-	[color]
-		diff = never
-
-Because ydiff expects plain, uncolored text.
+I also recommend setting `LESS=FSXR`. `less` will use those flags by default. You could alternatively put those in your git config.
 
 Optionally, if you have a C compiler, you can compile the Cython binary with `make ydiff-bin`.
