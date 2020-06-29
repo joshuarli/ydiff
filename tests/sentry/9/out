@@ -14,31 +14,34 @@
 [0m[36mindex 1b824f8765..a7f57ae359 100644
 [0m[33m--- a/src/sentry/snuba/query_subscription_consumer.py
 [0m[33m+++ b/src/sentry/snuba/query_subscription_consumer.py
-[0m[37m┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈[0m[37m 87[0m                 else:                                        [37m 87[0m                 else:
-[37m 88[0m                     updated_offset = partition.offset        [37m 88[0m                     updated_offset = partition.offset
-[37m 89[0m                 self.offsets[partition.partition] = updated_ [37m 89[0m                 self.offsets[partition.partition] = updated_
+[0m[37m┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈[0m[37m 87[0m                 else:                                        [37m 87[0m [0m                else:
+[37m 88[0m                     updated_offset = partition.offset        [37m 88[0m [0m                    updated_offset = partition.offset
+[37m 89[0m                 self.offsets[partition.partition] = updated_ [37m 89[0m [0m                self.offsets[partition.partition] = updated_
 [37m   [0m offset                                                       [37m   [0m offset
 [37m   [0m                                                              [37m 90[0m [32m            logger.info("query-subscription-consumer.on_assi[0m
 [37m   [0m                                                              [37m   [0m [32mgn", extra={"offsets": self.offsets})[0m
-[37m 91[0m         def on_revoke(consumer, partitions):                 [37m 92[0m         def on_revoke(consumer, partitions):
-[37m 92[0m             partition_numbers = [partition.partition for par [37m 93[0m             partition_numbers = [partition.partition for par
+[37m 90[0m                                                              [37m 91[0m [0m
+[37m 91[0m         def on_revoke(consumer, partitions):                 [37m 92[0m [0m        def on_revoke(consumer, partitions):
+[37m 92[0m             partition_numbers = [partition.partition for par [37m 93[0m [0m            partition_numbers = [partition.partition for par
 [37m   [0m tition in partitions]                                        [37m   [0m tition in partitions]
-[37m 93[0m             self.commit_offsets(partition_numbers)           [37m 94[0m             self.commit_offsets(partition_numbers)
-[37m 94[0m             for partition_number in partition_numbers:       [37m 95[0m             for partition_number in partition_numbers:
-[37m 95[0m                 self.offsets.pop(partition_number, None)     [37m 96[0m                 self.offsets.pop(partition_number, None)
+[37m 93[0m             self.commit_offsets(partition_numbers)           [37m 94[0m [0m            self.commit_offsets(partition_numbers)
+[37m 94[0m             for partition_number in partition_numbers:       [37m 95[0m [0m            for partition_number in partition_numbers:
+[37m 95[0m                 self.offsets.pop(partition_number, None)     [37m 96[0m [0m                self.offsets.pop(partition_number, None)
 [37m   [0m                                                              [37m 97[0m [32m            logger.info("query-subscription-consumer.on_revo[0m
 [37m   [0m                                                              [37m   [0m [32mke", extra={"offsets": self.offsets})[0m
-[37m 97[0m         self.consumer = Consumer(conf)                       [37m 99[0m         self.consumer = Consumer(conf)
-[37m 98[0m         self.consumer.subscribe([self.topic], on_assign=on_a [37m100[0m         self.consumer.subscribe([self.topic], on_assign=on_a
+[37m 96[0m                                                              [37m 98[0m [0m
+[37m 97[0m         self.consumer = Consumer(conf)                       [37m 99[0m [0m        self.consumer = Consumer(conf)
+[37m 98[0m         self.consumer.subscribe([self.topic], on_assign=on_a [37m100[0m [0m        self.consumer.subscribe([self.topic], on_assign=on_a
 [37m   [0m ssign, on_revoke=on_revoke)                                  [37m   [0m ssign, on_revoke=on_revoke)
-[37m┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈[0m[37m131[0m         self.shutdown()                                      [37m133[0m         self.shutdown()
-[37m133[0m     def commit_offsets(self, partitions=None):               [37m135[0m     def commit_offsets(self, partitions=None):
+[37m┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈[0m[37m131[0m         self.shutdown()                                      [37m133[0m [0m        self.shutdown()
+[37m132[0m                                                              [37m134[0m [0m
+[37m133[0m     def commit_offsets(self, partitions=None):               [37m135[0m [0m    def commit_offsets(self, partitions=None):
 [37m   [0m                                                              [37m136[0m [32m        logger.info([0m
 [37m   [0m                                                              [37m137[0m [32m            "query-subscription-consumer.commit_offsets",[0m
 [37m   [0m                                                              [37m138[0m [32m            extra={"offsets": self.offsets, "partitions": pa[0m
 [37m   [0m                                                              [37m   [0m [32mrtitions},[0m
 [37m   [0m                                                              [37m139[0m [32m        )[0m
 [37m   [0m                                                              [37m140[0m [32m[0m
-[37m134[0m         if self.offsets and self.consumer:                   [37m141[0m         if self.offsets and self.consumer:
-[37m135[0m             if partitions is None:                           [37m142[0m             if partitions is None:
-[37m136[0m                 partitions = self.offsets.keys()             [37m143[0m                 partitions = self.offsets.keys()
+[37m134[0m         if self.offsets and self.consumer:                   [37m141[0m [0m        if self.offsets and self.consumer:
+[37m135[0m             if partitions is None:                           [37m142[0m [0m            if partitions is None:
+[37m136[0m                 partitions = self.offsets.keys()             [37m143[0m [0m                partitions = self.offsets.keys()

@@ -19,29 +19,32 @@
 [0m[36mindex ee6d2af9a5..7cf9c9d153 100644
 [0m[33m--- a/src/sentry/static/sentry/app/utils/theme.tsx
 [0m[33m+++ b/src/sentry/static/sentry/app/utils/theme.tsx
-[0m[37m┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈[0m[37m242[0m   // Try to keep these ordered plz                           [37m242[0m   // Try to keep these ordered plz
-[37m243[0m   zIndex: {                                                  [37m243[0m   zIndex: {
+[0m[37m┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈[0m[37m241[0m                                                              [37m241[0m [0m
+[37m242[0m   // Try to keep these ordered plz                           [37m242[0m [0m  // Try to keep these ordered plz
+[37m243[0m   zIndex: {                                                  [37m243[0m [0m  zIndex: {
 [37m   [0m                                                              [37m244[0m [32m    // Generic z-index when you hope your component is isola[0m
 [37m   [0m                                                              [37m   [0m [32mted and[0m
 [37m   [0m                                                              [37m245[0m [32m    // does not need to battle others for z-index priority[0m
 [37m   [0m                                                              [37m246[0m [32m    initial: 1,[0m
 [37m   [0m                                                              [37m247[0m [32m[0m
-[37m244[0m     breadcrumbs: {                                           [37m248[0m     breadcrumbs: {
-[37m245[0m       header: 2,                                             [37m249[0m       header: 2,
-[37m246[0m       gridCellError: 1,                                      [37m250[0m       gridCellError: 1,
+[37m244[0m     breadcrumbs: {                                           [37m248[0m [0m    breadcrumbs: {
+[37m245[0m       header: 2,                                             [37m249[0m [0m      header: 2,
+[37m246[0m       gridCellError: 1,                                      [37m250[0m [0m      gridCellError: 1,
 [36mdiff --git a/src/sentry/static/sentry/app/views/admin/adminSettings.jsx b/src/sentry/static/sentry/app/views/admin/adminSettings.jsx
 [0m[36mindex 28d24d7021..3bf7bc87db 100644
 [0m[33m--- a/src/sentry/static/sentry/app/views/admin/adminSettings.jsx
 [0m[33m+++ b/src/sentry/static/sentry/app/views/admin/adminSettings.jsx
-[0m[37m┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈[0m[37m 4[0m import AsyncView from 'app/views/asyncView';                  [37m 4[0m import AsyncView from 'app/views/asyncView';
-[37m 5[0m import {t} from 'app/locale';                                 [37m 5[0m import {t} from 'app/locale';
+[0m[37m┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈[0m[37m 3[0m                                                               [37m 3[0m [0m
+[37m 4[0m import AsyncView from 'app/views/asyncView';                  [37m 4[0m [0mimport AsyncView from 'app/views/asyncView';
+[37m 5[0m import {t} from 'app/locale';                                 [37m 5[0m [0mimport {t} from 'app/locale';
 [37m 6[0m [31mimport {getOption, getOptionField} from 'app/options';[0m        [37m  [0m 
-[37m 7[0m import {ApiForm} from 'app/components/forms';                 [37m 6[0m import {ApiForm} from 'app/components/forms';
+[37m 7[0m import {ApiForm} from 'app/components/forms';                 [37m 6[0m [0mimport {ApiForm} from 'app/components/forms';
 [37m  [0m                                                               [37m 7[0m [32m[0m
 [37m  [0m                                                               [37m 8[0m [32mimport {getOption, getOptionField} from './options';[0m
-[37m 9[0m const optionsAvailable = [                                    [37m10[0m const optionsAvailable = [
-[37m10[0m   'system.url-prefix',                                        [37m11[0m   'system.url-prefix',
-[37m11[0m   'system.admin-email',                                       [37m12[0m   'system.admin-email',
+[37m 8[0m                                                               [37m 9[0m [0m
+[37m 9[0m const optionsAvailable = [                                    [37m10[0m [0mconst optionsAvailable = [
+[37m10[0m   'system.url-prefix',                                        [37m11[0m [0m  'system.url-prefix',
+[37m11[0m   'system.admin-email',                                       [37m12[0m [0m  'system.admin-email',
 [36mdiff --git a/src/sentry/static/sentry/app/views/installWizard.jsx b/src/sentry/static/sentry/app/views/admin/installWizard/index.tsx
 [0m[36msimilarity index 61%
 [0m[36mrename from src/sentry/static/sentry/app/views/installWizard.jsx
@@ -50,74 +53,82 @@
 [0m[33m--- a/src/sentry/static/sentry/app/views/installWizard.jsx
 [0m[33m+++ b/src/sentry/static/sentry/app/views/admin/installWizard/index.tsx
 [0m[37m┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈[0m[37m  1[0m [31mimport PropTypes from 'prop-types';[0m                          [37m   [0m 
-[37m  2[0m import React from 'react';                                   [37m  1[0m import React from 'react';
-[37m  3[0m import DocumentTitle from 'react-document-title';            [37m  2[0m import DocumentTitle from 'react-document-title';
+[37m  2[0m import React from 'react';                                   [37m  1[0m [0mimport React from 'react';
+[37m  3[0m import DocumentTitle from 'react-document-title';            [37m  2[0m [0mimport DocumentTitle from 'react-document-title';
 [37m   [0m                                                              [37m  3[0m [32mimport {css} from '@emotion/core';[0m
 [37m   [0m                                                              [37m  4[0m [32mimport styled from '@emotion/styled';[0m
-[37m  5[0m import AsyncView from 'app/views/asyncView';                 [37m  6[0m import AsyncView from 'app/views/asyncView';
-[37m  6[0m import {t} from 'app/locale';                                [37m  7[0m import {t} from 'app/locale';
-[37m  7[0m import ConfigStore from 'app/stores/configStore';            [37m  8[0m import ConfigStore from 'app/stores/configStore';
-[37m  8[0m import {ApiForm} from 'app/components/forms';                [37m  9[0m import {ApiForm} from 'app/components/forms';
+[37m  4[0m                                                              [37m  5[0m [0m
+[37m  5[0m import AsyncView from 'app/views/asyncView';                 [37m  6[0m [0mimport AsyncView from 'app/views/asyncView';
+[37m  6[0m import {t} from 'app/locale';                                [37m  7[0m [0mimport {t} from 'app/locale';
+[37m  7[0m import ConfigStore from 'app/stores/configStore';            [37m  8[0m [0mimport ConfigStore from 'app/stores/configStore';
+[37m  8[0m import {ApiForm} from 'app/components/forms';                [37m  9[0m [0mimport {ApiForm} from 'app/components/forms';
 [37m  9[0m [22m[7m[31mimport {getOptionDefault, getOptionField, getForm} from 'app[0m [37m 10[0m [22m[7m[32mimport sentryPattern from 'app/../images/pattern/sentry-patt[0m
 [37m   [0m [22m[7m[31m/options';[0m                                                   [37m   [0m [22m[7m[32mern.png';[0m
 [37m   [0m                                                              [37m 11[0m [32mimport space from 'app/styles/space';[0m
 [37m   [0m                                                              [37m 12[0m [32mimport Alert from 'app/components/alert';[0m
 [37m   [0m                                                              [37m 13[0m [32mimport {IconWarning} from 'app/icons';[0m
+[37m 10[0m                                                              [37m 14[0m [0m
 [37m 11[0m [22m[7m[31mexport default class InstallWizard extends AsyncView {[0m       [37m 15[0m [22m[7m[32mimport {getOptionDefault, getOptionField, getForm} from '../[0m
 [37m   [0m                                                              [37m   [0m [22m[7m[32moptions';[0m
 [37m 12[0m [31m  static propTypes = {[0m                                       [37m   [0m 
 [37m 13[0m [31m    onConfigured: PropTypes.func.isRequired,[0m                 [37m   [0m 
 [37m 14[0m [31m  };[0m                                                         [37m   [0m 
+[37m 15[0m                                                              [37m 16[0m [0m
 [37m 16[0m [22m[7m[31m  UNSAFE_componentWillMount() {[0m                              [37m 17[0m [22m[7m[32mtype Props = {[0m
 [37m 17[0m [22m[7m[31m    super.UNSAFE_componentWillMount();[0m                       [37m 18[0m [22m[7m[32m  onConfigured: () => void;[0m
 [37m 18[0m [22m[7m[31m    document.body.classList.add('install-wizard');[0m           [37m 19[0m [22m[7m[32m} & AsyncView['props'];[0m
 [37m 19[0m [31m  }[0m                                                          [37m   [0m 
+[37m 20[0m                                                              [37m 20[0m [0m
 [37m 21[0m [22m[7m[31m  componentWillUnmount() {[0m                                   [37m 21[0m [22m[7m[32mtype State = {} & AsyncView['state'];[0m
 [37m 22[0m [31m    super.componentWillUnmount();[0m                            [37m   [0m 
 [37m 23[0m [31m    document.body.classList.remove('install-wizard');[0m        [37m   [0m 
 [37m 24[0m [31m  }[0m                                                          [37m   [0m 
+[37m 25[0m                                                              [37m 22[0m [0m
 [37m 26[0m [22m[7m[31m  getEndpoints() {[0m                                           [37m 23[0m [22m[7m[32mexport default class InstallWizard extends AsyncView<Props, [0m
 [37m   [0m                                                              [37m   [0m [22m[7m[32mState> {[0m
 [37m   [0m                                                              [37m 24[0m [32m  getEndpoints(): ReturnType<AsyncView['getEndpoints']> {[0m
-[37m 27[0m     return [['data', '/internal/options/?query=is:required'] [37m 25[0m     return [['data', '/internal/options/?query=is:required']
+[37m 27[0m     return [['data', '/internal/options/?query=is:required'] [37m 25[0m [0m    return [['data', '/internal/options/?query=is:required']
 [37m   [0m ];                                                           [37m   [0m ];
-[37m 28[0m   }                                                          [37m 26[0m   }
-[37m┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈[0m[37m 92[0m     const version = ConfigStore.get('version');              [37m 90[0m     const version = ConfigStore.get('version');
-[37m 93[0m     return (                                                 [37m 91[0m     return (
-[37m 94[0m       <DocumentTitle title={this.getTitle()}>                [37m 92[0m       <DocumentTitle title={this.getTitle()}>
+[37m 28[0m   }                                                          [37m 26[0m [0m  }
+[37m 29[0m                                                              [37m 27[0m [0m
+[37m┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈[0m[37m 92[0m     const version = ConfigStore.get('version');              [37m 90[0m [0m    const version = ConfigStore.get('version');
+[37m 93[0m     return (                                                 [37m 91[0m [0m    return (
+[37m 94[0m       <DocumentTitle title={this.getTitle()}>                [37m 92[0m [0m      <DocumentTitle title={this.getTitle()}>
 [37m 95[0m [22m[7m[31m        <div className="app">[0m                                [37m 93[0m [22m[7m[32m        <Wrapper>[0m
 [37m 96[0m [22m[7m[31m          <div className="pattern" />[0m                        [37m 94[0m [22m[7m[32m          <Pattern />[0m
 [37m 97[0m [22m[7m[31m          <div className="setup-wizard">[0m                     [37m 95[0m [22m[7m[32m          <SetupWizard>[0m
 [37m 98[0m [22m            <[7m[33mh1[0m[22m>[0m                                             [37m 96[0m [22m            <[7m[33mHeading[0m[22m>[0m
-[37m 99[0m               <span>{t('Welcome to Sentry')}</span>          [37m 97[0m               <span>{t('Welcome to Sentry')}</span>
+[37m 99[0m               <span>{t('Welcome to Sentry')}</span>          [37m 97[0m [0m              <span>{t('Welcome to Sentry')}</span>
 [37m100[0m [22m              <s[7m[33mmall[0m[22m>{version.current}</s[7m[33mmall[0m[22m>[0m               [37m 98[0m [22m              <[7m[32mVer[0m[22ms[7m[33mion[0m[22m>{version.current}</[7m[32mVer[0m[22ms[7m[33mion[0m[22m>[0m
 [37m101[0m [22m            </[7m[33mh1[0m[22m>[0m                                            [37m 99[0m [22m            </[7m[33mHeading[0m[22m>[0m
-[37m102[0m             {this.state.loading                              [37m100[0m             {this.state.loading
-[37m103[0m               ? this.renderLoading()                         [37m101[0m               ? this.renderLoading()
-[37m104[0m               : this.state.error                             [37m102[0m               : this.state.error
+[37m102[0m             {this.state.loading                              [37m100[0m [0m            {this.state.loading
+[37m103[0m               ? this.renderLoading()                         [37m101[0m [0m              ? this.renderLoading()
+[37m104[0m               : this.state.error                             [37m102[0m [0m              : this.state.error
 [37m105[0m [22m[7m[31m              ? this.renderError(new Error('Unable to load a[0m [37m103[0m [22m[7m[32m              ? this.renderError()[0m
 [37m   [0m [22m[7m[31mll required endpoints'))[0m                                     [37m   [0m 
-[37m106[0m               : this.renderBody()}                           [37m104[0m               : this.renderBody()}
+[37m106[0m               : this.renderBody()}                           [37m104[0m [0m              : this.renderBody()}
 [37m107[0m [22m[7m[31m          </div>[0m                                             [37m105[0m [22m[7m[32m          </SetupWizard>[0m
 [37m108[0m [22m[7m[31m        </div>[0m                                               [37m106[0m [22m[7m[32m        </Wrapper>[0m
-[37m109[0m       </DocumentTitle>                                       [37m107[0m       </DocumentTitle>
-[37m110[0m     );                                                       [37m108[0m     );
-[37m111[0m   }                                                          [37m109[0m   }
-[37m113[0m   renderError() {                                            [37m111[0m   renderError() {
-[37m114[0m     return (                                                 [37m112[0m     return (
+[37m109[0m       </DocumentTitle>                                       [37m107[0m [0m      </DocumentTitle>
+[37m110[0m     );                                                       [37m108[0m [0m    );
+[37m111[0m   }                                                          [37m109[0m [0m  }
+[37m112[0m                                                              [37m110[0m [0m
+[37m113[0m   renderError() {                                            [37m111[0m [0m  renderError() {
+[37m114[0m     return (                                                 [37m112[0m [0m    return (
 [37m115[0m [22m[7m[31m      <div className="loading-error">[0m                        [37m113[0m [22m[7m[32m      <Alert type="error" icon={<IconWarning />}>[0m
 [37m116[0m [31m        <span className="icon-exclamation" />[0m                [37m   [0m 
-[37m117[0m         {t(                                                  [37m114[0m         {t(
-[37m118[0m           'We were unable to load the required configuration [37m115[0m           'We were unable to load the required configuration
+[37m117[0m         {t(                                                  [37m114[0m [0m        {t(
+[37m118[0m           'We were unable to load the required configuration [37m115[0m [0m          'We were unable to load the required configuration
 [37m   [0m  from the Sentry server. Please take a look at the service l [37m   [0m  from the Sentry server. Please take a look at the service l
 [37m   [0m ogs.'                                                        [37m   [0m ogs.'
-[37m119[0m         )}                                                   [37m116[0m         )}
+[37m119[0m         )}                                                   [37m116[0m [0m        )}
 [37m120[0m [22m[7m[31m      </div>[0m                                                 [37m117[0m [22m[7m[32m      </Alert>[0m
-[37m121[0m     );                                                       [37m118[0m     );
-[37m122[0m   }                                                          [37m119[0m   }
-[37m┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈[0m[37m137[0m     );                                                       [37m134[0m     );
-[37m138[0m   }                                                          [37m135[0m   }
-[37m139[0m }                                                            [37m136[0m }
+[37m121[0m     );                                                       [37m118[0m [0m    );
+[37m122[0m   }                                                          [37m119[0m [0m  }
+[37m123[0m                                                              [37m120[0m [0m
+[37m┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈[0m[37m137[0m     );                                                       [37m134[0m [0m    );
+[37m138[0m   }                                                          [37m135[0m [0m  }
+[37m139[0m }                                                            [37m136[0m [0m}
 [37m   [0m                                                              [37m137[0m [32m[0m
 [37m   [0m                                                              [37m138[0m [32mconst Wrapper = styled('div')`[0m
 [37m   [0m                                                              [37m139[0m [32m  display: flex;[0m
@@ -183,23 +194,25 @@
 [0m[36mindex 250662df75..53d909da80 100644
 [0m[33m--- a/src/sentry/static/sentry/app/views/app/index.tsx
 [0m[33m+++ b/src/sentry/static/sentry/app/views/app/index.tsx
-[0m[37m┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈[0m[37m235[0m     if (needsUpgrade) {                                      [37m235[0m     if (needsUpgrade) {
-[37m236[0m       const InstallWizard = React.lazy(() =>                 [37m236[0m       const InstallWizard = React.lazy(() =>
+[0m[37m┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈[0m[37m234[0m                                                              [37m234[0m [0m
+[37m235[0m     if (needsUpgrade) {                                      [37m235[0m [0m    if (needsUpgrade) {
+[37m236[0m       const InstallWizard = React.lazy(() =>                 [37m236[0m [0m      const InstallWizard = React.lazy(() =>
 [37m237[0m [22m        import(/* webpackChunkName: "InstallWizard" */ 'app/[0m [37m237[0m [22m        import(/* webpackChunkName: "InstallWizard" */ 'app/[0m
 [37m   [0m [22mviews/installWizard')[0m                                        [37m   [0m [22mviews[7m[32m/admin[0m[22m/installWizard')[0m
-[37m238[0m       );                                                     [37m238[0m       );
-[37m240[0m       return (                                               [37m240[0m       return (
+[37m238[0m       );                                                     [37m238[0m [0m      );
+[37m239[0m                                                              [37m239[0m [0m
+[37m240[0m       return (                                               [37m240[0m [0m      return (
 [36mdiff --git a/src/sentry/static/sentry/less/sentry.less b/src/sentry/static/sentry/less/sentry.less
 [0m[36mindex 32b3bdec52..a86341fc1f 100644
 [0m[33m--- a/src/sentry/static/sentry/less/sentry.less
 [0m[33m+++ b/src/sentry/static/sentry/less/sentry.less
-[0m[37m┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈[0m[37m32[0m @import url('./organization.less');                           [37m32[0m @import url('./organization.less');
-[37m33[0m @import url('./project-settings.less');                       [37m33[0m @import url('./project-settings.less');
-[37m34[0m @import url('./releases.less');                               [37m34[0m @import url('./releases.less');
+[0m[37m┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈[0m[37m32[0m @import url('./organization.less');                           [37m32[0m [0m@import url('./organization.less');
+[37m33[0m @import url('./project-settings.less');                       [37m33[0m [0m@import url('./project-settings.less');
+[37m34[0m @import url('./releases.less');                               [37m34[0m [0m@import url('./releases.less');
 [37m35[0m [31m@import url('./setup-wizard.less');[0m                           [37m  [0m 
-[37m36[0m @import url('./spacing.less');                                [37m35[0m @import url('./spacing.less');
-[37m37[0m @import url('./stream.less');                                 [37m36[0m @import url('./stream.less');
-[37m38[0m @import url('./group-similar.less');                          [37m37[0m @import url('./group-similar.less');
+[37m36[0m @import url('./spacing.less');                                [37m35[0m [0m@import url('./spacing.less');
+[37m37[0m @import url('./stream.less');                                 [37m36[0m [0m@import url('./stream.less');
+[37m38[0m @import url('./group-similar.less');                          [37m37[0m [0m@import url('./group-similar.less');
 [36mdiff --git a/src/sentry/static/sentry/less/setup-wizard.less b/src/sentry/static/sentry/less/setup-wizard.less
 [0m[36mdeleted file mode 100644
 [0m[36mindex 33cd39c0fa..0000000000
@@ -279,13 +292,13 @@
 [0m[36mindex 3f09c05a49..d7838c85c4 100644
 [0m[33m--- a/tests/js/spec/components/events/interfaces/breadcrumbs/__snapshots__/filter.spec.tsx.snap
 [0m[33m+++ b/tests/js/spec/components/events/interfaces/breadcrumbs/__snapshots__/filter.spec.tsx.snap
-[0m[37m┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈[0m[37m716[0m                       "globalSelectionHeader": 1009,         [37m716[0m                       "globalSelectionHeader": 1009,
-[37m717[0m                       "header": 1000,                        [37m717[0m                       "header": 1000,
-[37m718[0m                       "hovercard": 10002,                    [37m718[0m                       "hovercard": 10002,
+[0m[37m┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈[0m[37m716[0m                       "globalSelectionHeader": 1009,         [37m716[0m [0m                      "globalSelectionHeader": 1009,
+[37m717[0m                       "header": 1000,                        [37m717[0m [0m                      "header": 1000,
+[37m718[0m                       "hovercard": 10002,                    [37m718[0m [0m                      "hovercard": 10002,
 [37m   [0m                                                              [37m719[0m [32m                      "initial": 1,[0m
-[37m719[0m                       "modal": 10000,                        [37m720[0m                       "modal": 10000,
-[37m720[0m                       "orgAndUserMenu": 1030,                [37m721[0m                       "orgAndUserMenu": 1030,
-[37m721[0m                       "sentryErrorEmbed": 1090,              [37m722[0m                       "sentryErrorEmbed": 1090,
+[37m719[0m                       "modal": 10000,                        [37m720[0m [0m                      "modal": 10000,
+[37m720[0m                       "orgAndUserMenu": 1030,                [37m721[0m [0m                      "orgAndUserMenu": 1030,
+[37m721[0m                       "sentryErrorEmbed": 1090,              [37m722[0m [0m                      "sentryErrorEmbed": 1090,
 [36mdiff --git a/tests/js/spec/views/__snapshots__/installWizard.spec.jsx.snap b/tests/js/spec/views/__snapshots__/installWizard.spec.jsx.snap
 [0m[36mdeleted file mode 100644
 [0m[36mindex 9eb8056d32..0000000000
@@ -1496,31 +1509,38 @@
 [0m[36mindex aaf2c7156b..ce5d5491f1 100644
 [0m[33m--- a/tests/js/spec/views/installWizard.spec.jsx
 [0m[33m+++ b/tests/js/spec/views/admin/installWizard.spec.jsx
-[0m[37m┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈[0m[37m 1[0m import React from 'react';                                    [37m 1[0m import React from 'react';
+[0m[37m┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈[0m[37m 1[0m import React from 'react';                                    [37m 1[0m [0mimport React from 'react';
+[37m 2[0m                                                               [37m 2[0m [0m
 [37m 3[0m [22mimport {mount} from 'sentry-test/enzyme';[0m                     [37m 3[0m [22mimport {mount[7m[32mWithTheme[0m[22m} from 'sentry-test/enzyme';[0m
-[37m 5[0m import ConfigStore from 'app/stores/configStore';             [37m 5[0m import ConfigStore from 'app/stores/configStore';
+[37m 4[0m                                                               [37m 4[0m [0m
+[37m 5[0m import ConfigStore from 'app/stores/configStore';             [37m 5[0m [0mimport ConfigStore from 'app/stores/configStore';
 [37m 6[0m [22mimport InstallWizard from 'app/views/installWizard';[0m          [37m 6[0m [22mimport InstallWizard from 'app/views[7m[32m/admin[0m[22m/installWizard';[0m
-[37m 8[0m jest.mock('app/stores/configStore', () => ({                  [37m 8[0m jest.mock('app/stores/configStore', () => ({
-[37m 9[0m   get: jest.fn(),                                             [37m 9[0m   get: jest.fn(),
-[37m┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈[0m[37m28[0m   beforeEach(function() {});                                  [37m28[0m   beforeEach(function() {});
-[37m30[0m   it('renders', function() {                                  [37m30[0m   it('renders', function() {
+[37m 7[0m                                                               [37m 7[0m [0m
+[37m 8[0m jest.mock('app/stores/configStore', () => ({                  [37m 8[0m [0mjest.mock('app/stores/configStore', () => ({
+[37m 9[0m   get: jest.fn(),                                             [37m 9[0m [0m  get: jest.fn(),
+[37m┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈[0m[37m28[0m   beforeEach(function() {});                                  [37m28[0m [0m  beforeEach(function() {});
+[37m29[0m                                                               [37m29[0m [0m
+[37m30[0m   it('renders', function() {                                  [37m30[0m [0m  it('renders', function() {
 [37m31[0m [22m    const wrapper = mount(<InstallWizard onConfigured={jest.f[0m [37m31[0m [22m    const wrapper = mount[7m[32mWithTheme[0m[22m(<InstallWizard onConfigure[0m
 [37m  [0m [22mn()} />);[0m                                                     [37m  [0m [22md={jest.fn()} />);[0m
-[37m32[0m     expect(wrapper).toMatchSnapshot();                        [37m32[0m     expect(wrapper).toMatchSnapshot();
-[37m33[0m   });                                                         [37m33[0m   });
-[37m┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈[0m[37m49[0m         },                                                    [37m49[0m         },
-[37m50[0m       }),                                                     [37m50[0m       }),
-[37m51[0m     });                                                       [37m51[0m     });
+[37m32[0m     expect(wrapper).toMatchSnapshot();                        [37m32[0m [0m    expect(wrapper).toMatchSnapshot();
+[37m33[0m   });                                                         [37m33[0m [0m  });
+[37m34[0m                                                               [37m34[0m [0m
+[37m┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈[0m[37m49[0m         },                                                    [37m49[0m [0m        },
+[37m50[0m       }),                                                     [37m50[0m [0m      }),
+[37m51[0m     });                                                       [37m51[0m [0m    });
 [37m52[0m [22m    const wrapper = mount(<InstallWizard onConfigured={jest.f[0m [37m52[0m [22m    const wrapper = mount[7m[32mWithTheme[0m[22m(<InstallWizard onConfigure[0m
 [37m  [0m [22mn()} />);[0m                                                     [37m  [0m [22md={jest.fn()} />);[0m
-[37m54[0m     expect(                                                   [37m54[0m     expect(
-[37m55[0m       wrapper.find('input[name="beacon.anonymous"][value="fal [37m55[0m       wrapper.find('input[name="beacon.anonymous"][value="fal
+[37m53[0m                                                               [37m53[0m [0m
+[37m54[0m     expect(                                                   [37m54[0m [0m    expect(
+[37m55[0m       wrapper.find('input[name="beacon.anonymous"][value="fal [37m55[0m [0m      wrapper.find('input[name="beacon.anonymous"][value="fal
 [37m  [0m se"]').prop('checked')                                        [37m  [0m se"]').prop('checked')
-[37m┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈[0m[37m77[0m         },                                                    [37m77[0m         },
-[37m78[0m       }),                                                     [37m78[0m       }),
-[37m79[0m     });                                                       [37m79[0m     });
+[37m┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈[0m[37m77[0m         },                                                    [37m77[0m [0m        },
+[37m78[0m       }),                                                     [37m78[0m [0m      }),
+[37m79[0m     });                                                       [37m79[0m [0m    });
 [37m80[0m [22m    const wrapper = mount(<InstallWizard onConfigured={jest.f[0m [37m80[0m [22m    const wrapper = mount[7m[32mWithTheme[0m[22m(<InstallWizard onConfigure[0m
 [37m  [0m [22mn()} />);[0m                                                     [37m  [0m [22md={jest.fn()} />);[0m
-[37m82[0m     expect(                                                   [37m82[0m     expect(
-[37m83[0m       wrapper.find('input[name="beacon.anonymous"][value="fal [37m83[0m       wrapper.find('input[name="beacon.anonymous"][value="fal
+[37m81[0m                                                               [37m81[0m [0m
+[37m82[0m     expect(                                                   [37m82[0m [0m    expect(
+[37m83[0m       wrapper.find('input[name="beacon.anonymous"][value="fal [37m83[0m [0m      wrapper.find('input[name="beacon.anonymous"][value="fal
 [37m  [0m se"]').prop('checked')                                        [37m  [0m se"]').prop('checked')

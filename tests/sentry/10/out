@@ -10,11 +10,13 @@
 [0m[36mindex 8438573331..a6e360aded 100644
 [0m[33m--- a/src/sentry/snuba/discover.py
 [0m[33m+++ b/src/sentry/snuba/discover.py
-[0m[37m┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈[0m[37m626[0m         orderby=orderby,                                     [37m626[0m         orderby=orderby,
-[37m627[0m         referrer=referrer,                                   [37m627[0m         referrer=referrer,
-[37m628[0m         conditions=key_transaction_conditions(queryset),     [37m628[0m         conditions=key_transaction_conditions(queryset),
+[0m[37m┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈[0m[37m626[0m         orderby=orderby,                                     [37m626[0m [0m        orderby=orderby,
+[37m627[0m         referrer=referrer,                                   [37m627[0m [0m        referrer=referrer,
+[37m628[0m         conditions=key_transaction_conditions(queryset),     [37m628[0m [0m        conditions=key_transaction_conditions(queryset),
 [37m   [0m                                                              [37m629[0m [32m        use_aggregate_conditions=True,[0m
-[37m629[0m     )                                                        [37m630[0m     )
+[37m629[0m     )                                                        [37m630[0m [0m    )
+[37m630[0m                                                              [37m631[0m [0m
+[37m631[0m                                                              [37m632[0m [0m
 [36mdiff --git a/tests/snuba/api/endpoints/test_discover_key_transactions.py b/tests/snuba/api/endpoints/test_discover_key_transactions.py
 [0m[36mindex bd30c252a1..46b6676cb8 100644
 [0m[33m--- a/tests/snuba/api/endpoints/test_discover_key_transactions.py
@@ -72,11 +74,12 @@
 [37m   [0m                                                              [37m419[0m [32m[0m
 [37m   [0m                                                              [37m420[0m [32m        assert response.status_code == 200[0m
 [37m   [0m                                                              [37m421[0m [32m        data = response.data["data"][0m
-[37m376[0m         assert len(data) == 1                                [37m422[0m         assert len(data) == 1
-[37m377[0m         assert data[0]["transaction"] == event_data["transac [37m423[0m         assert data[0]["transaction"] == event_data["transac
+[37m376[0m         assert len(data) == 1                                [37m422[0m [0m        assert len(data) == 1
+[37m377[0m         assert data[0]["transaction"] == event_data["transac [37m423[0m [0m        assert data[0]["transaction"] == event_data["transac
 [37m   [0m tion"]                                                       [37m   [0m tion"]
-[37m379[0m     @patch("django.utils.timezone.now")                      [37m425[0m     @patch("django.utils.timezone.now")
-[37m380[0m     def test_get_transaction_with_backslash_and_quotes(self, [37m426[0m     def test_get_transaction_with_backslash_and_quotes(self,
+[37m378[0m                                                              [37m424[0m [0m
+[37m379[0m     @patch("django.utils.timezone.now")                      [37m425[0m [0m    @patch("django.utils.timezone.now")
+[37m380[0m     def test_get_transaction_with_backslash_and_quotes(self, [37m426[0m [0m    def test_get_transaction_with_backslash_and_quotes(self,
 [37m   [0m  mock_now):                                                  [37m   [0m  mock_now):
-[37m381[0m         mock_now.return_value = before_now().replace(tzinfo= [37m427[0m         mock_now.return_value = before_now().replace(tzinfo=
+[37m381[0m         mock_now.return_value = before_now().replace(tzinfo= [37m427[0m [0m        mock_now.return_value = before_now().replace(tzinfo=
 [37m   [0m pytz.utc)                                                    [37m   [0m pytz.utc)

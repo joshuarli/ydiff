@@ -17,8 +17,8 @@
 [0m[36mindex 7c0ea52762..69ae69024d 100644
 [0m[33m--- a/src/sentry/static/sentry/app/utils/discover/fields.tsx
 [0m[33m+++ b/src/sentry/static/sentry/app/utils/discover/fields.tsx
-[0m[37m┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈[0m[37m261[0m   multiPlotType: PlotType;                                   [37m261[0m   multiPlotType: PlotType;
-[37m262[0m };                                                           [37m262[0m };
+[0m[37m┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈[0m[37m261[0m   multiPlotType: PlotType;                                   [37m261[0m [0m  multiPlotType: PlotType;
+[37m262[0m };                                                           [37m262[0m [0m};
 [37m   [0m                                                              [37m263[0m [32m[0m
 [37m   [0m                                                              [37m264[0m [32menum FieldKey {[0m
 [37m   [0m                                                              [37m265[0m [32m  CULPRIT = 'culprit',[0m
@@ -80,16 +80,18 @@
 [37m   [0m                                                              [37m321[0m [32m  USER_IP = 'user.ip',[0m
 [37m   [0m                                                              [37m322[0m [32m  USER_USERNAME = 'user.username',[0m
 [37m   [0m                                                              [37m323[0m [32m}[0m
-[37m264[0m /**                                                          [37m325[0m /**
-[37m265[0m  * Refer to src/sentry/snuba/events.py, search for Columns   [37m326[0m  * Refer to src/sentry/snuba/events.py, search for Columns
-[37m266[0m  */                                                          [37m327[0m  */
+[37m263[0m                                                              [37m324[0m [0m
+[37m264[0m /**                                                          [37m325[0m [0m/**
+[37m265[0m  * Refer to src/sentry/snuba/events.py, search for Columns   [37m326[0m [0m * Refer to src/sentry/snuba/events.py, search for Columns
+[37m266[0m  */                                                          [37m327[0m [0m */
 [37m267[0m [22m[7m[31mexport const FIELDS = {[0m                                      [37m328[0m [22m[7m[32mexport const FIELDS: Readonly<Record<FieldKey, ColumnType>> [0m
 [37m   [0m                                                              [37m   [0m [22m[7m[32m= {[0m
 [37m268[0m [22m[7m[31m  id: 'string',[0m                                              [37m329[0m [22m[7m[32m  [FieldKey.ID]: 'string',[0m
-[37m269[0m   // issue.id and project.id are omitted on purpose.         [37m330[0m   // issue.id and project.id are omitted on purpose.
-[37m270[0m   // Customers should use `issue` and `project` instead.     [37m331[0m   // Customers should use `issue` and `project` instead.
+[37m269[0m   // issue.id and project.id are omitted on purpose.         [37m330[0m [0m  // issue.id and project.id are omitted on purpose.
+[37m270[0m   // Customers should use `issue` and `project` instead.     [37m331[0m [0m  // Customers should use `issue` and `project` instead.
 [37m271[0m [22m[7m[31m  timestamp: 'date',[0m                                         [37m332[0m [22m[7m[32m  [FieldKey.TIMESTAMP]: 'date',[0m
 [37m272[0m [22m[7m[31m  time: 'date',[0m                                              [37m333[0m [22m[7m[32m  [FieldKey.TIME]: 'date',[0m
+[37m273[0m                                                              [37m334[0m [0m
 [37m274[0m [22m[7m[31m  culprit: 'string',[0m                                         [37m335[0m [22m[7m[32m  [FieldKey.CULPRIT]: 'string',[0m
 [37m275[0m [22m[7m[31m  location: 'string',[0m                                        [37m336[0m [22m[7m[32m  [FieldKey.LOCATION]: 'string',[0m
 [37m276[0m [22m[7m[31m  message: 'string',[0m                                         [37m337[0m [22m[7m[32m  [FieldKey.MESSAGE]: 'string',[0m
@@ -99,7 +101,8 @@
 [37m280[0m [22m[7m[31m  dist: 'string',[0m                                            [37m341[0m [22m[7m[32m  [FieldKey.DIST]: 'string',[0m
 [37m281[0m [22m[7m[31m  title: 'string',[0m                                           [37m342[0m [22m[7m[32m  [FieldKey.TITLE]: 'string',[0m
 [37m282[0m [22m[7m[31m  'event.type': 'string',[0m                                    [37m343[0m [22m[7m[32m  [FieldKey.EVENT_TYPE]: 'string',[0m
-[37m283[0m   // tags.key and tags.value are omitted on purpose as well. [37m344[0m   // tags.key and tags.value are omitted on purpose as well.
+[37m283[0m   // tags.key and tags.value are omitted on purpose as well. [37m344[0m [0m  // tags.key and tags.value are omitted on purpose as well.
+[37m284[0m                                                              [37m345[0m [0m
 [37m285[0m [22m[7m[31m  transaction: 'string',[0m                                     [37m346[0m [22m[7m[32m  [FieldKey.TRANSACTION]: 'string',[0m
 [37m286[0m [22m[7m[31m  user: 'string',[0m                                            [37m347[0m [22m[7m[32m  [FieldKey.USER]: 'string',[0m
 [37m287[0m [22m[7m[31m  'user.id': 'string',[0m                                       [37m348[0m [22m[7m[32m  [FieldKey.USER_ID]: 'string',[0m
@@ -138,20 +141,24 @@
 [37m320[0m [22m[7m[31m  'stack.colno': 'number',[0m                                   [37m381[0m [22m[7m[32m  [FieldKey.STACK_COLNO]: 'number',[0m
 [37m321[0m [22m[7m[31m  'stack.lineno': 'number',[0m                                  [37m382[0m [22m[7m[32m  [FieldKey.STACK_LINENO]: 'number',[0m
 [37m322[0m [22m[7m[31m  'stack.stack_level': 'number',[0m                             [37m383[0m [22m[7m[32m  [FieldKey.STACK_STACK_LEVEL]: 'number',[0m
-[37m323[0m   // contexts.key and contexts.value omitted on purpose.     [37m384[0m   // contexts.key and contexts.value omitted on purpose.
-[37m325[0m   // Transaction event fields.                               [37m386[0m   // Transaction event fields.
+[37m323[0m   // contexts.key and contexts.value omitted on purpose.     [37m384[0m [0m  // contexts.key and contexts.value omitted on purpose.
+[37m324[0m                                                              [37m385[0m [0m
+[37m325[0m   // Transaction event fields.                               [37m386[0m [0m  // Transaction event fields.
 [37m326[0m [22m[7m[31m  'transaction.duration': 'duration',[0m                        [37m387[0m [22m[7m[32m  [FieldKey.TRANSACTION_DURATION]: 'duration',[0m
 [37m327[0m [22m[7m[31m  'transaction.op': 'string',[0m                                [37m388[0m [22m[7m[32m  [FieldKey.TRANSACTION_OP]: 'string',[0m
 [37m328[0m [22m[7m[31m  'transaction.status': 'string',[0m                            [37m389[0m [22m[7m[32m  [FieldKey.TRANSACTION_STATUS]: 'string',[0m
+[37m329[0m                                                              [37m390[0m [0m
 [37m330[0m [22m[7m[31m  trace: 'string',[0m                                           [37m391[0m [22m[7m[32m  [FieldKey.TRACE]: 'string',[0m
 [37m331[0m [22m[7m[31m  'trace.span': 'string',[0m                                    [37m392[0m [22m[7m[32m  [FieldKey.TRACE_SPAN]: 'string',[0m
 [37m332[0m [22m[7m[31m  'trace.parent_span': 'string',[0m                             [37m393[0m [22m[7m[32m  [FieldKey.TRACE_PARENT_SPAN]: 'string',[0m
-[37m334[0m   // Field alises defined in src/sentry/api/event_search.py  [37m395[0m   // Field alises defined in src/sentry/api/event_search.py
+[37m333[0m                                                              [37m394[0m [0m
+[37m334[0m   // Field alises defined in src/sentry/api/event_search.py  [37m395[0m [0m  // Field alises defined in src/sentry/api/event_search.py
 [37m335[0m [22m[7m[31m  project: 'string',[0m                                         [37m396[0m [22m[7m[32m  [FieldKey.PROJECT]: 'string',[0m
 [37m336[0m [22m[7m[31m  issue: 'string',[0m                                           [37m397[0m [22m[7m[32m  [FieldKey.ISSUE]: 'string',[0m
 [37m337[0m [22m[7m[31m} as const;[0m                                                  [37m398[0m [22m[7m[32m};[0m
 [37m338[0m [31massert(FIELDS as Readonly<{[key in keyof typeof FIELDS]: Col[0m [37m   [0m 
 [37m   [0m [31mumnType}>);[0m                                                  [37m   [0m 
+[37m339[0m                                                              [37m399[0m [0m
 [37m340[0m [22m[7m[31mexport type FieldKey = keyof typeof FIELDS | string | '';[0m    [37m400[0m [22m[7m[32mexport type FieldTag = {[0m
 [37m   [0m                                                              [37m401[0m [32m  key: FieldKey;[0m
 [37m   [0m                                                              [37m402[0m [32m  name: FieldKey;[0m
@@ -165,52 +172,58 @@
 [37m   [0m                                                              [37m409[0m [32m// Allows for a less strict field key definition in cases we[0m
 [37m   [0m                                                              [37m   [0m [32m are returning custom strings as fields[0m
 [37m   [0m                                                              [37m410[0m [32mexport type LooseFieldKey = FieldKey | string | '';[0m
-[37m342[0m // This list should be removed with the tranaction-events fe [37m412[0m // This list should be removed with the tranaction-events fe
+[37m341[0m                                                              [37m411[0m [0m
+[37m342[0m // This list should be removed with the tranaction-events fe [37m412[0m [0m// This list should be removed with the tranaction-events fe
 [37m   [0m ature flag.                                                  [37m   [0m ature flag.
-[37m343[0m export const TRACING_FIELDS = [                              [37m413[0m export const TRACING_FIELDS = [
+[37m343[0m export const TRACING_FIELDS = [                              [37m413[0m [0mexport const TRACING_FIELDS = [
 [36mdiff --git a/src/sentry/static/sentry/app/views/events/searchBar.tsx b/src/sentry/static/sentry/app/views/events/searchBar.tsx
 [0m[36mindex 2bee7646e3..10c503474e 100644
 [0m[33m--- a/src/sentry/static/sentry/app/views/events/searchBar.tsx
 [0m[33m+++ b/src/sentry/static/sentry/app/views/events/searchBar.tsx
-[0m[37m┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈[0m[37m 12[0m import {fetchTagValues} from 'app/actionCreators/tags';      [37m 12[0m import {fetchTagValues} from 'app/actionCreators/tags';
-[37m 13[0m import SentryTypes from 'app/sentryTypes';                   [37m 13[0m import SentryTypes from 'app/sentryTypes';
-[37m 14[0m import SmartSearchBar, {SearchType} from 'app/components/sma [37m 14[0m import SmartSearchBar, {SearchType} from 'app/components/sma
+[0m[37m┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈[0m[37m 12[0m import {fetchTagValues} from 'app/actionCreators/tags';      [37m 12[0m [0mimport {fetchTagValues} from 'app/actionCreators/tags';
+[37m 13[0m import SentryTypes from 'app/sentryTypes';                   [37m 13[0m [0mimport SentryTypes from 'app/sentryTypes';
+[37m 14[0m import SmartSearchBar, {SearchType} from 'app/components/sma [37m 14[0m [0mimport SmartSearchBar, {SearchType} from 'app/components/sma
 [37m   [0m rtSearchBar';                                                [37m   [0m rtSearchBar';
 [37m 15[0m [22mimport {Field, FIELDS, TRACING_FIELDS} from 'app/utils/disco[0m [37m 15[0m [22mimport {Field, FIELD[7m[32m_TAG[0m[22mS, TRACING_FIELDS} from 'app/utils/d[0m
 [37m   [0m [22mver/fields';[0m                                                 [37m   [0m [22miscover/fields';[0m
-[37m 16[0m import withApi from 'app/utils/withApi';                     [37m 16[0m import withApi from 'app/utils/withApi';
-[37m 17[0m import withTags from 'app/utils/withTags';                   [37m 17[0m import withTags from 'app/utils/withTags';
-[37m 18[0m import {Client} from 'app/api';                              [37m 18[0m import {Client} from 'app/api';
-[37m┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈[0m[37m 23[0m   'g'                                                        [37m 23[0m   'g'
+[37m 16[0m import withApi from 'app/utils/withApi';                     [37m 16[0m [0mimport withApi from 'app/utils/withApi';
+[37m 17[0m import withTags from 'app/utils/withTags';                   [37m 17[0m [0mimport withTags from 'app/utils/withTags';
+[37m 18[0m import {Client} from 'app/api';                              [37m 18[0m [0mimport {Client} from 'app/api';
+[37m┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈[0m[37m 23[0m   'g'                                                        [37m 23[0m [0m  'g'
 [37m 24[0m [31m);[0m                                                           [37m   [0m 
 [37m 25[0m [31m[0m                                                             [37m   [0m 
 [37m 26[0m [31mconst FIELD_TAGS = Object.fromEntries([0m                       [37m   [0m 
 [37m 27[0m [31m  Object.keys(FIELDS).map(item => [item, {key: item, name: i[0m [37m   [0m 
 [37m   [0m [31mtem}])[0m                                                       [37m   [0m 
-[37m 28[0m );                                                           [37m 24[0m );
-[37m 30[0m type SearchBarProps = Omit<React.ComponentProps<typeof Smart [37m 26[0m type SearchBarProps = Omit<React.ComponentProps<typeof Smart
+[37m 28[0m );                                                           [37m 24[0m [0m);
+[37m 29[0m                                                              [37m 25[0m [0m
+[37m 30[0m type SearchBarProps = Omit<React.ComponentProps<typeof Smart [37m 26[0m [0mtype SearchBarProps = Omit<React.ComponentProps<typeof Smart
 [37m   [0m SearchBar>, 'tags'> & {                                      [37m   [0m SearchBar>, 'tags'> & {
-[37m 31[0m   api: Client;                                               [37m 27[0m   api: Client;
-[37m 32[0m   organization: Organization;                                [37m 28[0m   organization: Organization;
-[37m┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈[0m[37m101[0m       : {};                                                  [37m 97[0m       : {};
-[37m103[0m     const fieldTags = organization.features.includes('perfor [37m 99[0m     const fieldTags = organization.features.includes('perfor
+[37m 31[0m   api: Client;                                               [37m 27[0m [0m  api: Client;
+[37m 32[0m   organization: Organization;                                [37m 28[0m [0m  organization: Organization;
+[37m┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈[0m[37m101[0m       : {};                                                  [37m 97[0m [0m      : {};
+[37m102[0m                                                              [37m 98[0m [0m
+[37m103[0m     const fieldTags = organization.features.includes('perfor [37m 99[0m [0m    const fieldTags = organization.features.includes('perfor
 [37m   [0m mance-view')                                                 [37m   [0m mance-view')
 [37m104[0m [22m      ? assign(FIELD_TAGS, functionTags)[0m                     [37m100[0m [22m      ? [7m[32mObject.[0m[22massign([7m[32m{}, [0m[22mFIELD_TAGS, functionTags)[0m
-[37m105[0m       : omit(FIELD_TAGS, TRACING_FIELDS);                    [37m101[0m       : omit(FIELD_TAGS, TRACING_FIELDS);
-[37m107[0m     const combined = assign({}, tags, fieldTags);            [37m103[0m     const combined = assign({}, tags, fieldTags);
+[37m105[0m       : omit(FIELD_TAGS, TRACING_FIELDS);                    [37m101[0m [0m      : omit(FIELD_TAGS, TRACING_FIELDS);
+[37m106[0m                                                              [37m102[0m [0m
+[37m107[0m     const combined = assign({}, tags, fieldTags);            [37m103[0m [0m    const combined = assign({}, tags, fieldTags);
 [36mdiff --git a/src/sentry/static/sentry/app/views/settings/incidentRules/metricField.tsx b/src/sentry/static/sentry/app/views/settings/incidentRules/metricField.tsx
 [0m[36mindex 3acb977f8a..9ff83b3f82 100644
 [0m[33m--- a/src/sentry/static/sentry/app/views/settings/incidentRules/metricField.tsx
 [0m[33m+++ b/src/sentry/static/sentry/app/views/settings/incidentRules/metricField.tsx
-[0m[37m┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈[0m[37m16[0m   explodeFieldString,                                         [37m16[0m   explodeFieldString,
-[37m17[0m   generateFieldAsString,                                      [37m17[0m   generateFieldAsString,
-[37m18[0m   AggregationKey,                                             [37m18[0m   AggregationKey,
+[0m[37m┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈[0m[37m16[0m   explodeFieldString,                                         [37m16[0m [0m  explodeFieldString,
+[37m17[0m   generateFieldAsString,                                      [37m17[0m [0m  generateFieldAsString,
+[37m18[0m   AggregationKey,                                             [37m18[0m [0m  AggregationKey,
 [37m19[0m [22m  FieldKey,[0m                                                   [37m19[0m [22m  [7m[32mLoose[0m[22mFieldKey,[0m
-[37m20[0m   AGGREGATIONS,                                               [37m20[0m   AGGREGATIONS,
-[37m21[0m   FIELDS,                                                     [37m21[0m   FIELDS,
-[37m22[0m } from 'app/utils/discover/fields';                           [37m22[0m } from 'app/utils/discover/fields';
-[37m┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈[0m[37m31[0m type OptionConfig = {                                         [37m31[0m type OptionConfig = {
-[37m32[0m   aggregations: AggregationKey[];                             [37m32[0m   aggregations: AggregationKey[];
+[37m20[0m   AGGREGATIONS,                                               [37m20[0m [0m  AGGREGATIONS,
+[37m21[0m   FIELDS,                                                     [37m21[0m [0m  FIELDS,
+[37m22[0m } from 'app/utils/discover/fields';                           [37m22[0m [0m} from 'app/utils/discover/fields';
+[37m┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈[0m[37m30[0m                                                               [37m30[0m [0m
+[37m31[0m type OptionConfig = {                                         [37m31[0m [0mtype OptionConfig = {
+[37m32[0m   aggregations: AggregationKey[];                             [37m32[0m [0m  aggregations: AggregationKey[];
 [37m33[0m [22m  fields: FieldKey[];[0m                                         [37m33[0m [22m  fields: [7m[32mLoose[0m[22mFieldKey[];[0m
-[37m34[0m };                                                            [37m34[0m };
-[37m36[0m const errorFieldConfig: OptionConfig = {                      [37m36[0m const errorFieldConfig: OptionConfig = {
+[37m34[0m };                                                            [37m34[0m [0m};
+[37m35[0m                                                               [37m35[0m [0m
+[37m36[0m const errorFieldConfig: OptionConfig = {                      [37m36[0m [0mconst errorFieldConfig: OptionConfig = {

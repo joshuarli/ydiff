@@ -350,6 +350,8 @@ class DiffMarker(object):
                     else:
                         left = _fit_with_marker_mix(left)
                         right = _fit_with_marker_mix(right)
+                else:
+                    right = f"{COLOR_RESET}{right}"
 
                 # Need to wrap long lines, so here we'll iterate,
                 # shaving off `width` chars from both left and right

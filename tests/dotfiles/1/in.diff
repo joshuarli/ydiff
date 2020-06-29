@@ -1,3 +1,127 @@
+commit d0883cf116c05c12813c949814ce47733b82cfa2
+Author: Joshua Li <josh@jrl.ninja>
+Date:   Sun Jun 28 13:22:45 2020 -0700
+
+    more editorconfig file types
+
+diff --git a/dev-tools/editorconfig/.editorconfig b/dev-tools/editorconfig/.editorconfig
+index f62d13d..12a5a30 100644
+--- a/dev-tools/editorconfig/.editorconfig
++++ b/dev-tools/editorconfig/.editorconfig
+@@ -8,12 +8,12 @@ end_of_line = lf
+ insert_final_newline = true
+ trim_trailing_whitespace = true
+ 
+-[*.{html,css,js,json,yml,scss,yaml}]
++[*.{html,css,js,json,yml,scss,yaml,tf,mdx,sls}]
+ indent_size = 2
+ 
+ [{*.c,Makefile,*.go}]
+ indent_style = tab
+ 
+-[{*.md,*.rst,LICENSE,VERSION}]
++[{*.{md,mdx,rst},LICENSE,VERSION}]
+ insert_final_newline = false
+ trim_trailing_whitespace = false
+
+commit fc2a6d7de3009f1ffecbbd557eb29d640f2ca312
+Author: Joshua Li <josh@jrl.ninja>
+Date:   Sun Jun 28 13:22:21 2020 -0700
+
+    prefer git config pager.tool over env var which overrides it
+
+diff --git a/base/.config/dotfiles/env b/base/.config/dotfiles/env
+index bb4881f..acd4993 100644
+--- a/base/.config/dotfiles/env
++++ b/base/.config/dotfiles/env
+@@ -31,11 +31,6 @@ else
+     export EDITOR='nano'
+ fi
+ export GIT_EDITOR="$EDITOR"
+-if df_require ydiff-bin; then
+-    export GIT_PAGER="ydiff-bin | less"
+-else
+-    export GIT_PAGER="$PAGER"
+-fi
+ export GPG_TTY="$(tty)"
+ 
+ # xdg
+diff --git a/dev-tools/git/.config/git/config b/dev-tools/git/.config/git/config
+index 42c99f1..d5327d3 100644
+--- a/dev-tools/git/.config/git/config
++++ b/dev-tools/git/.config/git/config
+@@ -23,13 +23,18 @@
+     l = log --date=short --pretty='format:%h %ad (%an)%d %s'
+     unstage = reset --
+ 
++[pager]
++    log = less
++    diff = ydiff | less
++    show = ydiff | less
++
++[color]
++    status = always
++    diff = never  # disable colors for ydiff and patch generation
++
+ [push]
+     default = current
+     followTags = false
+ 
+ [branch]
+     autoSetupMerge = always
+-
+-[color]
+-    status = always
+-    diff = never  # disable colors for ydiff and patch generation
+
+commit 9b83d758774f6dd2085745c8cf5cc6fd0d32ca8f
+Author: Joshua Li <josh@jrl.ninja>
+Date:   Sat Jun 27 01:33:45 2020 -0700
+
+    ydiff-bin as git pager
+
+diff --git a/base/.config/dotfiles/env b/base/.config/dotfiles/env
+index 06f8569..bb4881f 100644
+--- a/base/.config/dotfiles/env
++++ b/base/.config/dotfiles/env
+@@ -31,7 +31,11 @@ else
+     export EDITOR='nano'
+ fi
+ export GIT_EDITOR="$EDITOR"
+-export GIT_PAGER="$PAGER"
++if df_require ydiff-bin; then
++    export GIT_PAGER="ydiff-bin | less"
++else
++    export GIT_PAGER="$PAGER"
++fi
+ export GPG_TTY="$(tty)"
+ 
+ # xdg
+diff --git a/dev-tools/git/.config/git/config b/dev-tools/git/.config/git/config
+index d294e82..42c99f1 100644
+--- a/dev-tools/git/.config/git/config
++++ b/dev-tools/git/.config/git/config
+@@ -17,10 +17,10 @@
+     amend = commit --amend -v
+     b = blame -c --date=short
+     c = checkout
+-    d = ydiff -s -w0 --wrap
+-    dc = ydiff -s -w0 --wrap --cached
++    d = diff
++    dc = diff --cached
++    s = show
+     l = log --date=short --pretty='format:%h %ad (%an)%d %s'
+-    s = "!showdiff () { rev=${1:-HEAD}; git d $rev~1 $rev; }; showdiff $1"
+     unstage = reset --
+ 
+ [push]
+@@ -32,4 +32,4 @@
+ 
+ [color]
+     status = always
+-    diff = never  # disable colors for ydiff -s and patch generation
++    diff = never  # disable colors for ydiff and patch generation
+
 commit 78aca059ed3fbc50a749d46bf3bd66b6ddbf07d0
 Author: Joshua Li <josh@jrl.ninja>
 Date:   Fri May 22 12:37:03 2020 -0700
