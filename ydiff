@@ -124,10 +124,10 @@ class Hunk(object):
 
 class UnifiedDiff(object):
     def __init__(self, headers=None, old_path=None, new_path=None, hunks=None):
-        self._headers = headers if headers else []
-        self._old_path = old_path
-        self._new_path = new_path
-        self._hunks = hunks if hunks else []
+        self._headers = headers or []
+        self._old_path = old_path or None
+        self._new_path = new_path or None
+        self._hunks = hunks or []
 
     def is_old_path(self, line):
         return line.startswith("--- ")
@@ -311,8 +311,9 @@ class DiffMarker(object):
         for line in diff._headers:
             yield f"{COLOR_CYAN}{line}{COLOR_RESET}"
 
-        yield f"{COLOR_YELLOW}{diff._old_path}{COLOR_RESET}"
-        yield f"{COLOR_YELLOW}{diff._new_path}{COLOR_RESET}"
+        if diff._old_path is not None and diff._new_path is not None:
+            yield f"{COLOR_YELLOW}{diff._old_path}{COLOR_RESET}"
+            yield f"{COLOR_YELLOW}{diff._new_path}{COLOR_RESET}"
 
         for hunk in diff._hunks:
             for hunk_header in hunk._hunk_headers:
