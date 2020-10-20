@@ -1,5 +1,7 @@
 # joshuarli's ydiff fork
 
+**UNMAINTAINED:** I use [delta](https://github.com/dandavison/delta) now, [here's my configuration](https://github.com/joshuarli/dotfiles/commit/f6db90ea70642edecca6193065302f67ce36fb1d).
+
 This is [ydiff](https://github.com/ymattw/ydiff), distilled down to the very core.
 
 It's been heavily modified and stripped down to a very specific feature subset:
